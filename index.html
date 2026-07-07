@@ -129,12 +129,12 @@
     <div class="story">
       <img src="logo.png" alt="">
       <div style="flex:1;min-width:260px">
-        <p>Compasse is made by Aidan and his mom, Shelly. We built it the way you'd want software
-        built for your own family — because that's exactly who we test it on. Every feature is tried
-        in our own living rooms before it reaches yours, and when you send feedback, a real person
-        (one of the two of us) reads it and answers.</p>
-        <p style="margin-top:10px">No call centers. No “your call is important to us.” Just a family
-        building for families.</p>
+        <p>Compasse is a two person company. Aidan writes the software. His mom Shelly tries
+        everything on her own phone and tablet before it ever reaches another family. If something
+        confuses her, it gets fixed before you see it.</p>
+        <p style="margin-top:10px">That size is the point. When you send us feedback it goes to our
+        phones, and the person who writes you back is the same person who will fix the problem. We
+        know the people using Compasse are somebody's mom or dad. We treat them that way.</p>
       </div>
     </div>
   </section>
@@ -165,7 +165,14 @@
       <p style="color:var(--muted);max-width:560px;margin:10px auto 24px">We're onboarding a small
       group of trial families right now — free, with white-glove setup help from Aidan and Shelly.
       Tell us a little about your family and we'll reach out.</p>
-      <a class="btn" href="mailto:Aidan@revisesolutions.com?subject=Compasse%20trial%20family&body=Hi%20Aidan%20and%20Shelly%20—%20we'd%20like%20to%20try%20Compasse.%0A%0AWho%20it's%20for%20(e.g.%20my%20mom%2C%2082)%3A%0ADevices%20we%20have%3A%0AWhat%20we're%20hoping%20it%20helps%20with%3A">Join the trial waitlist</a>
+      <form id="wl" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <input id="wl-email" type="email" required placeholder="you@email.com" autocomplete="email"
+          style="font:inherit;padding:12px 18px;border-radius:999px;border:1.5px solid var(--border);min-width:260px;background:#fff">
+        <button class="btn" type="submit" style="border:none;cursor:pointer;font:inherit">Join the trial waitlist</button>
+      </form>
+      <p id="wl-msg" aria-live="polite" style="margin-top:14px;color:var(--accent);font-weight:600;min-height:24px"></p>
+      <p style="font-size:14px;color:var(--muted)">Prefer email? Write us at
+        <a href="mailto:Aidan@revisesolutions.com">Aidan@revisesolutions.com</a></p>
     </div>
   </section>
 </div>
@@ -183,5 +190,41 @@
   </div>
 </footer>
 
+
+<script>
+  // Waitlist: writes to our own database. The key below is the public
+  // publishable key; the table is insert-only, so it can add an email but
+  // never read the list.
+  const SB_URL = 'https://cklagdabffzbikvtnnzo.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8';
+  document.getElementById('wl').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('wl-email').value.trim();
+    const msg = document.getElementById('wl-msg');
+    msg.textContent = 'One moment\u2026';
+    try {
+      const r = await fetch(SB_URL + '/rest/v1/waitlist_signups', {
+        method: 'POST',
+        headers: {
+          apikey: SB_KEY,
+          Authorization: 'Bearer ' + SB_KEY,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (r.status === 409) {
+        msg.textContent = "You're already on the list. We'll be in touch soon.";
+      } else if (r.ok) {
+        msg.textContent = "You're on the list. We'll email you when your spot opens.";
+        e.target.reset();
+      } else {
+        throw new Error(String(r.status));
+      }
+    } catch {
+      msg.textContent = "That didn't go through. Please email us instead: Aidan@revisesolutions.com";
+    }
+  });
+</script>
 </body>
 </html>
