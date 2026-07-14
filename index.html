@@ -427,7 +427,12 @@
           'Content-Type': 'application/json',
           Prefer: 'return=minimal',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          // Where this signup came from (?src=flyer on QR codes, etc.) —
+          // lets us see which outreach actually works.
+          source: new URLSearchParams(location.search).get('src'),
+        }),
       });
       if (r.status === 409) {
         msg.textContent = "You're already on the list. We'll be in touch soon.";
