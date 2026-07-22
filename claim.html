@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Welcome to Compasse</title>
+<link rel="icon" href="logo.png">
+<style>
+  :root { --teal:#2C6A85; --ink:#2B2A28; --muted:#6B6660; --bg:#FAF7F2; --line:#E8E2D8; }
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:Georgia,serif; background:var(--bg); color:var(--ink); min-height:100vh;
+         display:flex; align-items:center; justify-content:center; padding:24px; }
+  .card { max-width:560px; background:#fff; border:1px solid var(--line); border-radius:16px;
+          padding:40px 36px; text-align:center; }
+  .mark { width:72px; height:72px; border-radius:16px; }
+  h1 { font-size:28px; margin:16px 0 8px; font-weight:400; }
+  p  { color:var(--muted); line-height:1.6; margin:8px 0; }
+  .email { color:var(--teal); font-weight:700; }
+  ol { text-align:left; margin:20px 0; padding-left:22px; color:var(--ink); line-height:1.8;
+       font-family:-apple-system,system-ui,sans-serif; font-size:15px; }
+  .note { background:var(--bg); border-radius:10px; padding:12px 16px; font-size:13px;
+          font-family:-apple-system,system-ui,sans-serif; }
+  a { color:var(--teal); }
+  #pending, #failed { display:none; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <img class="mark" src="logo.png" alt="Compasse">
+    <div id="pending"><h1>One moment…</h1><p>Confirming your subscription.</p></div>
+    <div id="ok" style="display:none">
+      <h1>Welcome to Compasse 💙</h1>
+      <p>Your free month has started for <span class="email" id="who"></span>.<br>Nothing is charged until it ends, and you can cancel anytime.</p>
+      <ol>
+        <li><b>Install Compasse on your iPhone</b> — we'll email your download link to the address above within a few minutes.</li>
+        <li><b>Create your account in the app using that same email address</b> — that's how your subscription finds you.</li>
+        <li><b>Set up their tablet</b> — the app walks you through it with a one-time code. About 15 minutes, once. <a href="https://compasse.care/film/setup/">Watch the 46-second setup video.</a></li>
+      </ol>
+      <p class="note">Compasse is a comfort and communication tool, not a medical or emergency device. In any emergency, always call 911.</p>
+      <p style="margin-top:16px">Questions at any step: <a href="mailto:hello@compasse.care">hello@compasse.care</a> — a real person answers.</p>
+    </div>
+    <div id="failed">
+      <h1>We couldn't confirm that</h1>
+      <p>Your payment may still have gone through. Email us at <a href="mailto:hello@compasse.care">hello@compasse.care</a> and we'll sort it out personally — usually within the hour.</p>
+    </div>
+  </div>
+<script>
+(async function(){
+  const pending = document.getElementById('pending');
+  const ok = document.getElementById('ok');
+  const failed = document.getElementById('failed');
+  pending.style.display = 'block';
+  const sid = new URLSearchParams(location.search).get('session_id') || '';
+  try {
+    const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout?session_id=' + encodeURIComponent(sid));
+    const d = await r.json();
+    pending.style.display = 'none';
+    if (d.ok) {
+      document.getElementById('who').textContent = d.email || 'your email';
+      ok.style.display = 'block';
+    } else {
+      failed.style.display = 'block';
+    }
+  } catch (e) {
+    pending.style.display = 'none';
+    failed.style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>

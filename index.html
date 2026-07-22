@@ -354,6 +354,30 @@
     </div>
   </section>
 
+  <!-- Pricing — hidden until launch (revealed by ?pricing=preview or the launch flag in main.js logic below) -->
+  <section id="pricing" class="faq" hidden>
+    <div class="wrap">
+      <div class="head">
+        <div class="overline" style="color:var(--terra)">Simple pricing</div>
+        <h2>One plan, everything included</h2>
+      </div>
+      <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #E8E2D8;border-radius:16px;padding:32px;text-align:center">
+        <div style="font-size:48px;font-weight:700;color:var(--ink,#2B2A28)">$29<span style="font-size:18px;font-weight:400;color:#6B6660">/month</span></div>
+        <p style="margin:8px 0 0;color:#6B6660">Your first month is free. Cancel anytime, online, in two clicks.</p>
+        <ul style="list-style:none;padding:0;margin:20px 0;text-align:left;color:#2B2A28;line-height:2">
+          <li>✓ The always-on board for their iPad</li>
+          <li>✓ Cassi, with your recorded voice</li>
+          <li>✓ Medication and calendar reminders</li>
+          <li>✓ Voice notes, check-ins, and calls</li>
+          <li>✓ A real person at hello@compasse.care</li>
+        </ul>
+        <button class="btn" id="buy-btn" type="button">Start your free month</button>
+        <p style="margin-top:14px;font-size:13px;color:#6B6660">Founding families: our first 12 families keep a founding price of $19/month for life.</p>
+        <p style="margin-top:6px;font-size:12px;color:#6B6660">If care ends, tell us — we stop the subscription immediately and refund the current month.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section id="get" class="get">
     <div class="wrap">
@@ -390,6 +414,35 @@
 </footer>
 
 <script>
+  // Pricing stays hidden until launch. Reveal for internal preview with
+  // ?pricing=preview (sticky via localStorage) — flipped for real on launch day.
+  (function(){
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('pricing') === 'preview') localStorage.setItem('compasse_pricing', '1');
+    if (qs.get('pricing') === 'off') localStorage.removeItem('compasse_pricing');
+    const LAUNCHED = false; // ← flip to true on launch day
+    if (LAUNCHED || localStorage.getItem('compasse_pricing') === '1') {
+      document.getElementById('pricing').hidden = false;
+    }
+    const buy = document.getElementById('buy-btn');
+    if (buy) buy.addEventListener('click', async () => {
+      buy.disabled = true; buy.textContent = 'One moment…';
+      try {
+        const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ founding: false }),
+        });
+        const d = await r.json();
+        if (d.url) { location.href = d.url; return; }
+        throw new Error('no url');
+      } catch (e) {
+        buy.disabled = false; buy.textContent = 'Start your free month';
+        alert('Something went wrong starting checkout. Please try again or email hello@compasse.care');
+      }
+    });
+  })();
+
   // Live board clock — the hero tile shows the real time, like the real board.
   function tickBoard(){
     const now = new Date();
