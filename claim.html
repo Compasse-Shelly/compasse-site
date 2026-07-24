@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Welcome to Compasse</title>
+<!-- Meta pixel, privacy-disciplined: library only, NO PageView, NO scraping.
+     Fires exactly one event (StartTrial) after a verified checkout. -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('set','autoConfig',false,'1039692688431979');
+fbq('init','1039692688431979');
+/* Intentionally NO fbq('track','PageView'). */
+</script>
 <link rel="icon" href="logo.png">
 <style>
   :root { --teal:#2C6A85; --ink:#2B2A28; --muted:#6B6660; --bg:#FAF7F2; --line:#E8E2D8; }
@@ -46,12 +58,33 @@
     </div>
   </div>
 <script>
+  // metaEvent — pixel + server-side CAPI, same eventID, no email/name/phone.
+  function _cookie(n){ const m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
+  function metaEvent(name, value){
+    const eventID = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+Math.random();
+    const cd = (value!=null) ? { value: value, currency: 'USD' } : {};
+    try { if (window.fbq) fbq('track', name, cd, { eventID: eventID }); } catch(e){}
+    try {
+      fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/capi-event', {
+        method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
+        body: JSON.stringify({
+          event_name: name, event_id: eventID,
+          event_source_url: location.origin + location.pathname,
+          value: (value!=null)?value:undefined, currency: (value!=null)?'USD':undefined,
+          fbp: _cookie('_fbp'), fbc: _cookie('_fbc'),
+        }),
+      }).catch(function(){});
+    } catch(e){}
+  }
 (async function(){
   const pending = document.getElementById('pending');
   const ok = document.getElementById('ok');
   const failed = document.getElementById('failed');
   pending.style.display = 'block';
   const sid = new URLSearchParams(location.search).get('session_id') || '';
+  // Scrub the Stripe session id from the address bar BEFORE the pixel captures
+  // the page URL — the pixel auto-sends location.href to Meta otherwise.
+  try { history.replaceState({}, '', location.pathname); } catch(e){}
   try {
     const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout?session_id=' + encodeURIComponent(sid));
     const d = await r.json();
@@ -59,6 +92,10 @@
     if (d.ok) {
       document.getElementById('who').textContent = d.email || 'your email';
       ok.style.display = 'block';
+      // The one conversion event for a completed checkout (a free-trial start).
+      // Fired only on a server-verified session, so it can't be spoofed by
+      // loading claim.html directly.
+      metaEvent('StartTrial', 29);
     } else {
       failed.style.display = 'block';
     }

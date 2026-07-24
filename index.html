@@ -4,6 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="facebook-domain-verification" content="101q9uwdevv5efsa598gxavkvyuztw" />
+<!-- Meta pixel, privacy-disciplined. Loads the library but fires NO PageView and
+     NO automatic form/button scraping (autoConfig false, the email-leak vector).
+     Only explicit conversion events (Lead, InitiateCheckout, StartTrial) are ever
+     sent — browsing is never tracked. See metaEvent() in the page script. -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('set','autoConfig',false,'1039692688431979');
+fbq('init','1039692688431979');
+/* Intentionally NO fbq('track','PageView'). */
+</script>
 <title>Compasse, a companion for families living with cognitive decline</title>
 <meta name="description" content="Compasse turns the iPad in your drawer into a calm companion for a parent with cognitive decline. It answers their questions in your own recorded voice.">
 <link rel="icon" href="logo.png">
@@ -415,6 +429,29 @@
 </footer>
 
 <script>
+  // metaEvent — the ONLY way this site talks to Meta. Fires the browser pixel
+  // AND a server-side CAPI copy with the same eventID (Meta dedups them).
+  // Sends value/currency + the pixel's own cookies (_fbp/_fbc) only — never an
+  // email, name, or phone. event_source_url is stripped of query string so no
+  // ?src / ?session_id ever reaches Meta.
+  function _cookie(n){ const m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
+  function metaEvent(name, value){
+    const eventID = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+Math.random();
+    const cd = (value!=null) ? { value: value, currency: 'USD' } : {};
+    try { if (window.fbq) fbq('track', name, cd, { eventID: eventID }); } catch(e){}
+    try {
+      fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/capi-event', {
+        method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
+        body: JSON.stringify({
+          event_name: name, event_id: eventID,
+          event_source_url: location.origin + location.pathname,
+          value: (value!=null)?value:undefined, currency: (value!=null)?'USD':undefined,
+          fbp: _cookie('_fbp'), fbc: _cookie('_fbc'),
+        }),
+      }).catch(function(){});
+    } catch(e){}
+  }
+
   // Pricing stays hidden until launch. Reveal for internal preview with
   // ?pricing=preview (sticky via localStorage) — flipped for real on launch day.
   (function(){
@@ -428,6 +465,7 @@
     const buy = document.getElementById('buy-btn');
     if (buy) buy.addEventListener('click', async () => {
       buy.disabled = true; buy.textContent = 'One moment…';
+      metaEvent('InitiateCheckout', 29);
       try {
         const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout', {
           method: 'POST',
@@ -485,6 +523,7 @@
         msg.textContent = "You're already on the list. We'll be in touch soon.";
       } else if (r.ok) {
         msg.textContent = "You're on the list. We'll email you when your spot opens.";
+        metaEvent('Lead');
         e.target.reset();
       } else {
         throw new Error(String(r.status));
