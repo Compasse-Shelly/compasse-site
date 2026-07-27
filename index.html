@@ -215,6 +215,15 @@ fbq('init','1039692688431979');
 </head>
 <body>
 
+<!-- Founding-family banner. Hidden until launch day (revealed by the same flag
+     as the pricing section). No countdown timers, real dates only. -->
+<div id="launch-banner" data-launch hidden
+     style="background:var(--teal);color:#fff;text-align:center;padding:10px 16px;font-size:15px;line-height:1.45">
+  <strong>Compasse is live.</strong> First 30 days free, then $29 a month, everything included, cancel anytime.
+  Founding trial families: your $19 for-life price is already on your account, nothing to do.
+  <a href="#pricing" style="color:#fff;text-decoration:underline;white-space:nowrap">Start Compasse</a>
+</div>
+
 <header class="nav">
   <div class="wrap">
     <img src="logo.png" alt="">
@@ -356,15 +365,23 @@ fbq('init','1039692688431979');
         <details><summary>Does my parent need to learn anything?</summary>
           <p>No. The board is always on and they just talk to it. There are no passwords or menus on their side. Setup on their iPad is a one-time code that you enter yourself.</p></details>
         <details><summary>Is this a medical device? Can it call 911?</summary>
-          <p>No. Compasse is a comfort and communication tool, not a medical or emergency device. It must never be relied on for emergencies. Always keep your existing emergency plans in place.</p></details>
+          <p>No. Compasse is a comfort and communication tool, not a medical device, an emergency response system, or a monitoring service. It does not call 911, detect falls, or guarantee that medication gets taken. It gives your parent a calm, familiar presence and gives you a clearer picture of the day. If your family needs emergency response or medical monitoring, please use a dedicated service alongside Compasse, and always keep your existing emergency plans in place.</p></details>
         <details><summary>What about privacy? Is it always listening?</summary>
-          <p>Conversations happen only when your parent talks to Cassi. Recordings are used only to make Compasse work, and the speech partners that power Cassi are named in our <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>, which is written in plain English and covers all of it.</p></details>
-        <details><summary>What does it cost?</summary>
+          <p>Conversations happen only when your parent talks to Cassi. Recordings are used only to make Compasse work, and the speech partners that power Cassi are named in our <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>, which is written in plain English and covers all of it.<span data-launch hidden> Payments are handled by Stripe, so your card number never touches our servers. We never sell your family&rsquo;s information or use it for advertising.</span></p></details>
+        <details data-prelaunch><summary>What does it cost?</summary>
           <p>During our family trial, Compasse is free. At launch it will be a monthly subscription you can cancel anytime. Trial families will keep a lower founding-family price.</p></details>
+        <details data-launch hidden><summary>What does it cost?</summary>
+          <p>Your first 30 days are free, then it&rsquo;s $29 a month, everything included. We ask for a card up front, and if you cancel during the free month you are never charged. There are no tiers, no setup fee, no contract, and nothing else to buy, because Compasse runs on an iPad you already own (any iPad from 2017 or newer). You can cancel anytime in one tap. Families from our founding trial keep their $19 a month founding price for life.</p></details>
+        <details data-launch hidden><summary>Can I really cancel anytime?</summary>
+          <p>Yes, in one tap, from the app or the website, with no phone call and no retention script. If care has ended, tell us with one tap: billing stops immediately and we automatically refund the unused part of the month, no request needed. You will never hear from us again unless you reach out first. If you just need a pause, you can stop billing for up to three months and everything stays saved for when you&rsquo;re ready.</p></details>
+        <details data-launch hidden><summary>What is the founding-family price?</summary>
+          <p>Families who joined our founding trial and helped us shape Compasse keep a $19 a month price for as long as they subscribe. That price is a thank-you, and it never expires and never goes up. The founding window closed when Compasse launched publicly; the standard price for new families is $29 a month, everything included.</p></details>
         <details><summary>Can more than one family member use it?</summary>
           <p>Right now each family has one caregiver phone connected. Support for siblings and other family members is on the way.</p></details>
-        <details><summary>What if it doesn&rsquo;t work for us?</summary>
+        <details data-prelaunch><summary>What if it doesn&rsquo;t work for us?</summary>
           <p>Tell us. There&rsquo;s a Send Feedback button right on your dashboard and one of us answers it. If Compasse isn&rsquo;t a fit, we&rsquo;ll help you close out and delete your family&rsquo;s data completely.</p></details>
+        <details data-launch hidden><summary>What if it doesn&rsquo;t work for us?</summary>
+          <p>Tell us. There&rsquo;s a Send Feedback button right on your dashboard and one of us answers it. Your first 30 days are free, and if Compasse isn&rsquo;t right for your family, cancel in one tap and that&rsquo;s the end of it. We&rsquo;ll help you close out and delete your family&rsquo;s data completely.</p></details>
       </div>
     </div>
   </section>
@@ -458,9 +475,16 @@ fbq('init','1039692688431979');
     const qs = new URLSearchParams(location.search);
     if (qs.get('pricing') === 'preview') localStorage.setItem('compasse_pricing', '1');
     if (qs.get('pricing') === 'off') localStorage.removeItem('compasse_pricing');
+    // ONE flag runs the whole launch-day swap. Flip LAUNCHED to true and the
+    // pricing section, the founding-family banner, and the paid-era FAQ
+    // answers all appear, while the pre-launch (free trial) copy disappears.
+    // Preview any time with ?pricing=preview, undo with ?pricing=off.
     const LAUNCHED = false; // ← flip to true on launch day
-    if (LAUNCHED || localStorage.getItem('compasse_pricing') === '1') {
+    const live = LAUNCHED || localStorage.getItem('compasse_pricing') === '1';
+    if (live) {
       document.getElementById('pricing').hidden = false;
+      document.querySelectorAll('[data-launch]').forEach(function(el){ el.hidden = false; });
+      document.querySelectorAll('[data-prelaunch]').forEach(function(el){ el.hidden = true; });
     }
     const buy = document.getElementById('buy-btn');
     if (buy) buy.addEventListener('click', async () => {
