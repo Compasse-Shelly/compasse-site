@@ -67,6 +67,21 @@ python3 scrub_master.py revert   --vertical collision --version "2026-07-28 1455
 
 Reverting is itself snapshotted first, so an accidental revert is also undoable.
 
+## Rescuing a scrub that already ran into some other file
+
+If a run wrote to a workbook somewhere else — its own filename, a sheet per
+city — pull it into the master. Source sheet names are ignored entirely; only
+each row's **State** column decides where it lands.
+
+```bash
+python3 scrub_master.py import --vertical collision \
+  --file ~/Downloads/"collision NY scrub 7-28.xlsx"
+```
+
+It maps headers case-insensitively, resolves "new york" to `NY`, drops
+duplicates, and **lists any source column that has no home** rather than
+silently discarding it. Snapshots first, so `revert` undoes the import.
+
 ## Cleaning up a master that already sprayed sheets
 
 The Collision master currently has a sheet per city. One command folds them into

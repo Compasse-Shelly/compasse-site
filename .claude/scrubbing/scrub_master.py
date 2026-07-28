@@ -393,9 +393,97 @@ def cmd_consolidate(args):
     print(f"  sheets now: {', '.join(w.title for w in wb.worksheets)}")
 
 
+def cmd_import(args):
+    """Fold ANY existing workbook into the master, routing rows by state.
+
+    For a scrub that already ran and scattered sheets into some other file.
+    Sheet names in the source are ignored entirely — only the State column
+    decides where a row lands.
+    """
+    vertical = resolve_vertical(args.vertical)
+    spec = VERTICALS[vertical]
+    columns, key_cols = spec["columns"], spec["key"]
+
+    src = Path(args.file).expanduser()
+    if not src.exists():
+        sys.exit(f"No such file: {src}")
+
+    folder, master, _ = paths(vertical)
+    folder.mkdir(parents=True, exist_ok=True)
+    snapshot(vertical, f"before import of {src.name}")
+
+    swb = load_workbook(src, read_only=True, data_only=True)
+    wb = open_master(vertical)
+
+    canon = {c.strip().lower(): c for c in columns}
+    added = dupes = no_state = 0
+    unmapped, per_state = set(), {}
+
+    for ws in swb.worksheets:
+        rows = list(ws.iter_rows(values_only=True))
+        if len(rows) < 2:
+            continue
+        headers = [str(h).strip() if h is not None else "" for h in rows[0]]
+        # map source headers onto canonical columns, case-insensitively
+        mapping = {}
+        for i, h in enumerate(headers):
+            key = h.strip().lower()
+            if key in canon:
+                mapping[i] = canon[key]
+            elif h:
+                unmapped.add(f"{ws.title}:{h}")
+        if "State" not in mapping.values():
+            no_state += len(rows) - 1
+            print(f"  ! '{ws.title}' has no State column — {len(rows)-1} row(s) skipped")
+            continue
+
+        for raw in rows[1:]:
+            if not raw or not any(raw):
+                continue
+            rec = {}
+            for i, col in mapping.items():
+                rec[col] = raw[i] if i < len(raw) else ""
+            st = str(rec.get("State", "")).strip().upper()
+            if st not in STATES:
+                low = str(rec.get("State", "")).strip().lower()
+                st = STATE_NAMES.get(low, "")
+            if st not in STATES:
+                no_state += 1
+                continue
+            rec["State"] = st
+            target, _ = sheet_for_state(wb, st, columns)
+            seen = per_state.setdefault(st, existing_keys(target, columns, key_cols))
+            k = tuple(norm(rec.get(c, "")) for c in key_cols)
+            if k in seen:
+                dupes += 1
+                continue
+            seen.add(k)
+            target.append([rec.get(c, "") for c in columns])
+            added += 1
+
+    order_sheets(wb)
+    wb.save(master)
+
+    print(f"{vertical}: imported {src.name}")
+    print(f"  {added} row(s) added, {dupes} duplicate(s) skipped, {no_state} unusable")
+    print(f"  sheets now: {', '.join(w.title for w in wb.worksheets)}")
+    print(f"  master: {master}")
+    if unmapped:
+        print("  columns in the source that have no home (data NOT carried over):")
+        for u in sorted(unmapped):
+            print(f"    {u}")
+        print("  -> if any of those matter, add them to Notes in the source and re-import.")
+    print(f"  revert: python3 scrub_master.py revert --vertical {vertical}")
+
+
 def main():
     p = argparse.ArgumentParser(description="One master workbook per vertical, one sheet per state.")
     sub = p.add_subparsers(dest="cmd", required=True)
+
+    i = sub.add_parser("import", help="fold an existing workbook into the master")
+    i.add_argument("--vertical", required=True)
+    i.add_argument("--file", required=True, help="path to the .xlsx a scrub already produced")
+    i.set_defaults(func=cmd_import)
 
     a = sub.add_parser("add", help="append qualified rows to a state sheet")
     a.add_argument("--vertical", required=True)
