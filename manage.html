@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Manage your Compasse membership</title>
+<link rel="icon" href="logo.png">
+<style>
+  :root { --teal:#2C6A85; --ink:#2B2A28; --muted:#6B6660; --bg:#FAF7F2; --line:#E8E2D8; --warn:#9A4A2E; }
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:Georgia,serif; background:var(--bg); color:var(--ink); min-height:100vh;
+         display:flex; align-items:center; justify-content:center; padding:24px; }
+  .card { width:100%; max-width:560px; background:#fff; border:1px solid var(--line); border-radius:16px;
+          padding:36px 32px; }
+  .head { text-align:center; margin-bottom:22px; }
+  .mark { width:64px; height:64px; border-radius:14px; }
+  h1 { font-size:25px; margin:14px 0 6px; font-weight:400; }
+  p  { color:var(--muted); line-height:1.6; margin:8px 0; }
+  .sans { font-family:-apple-system,system-ui,sans-serif; }
+  label { display:block; font-family:-apple-system,system-ui,sans-serif; font-size:13px;
+          color:var(--muted); margin:14px 0 5px; }
+  input { width:100%; font-size:16px; font-family:-apple-system,system-ui,sans-serif;
+          padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+  input:focus { outline:2px solid var(--teal); outline-offset:1px; }
+  button { font-family:-apple-system,system-ui,sans-serif; font-size:16px; font-weight:600;
+           width:100%; padding:14px; border:none; border-radius:12px; cursor:pointer; margin-top:16px; }
+  .primary { background:var(--teal); color:#fff; }
+  .primary:disabled { opacity:.55; cursor:default; }
+  .ghost { background:transparent; color:var(--teal); font-weight:600; margin-top:10px; }
+  .warn { background:#fff; color:var(--warn); border:1px solid var(--warn); }
+  .opt { text-align:left; width:100%; background:var(--bg); border:1px solid var(--line);
+         border-radius:12px; padding:16px 18px; margin-top:12px; cursor:pointer;
+         font-family:-apple-system,system-ui,sans-serif; }
+  .opt:hover { border-color:var(--teal); }
+  .opt b { font-size:16px; color:var(--ink); display:block; margin-bottom:4px; }
+  .opt span { font-size:14px; color:var(--muted); line-height:1.5; }
+  .err { font-family:-apple-system,system-ui,sans-serif; font-size:14px; color:var(--warn);
+         margin-top:12px; }
+  .foot { font-family:-apple-system,system-ui,sans-serif; font-size:13px; text-align:center;
+          margin-top:20px; }
+  a { color:var(--teal); }
+  #view > div { display:none; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="head">
+      <img class="mark" src="logo.png" alt="Compasse">
+      <h1 id="title">Manage your membership</h1>
+    </div>
+    <div id="view"><!-- screens injected here --></div>
+    <div class="foot">Trouble signing in? Email <a href="mailto:hello@compasse.care">hello@compasse.care</a> — a real person answers, usually within the hour.</div>
+  </div>
+
+<script>
+const SB = 'https://cklagdabffzbikvtnnzo.supabase.co';
+// Public, publishable anon key — safe in client code (the app ships the same key).
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8';
+
+let token = null;   // Supabase access token after login
+let sub = null;     // the caregiver's subscription row
+
+const view = document.getElementById('view');
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function screen(html) { view.innerHTML = '<div style="display:block">' + html + '</div>'; }
+
+// ---------- login ----------
+function showLogin(msg) {
+  screen(
+    '<p>Sign in with the email and password you use in the Compasse app to change or end your membership.</p>' +
+    '<label for="em">Email</label><input id="em" type="email" autocomplete="email" inputmode="email">' +
+    '<label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">' +
+    (msg ? '<div class="err">' + esc(msg) + '</div>' : '') +
+    '<button class="primary" id="signin">Sign in</button>'
+  );
+  document.getElementById('signin').onclick = signIn;
+  document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') signIn(); });
+}
+
+async function signIn() {
+  const email = document.getElementById('em').value.trim();
+  const password = document.getElementById('pw').value;
+  const btn = document.getElementById('signin');
+  if (!email || !password) { showLogin('Enter your email and password.'); return; }
+  btn.disabled = true; btn.textContent = 'One moment…';
+  try {
+    const r = await fetch(SB + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': ANON },
+      body: JSON.stringify({ email, password }),
+    });
+    const d = await r.json();
+    if (!r.ok || !d.access_token) { showLogin('That email and password didn’t match. Try again, or email us.'); return; }
+    token = d.access_token;
+    await loadSubscription();
+  } catch (e) {
+    showLogin('Something went wrong. Check your connection and try again.');
+  }
+}
+
+// ---------- load the caregiver's subscription ----------
+async function loadSubscription() {
+  screen('<p class="sans">Loading your membership…</p>');
+  try {
+    const r = await fetch(SB + '/rest/v1/subscriptions?select=status,paused,cancel_at_period_end,current_period_end&order=updated_at.desc&limit=1', {
+      headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + token },
+    });
+    const rows = await r.json();
+    sub = Array.isArray(rows) && rows.length ? rows[0] : null;
+    showOptions();
+  } catch (e) {
+    showOptions();
+  }
+}
+
+function endDatePhrase() {
+  if (sub && sub.current_period_end) {
+    try {
+      return new Date(sub.current_period_end).toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+    } catch (e) {}
+  }
+  return 'the end of your current billing period';
+}
+
+// ---------- options ----------
+function showOptions() {
+  // No paid subscription on file (trial/founding families have no Stripe row).
+  if (!sub) {
+    screen('<p>We don’t see a paid subscription on this account yet. If you think that’s wrong, email <a href="mailto:hello@compasse.care">hello@compasse.care</a> and we’ll sort it out.</p>');
+    return;
+  }
+  if (sub.paused) {
+    screen(
+      '<p><b>Your membership is paused.</b> The board at home, the schedule, and your recordings are all saved. Resume whenever you’re ready — it comes back exactly as you left it.</p>' +
+      '<button class="primary" id="resume">Resume membership</button>'
+    );
+    document.getElementById('resume').onclick = () => act('resume', 'Your membership is active again. Welcome back.');
+    return;
+  }
+  if (sub.cancel_at_period_end) {
+    screen('<p>Your membership is already set to end on <b>' + esc(endDatePhrase()) + '</b>, and won’t renew. If you’d like to keep it, email <a href="mailto:hello@compasse.care">hello@compasse.care</a>.</p>');
+    return;
+  }
+  screen(
+    '<p>Change or end your Compasse membership below. The board at home keeps running while you decide.</p>' +
+    '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now and refund the rest of this month automatically — no questions, no follow-ups.</span></button>' +
+    '<button class="opt" id="o-pause"><b>We need a break — pause up to 3 months</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
+    '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal. Compasse keeps running until the end of the time you’ve already paid for, then stops — and you won’t be charged again.</span></button>'
+  );
+  document.getElementById('o-endcare').onclick = confirmEndCare;
+  document.getElementById('o-pause').onclick = confirmPause;
+  document.getElementById('o-cancel').onclick = confirmCancel;
+}
+
+function confirmEndCare() {
+  screen(
+    '<h2 style="font-weight:400;font-size:20px;margin-bottom:6px">We’re so sorry.</h2>' +
+    '<p>We’ll stop billing right now and refund the rest of this month automatically — no forms, no follow-up. You won’t hear from us again unless you reach out.</p>' +
+    '<button class="warn" id="go">Stop billing and refund</button>' +
+    '<button class="ghost" id="back">Go back</button>'
+  );
+  wireConfirm('end_care', 'Billing has stopped and we’ve refunded the rest of this month. Take care — we were glad we could help.');
+}
+
+function confirmPause() {
+  screen(
+    '<h2 style="font-weight:400;font-size:20px;margin-bottom:6px">Pause your membership?</h2>' +
+    '<p>We’ll pause billing for up to 3 months. The board, the schedule, and your recordings all stay saved, and you can resume anytime in one tap.</p>' +
+    '<button class="primary" id="go">Pause membership</button>' +
+    '<button class="ghost" id="back">Go back</button>'
+  );
+  wireConfirm('pause', 'Paused. Everything is saved, and you can resume anytime.');
+}
+
+function confirmCancel() {
+  screen(
+    '<h2 style="font-weight:400;font-size:20px;margin-bottom:6px">End your membership?</h2>' +
+    '<p>Compasse keeps running at home through <b>' + esc(endDatePhrase()) + '</b>, the time you’ve already paid for, and then it won’t renew. You won’t be charged again. There’s no refund for the current month.</p>' +
+    '<button class="warn" id="go">Yes, end membership</button>' +
+    '<button class="ghost" id="back">Go back</button>'
+  );
+  wireConfirm('cancel', 'You’re all set. Your membership won’t renew, Compasse stays on through ' + endDatePhrase() + ', and you won’t be charged again.');
+}
+
+function wireConfirm(action, doneMsg) {
+  document.getElementById('back').onclick = showOptions;
+  document.getElementById('go').onclick = () => act(action, doneMsg);
+}
+
+async function act(action, doneMsg) {
+  const go = document.getElementById('go') || document.getElementById('resume');
+  if (go) { go.disabled = true; go.textContent = 'One moment…'; }
+  try {
+    const r = await fetch(SB + '/functions/v1/manage-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': ANON, 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action }),
+    });
+    const d = await r.json();
+    if (d && d.ok) {
+      document.getElementById('title').textContent = 'Compasse';
+      screen('<p style="font-size:16px;color:var(--ink)">' + esc(doneMsg) + '</p>');
+    } else {
+      showActionError(action, doneMsg);
+    }
+  } catch (e) {
+    showActionError(action, doneMsg);
+  }
+}
+
+function showActionError(action, doneMsg) {
+  screen(
+    '<p class="err">That didn’t go through. Check your connection and try again, or email <a href="mailto:hello@compasse.care">hello@compasse.care</a>.</p>' +
+    '<button class="primary" id="retry">Try again</button>' +
+    '<button class="ghost" id="back">Back to options</button>'
+  );
+  document.getElementById('retry').onclick = () => act(action, doneMsg);
+  document.getElementById('back').onclick = showOptions;
+}
+
+showLogin();
+</script>
+</body>
+</html>
