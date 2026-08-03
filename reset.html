@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Reset your password — Compasse</title>
+<style>
+  :root { --bg:#FAF7F2; --text:#1E1E1E; --muted:#5A5A5A; --accent:#2C6A85; --border:#E5DFD2; --good:#2E7D32; --warn:#C0392B; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 32px; max-width: 420px; width: 100%; display: grid; gap: 16px; }
+  h1 { font-size: 24px; }
+  p { color: var(--muted); font-size: 15px; line-height: 1.5; }
+  input { font-size: 17px; padding: 14px; border: 2px solid var(--border); border-radius: 12px; width: 100%; }
+  button { font-size: 17px; font-weight: 600; padding: 14px; border: 0; border-radius: 12px; background: var(--accent); color: #fff; cursor: pointer; }
+  button:disabled { opacity: .5; }
+  .msg-good { color: var(--good); font-weight: 600; }
+  .msg-warn { color: var(--warn); }
+  .rule { height: 4px; width: 132px; border-radius: 2px; background: linear-gradient(90deg, #2B4FC9, #6E3F9E, #D0322E); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="rule"></div>
+  <h1>Reset your password</h1>
+  <div id="form" hidden>
+    <p style="margin-bottom:12px">Choose a new password for your Compasse account (at least 6 characters).</p>
+    <div style="display:grid;gap:12px">
+      <input id="pw" type="password" placeholder="New password" autocomplete="new-password" minlength="6">
+      <input id="pw2" type="password" placeholder="Type it again" autocomplete="new-password" minlength="6">
+      <button id="save">Save new password</button>
+      <p id="err" class="msg-warn" hidden></p>
+    </div>
+  </div>
+  <p id="checking">Checking your reset link…</p>
+  <div id="done" hidden>
+    <p class="msg-good">✓ Password updated.</p>
+    <p>Open the Compasse app on your phone and sign in with your new password.</p>
+  </div>
+  <div id="bad" hidden>
+    <p class="msg-warn">This reset link is invalid or has expired.</p>
+    <p>Open the Compasse app, tap "Forgot your password?", and we'll send a fresh one.</p>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const client = supabase.createClient(
+    'https://cklagdabffzbikvtnnzo.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8',
+  );
+  const show = (id) => {
+    for (const x of ['form', 'checking', 'done', 'bad']) {
+      document.getElementById(x).hidden = x !== id;
+    }
+  };
+  // supabase-js consumes the recovery token from the URL hash automatically
+  // (detectSessionInUrl). Give it a moment, then check whether we have a session.
+  (async () => {
+    await new Promise((r) => setTimeout(r, 600));
+    const { data } = await client.auth.getSession();
+    show(data.session ? 'form' : 'bad');
+  })();
+  document.getElementById('save').addEventListener('click', async () => {
+    const pw = document.getElementById('pw').value;
+    const pw2 = document.getElementById('pw2').value;
+    const err = document.getElementById('err');
+    err.hidden = true;
+    if (pw.length < 6) { err.textContent = 'At least 6 characters, please.'; err.hidden = false; return; }
+    if (pw !== pw2) { err.textContent = "Those don't match — try again."; err.hidden = false; return; }
+    document.getElementById('save').disabled = true;
+    const { error } = await client.auth.updateUser({ password: pw });
+    if (error) {
+      err.textContent = "That didn't save: " + error.message;
+      err.hidden = false;
+      document.getElementById('save').disabled = false;
+      return;
+    }
+    await client.auth.signOut();
+    show('done');
+  });
+</script>
+</body>
+</html>
