@@ -50,7 +50,7 @@
       <h1 id="title">Manage your membership</h1>
     </div>
     <div id="view"><!-- screens injected here --></div>
-    <div class="foot">Trouble signing in? Email <a href="mailto:hello@compasse.care">hello@compasse.care</a> — a real person answers, usually within the hour.</div>
+    <div class="foot">Trouble signing in? Email <a href="mailto:hello@compasse.care">hello@compasse.care</a>. A real person answers, usually within the hour.</div>
   </div>
 
 <script>
@@ -140,7 +140,7 @@ function showOptions() {
   // that can no longer do anything (the portal can't fix a canceled sub).
   if (sub.status === 'canceled') {
     screen(
-      '<p><b>Your membership has ended.</b> The board at home keeps working — Cassi is still there. ' +
+      '<p><b>Your membership has ended.</b> The board at home keeps working, and Cassi is still there. ' +
       'Restarting brings your dashboard, alerts, and recordings back exactly as you left them.</p>' +
       '<a class="primary" style="display:block;text-align:center;text-decoration:none;padding:12px" href="https://compasse.care/#pricing">Restart at compasse.care</a>' +
       '<p style="margin-top:10px">Questions or receipts? Email <a href="mailto:hello@compasse.care">hello@compasse.care</a>.</p>'
@@ -149,7 +149,7 @@ function showOptions() {
   }
   if (sub.paused) {
     screen(
-      '<p><b>Your membership is paused.</b> The board at home, the schedule, and your recordings are all saved. Resume whenever you’re ready — it comes back exactly as you left it.</p>' +
+      '<p><b>Your membership is paused.</b> The board at home, the schedule, and your recordings are all saved. Resume whenever you’re ready, and it comes back exactly as you left it.</p>' +
       '<button class="primary" id="resume">Resume membership</button>' +
       '<button class="opt" id="o-payment-paused" style="margin-top:10px"><b>Update payment method</b><span>Card changed while paused? Update it now so resuming just works.</span></button>'
     );
@@ -163,10 +163,10 @@ function showOptions() {
   }
   screen(
     '<p>Change or end your Compasse membership below. The board at home keeps running while you decide.</p>' +
-    '<button class="opt" id="o-payment"><b>Update payment method</b><span>Card expired or changed? Update it securely with Stripe — takes about a minute, and nothing else about your membership changes.</span></button>' +
-    '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now and refund the rest of this month automatically — no questions, no follow-ups.</span></button>' +
-    '<button class="opt" id="o-pause"><b>We need a break — pause up to 3 months</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
-    '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal. Compasse keeps running until the end of the time you’ve already paid for, then stops — and you won’t be charged again.</span></button>'
+    '<button class="opt" id="o-payment"><b>Update payment method</b><span>Card expired or changed? Update it securely with Stripe. It takes about a minute, and nothing else about your membership changes.</span></button>' +
+    '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now and refund the rest of this month automatically. No questions, no follow-ups.</span></button>' +
+    '<button class="opt" id="o-pause"><b>We need a break: pause up to 3 months</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
+    '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal. Compasse keeps running until the end of the time you’ve already paid for, then stops, and you won’t be charged again.</span></button>'
   );
   document.getElementById('o-payment').onclick = openPortal;
   document.getElementById('o-endcare').onclick = confirmEndCare;
@@ -209,7 +209,7 @@ function showPortalError() {
 function confirmEndCare() {
   screen(
     '<h2 style="font-weight:400;font-size:20px;margin-bottom:6px">We’re so sorry.</h2>' +
-    '<p>We’ll stop billing right now and refund the rest of this month automatically — no forms, no follow-up. You won’t hear from us again unless you reach out.</p>' +
+    '<p>We’ll stop billing right now and refund the rest of this month automatically. No forms, no follow-up. You won’t hear from us again unless you reach out.</p>' +
     '<button class="warn" id="go">Stop billing and refund</button>' +
     '<button class="ghost" id="back">Go back</button>'
   );
