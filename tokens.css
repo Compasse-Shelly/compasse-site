@@ -1,0 +1,38 @@
+/* Hallmark tokens · Compasse · genre: editorial · macrostructure: Letter · theme: brand-locked
+ * Palette preserved verbatim from the live site. Portable to the next build. */
+:root{
+  /* colour */
+  --color-paper:#FAF7F2;      /* cream */
+  --color-white:#FFFFFF;
+  --color-tint:#EDF4F6;       /* soft teal band */
+  --color-ink:#2B2A28;
+  --color-muted:#6B6660;
+  --color-accent:#2C6A85;     /* teal — primary */
+  --color-accent-deep:#235468;
+  --color-accent-2:#B3543F;   /* terracotta — secondary / marginalia */
+  --color-border:#E8E2D8;
+  --color-footer:#2A2622;
+  --color-good:#2F6B45;
+  --color-good-bg:#EAF3EC;
+  --color-focus:#8FC1D6;
+
+  /* type */
+  --font-display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --font-body:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
+  /* space (4pt-ish scale) */
+  --space-xs:6px; --space-sm:12px; --space-md:20px; --space-lg:34px; --space-xl:56px; --space-2xl:92px;
+
+  /* text */
+  --text-display:clamp(31px,4.4vw,50px);
+  --text-h2:clamp(25px,3vw,34px);
+  --measure:34em;
+
+  /* motion */
+  --ease-out:cubic-bezier(.22,.61,.36,1);
+  --dur:.6s;
+
+  /* rule / radius */
+  --rule:1px solid var(--color-border);
+  --radius:10px;
+}

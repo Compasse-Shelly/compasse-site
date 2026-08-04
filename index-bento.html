@@ -3,21 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="facebook-domain-verification" content="101q9uwdevv5efsa598gxavkvyuztw" />
-<!-- Meta pixel, privacy-disciplined. Loads the library but fires NO PageView and
-     NO automatic form/button scraping (autoConfig false, the email-leak vector).
-     Only explicit conversion events (Lead, InitiateCheckout, StartTrial) are ever
-     sent — browsing is never tracked. See metaEvent() in the page script. -->
-<script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('set','autoConfig',false,'1039692688431979');
-fbq('init','1039692688431979');
-/* Intentionally NO fbq('track','PageView'). */
-</script>
 <title>Compasse, a companion for families living with cognitive decline</title>
 <meta name="description" content="Compasse turns the iPad in your drawer into a calm companion for a parent with cognitive decline. It answers their questions in your own recorded voice.">
 <link rel="icon" href="logo.png">
@@ -215,14 +200,6 @@ fbq('init','1039692688431979');
 </head>
 <body>
 
-<!-- Launch banner. Hidden until launch day (revealed by the same flag
-     as the pricing section). No countdown timers, real dates only. -->
-<div id="launch-banner" data-launch hidden
-     style="background:var(--teal);color:#fff;text-align:center;padding:10px 16px;font-size:15px;line-height:1.45">
-  <strong>Compasse is live.</strong> First week free, then $29 a month, everything included, cancel anytime.
-  <a href="#pricing" style="color:#fff;text-decoration:underline;white-space:nowrap">Start Compasse</a>
-</div>
-
 <header class="nav">
   <div class="wrap">
     <img src="logo.png" alt="">
@@ -249,7 +226,7 @@ fbq('init','1039692688431979');
         <a class="btn" href="#get">Join the free trial</a>
         <a class="btn ghost" href="#tour">Take the tour</a>
       </div>
-      <p class="fineprint">Family trial &middot; free &middot; no new hardware to buy</p>
+      <p class="fineprint">Founding-family trial &middot; free &middot; no new hardware to buy</p>
     </div>
   </section>
 
@@ -301,11 +278,11 @@ fbq('init','1039692688431979');
         <!-- 1x1 · honest alerts -->
         <article class="cell warm">
           <span class="overline" style="color:var(--warn)">When it matters</span>
-          <h3>Your phone stays quiet until it shouldn&rsquo;t</h3>
+          <h3>You get the nudge, not Mom the nagging</h3>
           <div class="rows">
-            <div class="row warn">!&nbsp; Mom missed her 8 AM medication</div>
+            <div class="row warn">!&nbsp; Please check on Mom — she didn&rsquo;t confirm her 8 AM medication</div>
           </div>
-          <p style="margin-top:12px">Compasse interrupts you for four things only: a missed medication, a check-in answer, a call request, and the tablet going offline. Everything else waits calmly on your dashboard.</p>
+          <p style="margin-top:12px">Your phone only buzzes for what matters. Everything else waits in the app.</p>
         </article>
 
         <!-- 1x1 · calls -->
@@ -341,10 +318,9 @@ fbq('init','1039692688431979');
         <article class="cell span-2x1">
           <span class="overline">Private by design</span>
           <h3>Only listens when spoken to</h3>
-          <p>Conversations happen only when your parent talks to Cassi. Recordings are used only to make
-          Compasse work, and the speech partners that power Cassi are named in our
-          <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>,
-          written in plain English.</p>
+          <p>Conversations happen only when your parent talks to Cassi, and your recordings stay private
+          to your family. Our <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>
+          is written in plain English.</p>
         </article>
 
       </div>
@@ -364,44 +340,15 @@ fbq('init','1039692688431979');
         <details><summary>Does my parent need to learn anything?</summary>
           <p>No. The board is always on and they just talk to it. There are no passwords or menus on their side. Setup on their iPad is a one-time code that you enter yourself.</p></details>
         <details><summary>Is this a medical device? Can it call 911?</summary>
-          <p>No. Compasse is a comfort and communication tool, not a medical device, an emergency response system, or a monitoring service. It does not call 911, detect falls, or guarantee that medication gets taken. It gives your parent a calm, familiar presence and gives you a clearer picture of the day. If your family needs emergency response or medical monitoring, please use a dedicated service alongside Compasse, and always keep your existing emergency plans in place.</p></details>
+          <p>No. Compasse is a comfort and communication tool, not a medical or emergency device. It must never be relied on for emergencies. Always keep your existing emergency plans in place.</p></details>
         <details><summary>What about privacy? Is it always listening?</summary>
-          <p>Conversations happen only when your parent talks to Cassi. Recordings are used only to make Compasse work, and the speech partners that power Cassi are named in our <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>, which is written in plain English and covers all of it.<span data-launch hidden> Payments are handled by Stripe, so your card number never touches our servers. We never sell your family&rsquo;s information or use it for advertising.</span></p></details>
-        <details data-prelaunch><summary>What does it cost?</summary>
-          <p>During our family trial, Compasse is free. At launch it will be a monthly subscription you can cancel anytime.</p></details>
-        <details data-launch hidden><summary>What does it cost?</summary>
-          <p>Your first week is free, then it&rsquo;s $29 a month, everything included. We ask for a card up front, and if you cancel during the free week you are never charged. There are no tiers, no setup fee, no contract, and nothing else to buy, because Compasse runs on an iPad you already own (any iPad from 2017 or newer). You can cancel anytime in one tap.</p></details>
-        <details data-launch hidden><summary>Can I really cancel anytime?</summary>
-          <p>Yes, in one tap, from the app or the website, with no phone call and no retention script. If care has ended, tell us with one tap: billing stops immediately and we automatically refund the unused part of the month, no request needed. You will never hear from us again unless you reach out first. If you just need a pause, you can stop billing for up to three months and everything stays saved for when you&rsquo;re ready.</p></details>
+          <p>Conversations happen only when your parent talks to Cassi, and your recordings stay private to your family. Our <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a> is written in plain English and covers all of it.</p></details>
+        <details><summary>What does it cost?</summary>
+          <p>During our family trial, Compasse is free. At launch it will be a monthly subscription you can cancel anytime. Trial families will keep a lower founding-family price.</p></details>
         <details><summary>Can more than one family member use it?</summary>
           <p>Right now each family has one caregiver phone connected. Support for siblings and other family members is on the way.</p></details>
-        <details data-prelaunch><summary>What if it doesn&rsquo;t work for us?</summary>
+        <details><summary>What if it doesn&rsquo;t work for us?</summary>
           <p>Tell us. There&rsquo;s a Send Feedback button right on your dashboard and one of us answers it. If Compasse isn&rsquo;t a fit, we&rsquo;ll help you close out and delete your family&rsquo;s data completely.</p></details>
-        <details data-launch hidden><summary>What if it doesn&rsquo;t work for us?</summary>
-          <p>Tell us. There&rsquo;s a Send Feedback button right on your dashboard and one of us answers it. Your first week is free, and if Compasse isn&rsquo;t right for your family, cancel in one tap and that&rsquo;s the end of it. We&rsquo;ll help you close out and delete your family&rsquo;s data completely.</p></details>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing — hidden until launch (revealed by ?pricing=preview or the launch flag in main.js logic below) -->
-  <section id="pricing" class="faq" hidden>
-    <div class="wrap">
-      <div class="head">
-        <div class="overline" style="color:var(--terra)">Simple pricing</div>
-        <h2>One plan, everything included</h2>
-      </div>
-      <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #E8E2D8;border-radius:16px;padding:32px;text-align:center">
-        <div style="font-size:48px;font-weight:700;color:var(--ink,#2B2A28)">$29<span style="font-size:18px;font-weight:400;color:#6B6660">/month</span></div>
-        <p style="margin:8px 0 0;color:#6B6660">Your first week is free. Cancel anytime, online, in two clicks.</p>
-        <ul style="list-style:none;padding:0;margin:20px 0;text-align:left;color:#2B2A28;line-height:2">
-          <li>✓ The always-on board for their iPad</li>
-          <li>✓ Cassi, with your recorded voice</li>
-          <li>✓ Medication and calendar reminders</li>
-          <li>✓ Voice notes, check-ins, and calls</li>
-          <li>✓ A real person at hello@compasse.care</li>
-        </ul>
-        <button class="btn" id="buy-btn" type="button">Start your free week</button>
-        <p style="margin-top:6px;font-size:12px;color:#6B6660">If care ends, tell us — we stop the subscription immediately and refund the current month.</p>
       </div>
     </div>
   </section>
@@ -430,9 +377,7 @@ fbq('init','1039692688431979');
       <a href="#tour">A quick tour</a>
       <a href="#faq">FAQ</a>
       <a href="mailto:hello@compasse.care">Contact</a>
-      <a href="/manage.html">Manage membership</a>
       <a href="https://compasse-shelly.github.io/compasse-privacy/">Privacy policy</a>
-      <a href="/terms.html">Terms</a>
     </div>
     <p class="legal">
       Compasse is a comfort and communication tool. It is not a medical device, does not provide medical
@@ -444,66 +389,6 @@ fbq('init','1039692688431979');
 </footer>
 
 <script>
-  // metaEvent — the ONLY way this site talks to Meta. Fires the browser pixel
-  // AND a server-side CAPI copy with the same eventID (Meta dedups them).
-  // Sends value/currency + the pixel's own cookies (_fbp/_fbc) only — never an
-  // email, name, or phone. event_source_url is stripped of query string so no
-  // ?src / ?session_id ever reaches Meta.
-  function _cookie(n){ const m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
-  function metaEvent(name, value){
-    const eventID = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+Math.random();
-    const cd = (value!=null) ? { value: value, currency: 'USD' } : {};
-    try { if (window.fbq) fbq('track', name, cd, { eventID: eventID }); } catch(e){}
-    try {
-      fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/capi-event', {
-        method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
-        body: JSON.stringify({
-          event_name: name, event_id: eventID,
-          event_source_url: location.origin + location.pathname,
-          value: (value!=null)?value:undefined, currency: (value!=null)?'USD':undefined,
-          fbp: _cookie('_fbp'), fbc: _cookie('_fbc'),
-        }),
-      }).catch(function(){});
-    } catch(e){}
-  }
-
-  // Pricing stays hidden until launch. Reveal for internal preview with
-  // ?pricing=preview (sticky via localStorage) — flipped for real on launch day.
-  (function(){
-    const qs = new URLSearchParams(location.search);
-    if (qs.get('pricing') === 'preview') localStorage.setItem('compasse_pricing', '1');
-    if (qs.get('pricing') === 'off') localStorage.removeItem('compasse_pricing');
-    // ONE flag runs the whole launch-day swap. Flip LAUNCHED to true and the
-    // pricing section, the launch banner, and the paid-era FAQ
-    // answers all appear, while the pre-launch (free trial) copy disappears.
-    // Preview any time with ?pricing=preview, undo with ?pricing=off.
-    const LAUNCHED = false; // ← flip to true on launch day
-    const live = LAUNCHED || localStorage.getItem('compasse_pricing') === '1';
-    if (live) {
-      document.getElementById('pricing').hidden = false;
-      document.querySelectorAll('[data-launch]').forEach(function(el){ el.hidden = false; });
-      document.querySelectorAll('[data-prelaunch]').forEach(function(el){ el.hidden = true; });
-    }
-    const buy = document.getElementById('buy-btn');
-    if (buy) buy.addEventListener('click', async () => {
-      buy.disabled = true; buy.textContent = 'One moment…';
-      metaEvent('InitiateCheckout', 29);
-      try {
-        const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
-        });
-        const d = await r.json();
-        if (d.url) { location.href = d.url; return; }
-        throw new Error('no url');
-      } catch (e) {
-        buy.disabled = false; buy.textContent = 'Start your free week';
-        alert('Something went wrong starting checkout. Please try again or email hello@compasse.care');
-      }
-    });
-  })();
-
   // Live board clock — the hero tile shows the real time, like the real board.
   function tickBoard(){
     const now = new Date();
@@ -545,7 +430,6 @@ fbq('init','1039692688431979');
         msg.textContent = "You're already on the list. We'll be in touch soon.";
       } else if (r.ok) {
         msg.textContent = "You're on the list. We'll email you when your spot opens.";
-        metaEvent('Lead');
         e.target.reset();
       } else {
         throw new Error(String(r.status));

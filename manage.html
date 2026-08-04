@@ -104,11 +104,16 @@ async function signIn() {
 async function loadSubscription() {
   screen('<p class="sans">Loading your membership…</p>');
   try {
-    const r = await fetch(SB + '/rest/v1/subscriptions?select=status,paused,cancel_at_period_end,current_period_end&order=updated_at.desc&limit=1', {
+    // SAME selection rule as manage-subscription server-side (prefer the
+    // newest NON-canceled row) — before 8/4 this page took newest-by-update
+    // while the server preferred non-canceled, so a re-subscribed customer
+    // could read one subscription while their buttons acted on another.
+    const r = await fetch(SB + '/rest/v1/subscriptions?select=status,paused,cancel_at_period_end,current_period_end&order=updated_at.desc&limit=10', {
       headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + token },
     });
     const rows = await r.json();
-    sub = Array.isArray(rows) && rows.length ? rows[0] : null;
+    const list = Array.isArray(rows) ? rows : [];
+    sub = list.find(function (x) { return x.status !== 'canceled'; }) || list[0] || null;
     showOptions();
   } catch (e) {
     showOptions();
@@ -131,12 +136,25 @@ function showOptions() {
     screen('<p>We don’t see a paid subscription on this account yet. If you think that’s wrong, email <a href="mailto:hello@compasse.care">hello@compasse.care</a> and we’ll sort it out.</p>');
     return;
   }
+  // A fully-ended membership gets an honest ending, not a menu of actions
+  // that can no longer do anything (the portal can't fix a canceled sub).
+  if (sub.status === 'canceled') {
+    screen(
+      '<p><b>Your membership has ended.</b> The board at home keeps working — Cassi is still there. ' +
+      'Restarting brings your dashboard, alerts, and recordings back exactly as you left them.</p>' +
+      '<a class="primary" style="display:block;text-align:center;text-decoration:none;padding:12px" href="https://compasse.care/#pricing">Restart at compasse.care</a>' +
+      '<p style="margin-top:10px">Questions or receipts? Email <a href="mailto:hello@compasse.care">hello@compasse.care</a>.</p>'
+    );
+    return;
+  }
   if (sub.paused) {
     screen(
       '<p><b>Your membership is paused.</b> The board at home, the schedule, and your recordings are all saved. Resume whenever you’re ready — it comes back exactly as you left it.</p>' +
-      '<button class="primary" id="resume">Resume membership</button>'
+      '<button class="primary" id="resume">Resume membership</button>' +
+      '<button class="opt" id="o-payment-paused" style="margin-top:10px"><b>Update payment method</b><span>Card changed while paused? Update it now so resuming just works.</span></button>'
     );
     document.getElementById('resume').onclick = () => act('resume', 'Your membership is active again. Welcome back.');
+    document.getElementById('o-payment-paused').onclick = openPortal;
     return;
   }
   if (sub.cancel_at_period_end) {
