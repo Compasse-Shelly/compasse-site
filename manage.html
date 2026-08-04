@@ -145,13 +145,47 @@ function showOptions() {
   }
   screen(
     '<p>Change or end your Compasse membership below. The board at home keeps running while you decide.</p>' +
+    '<button class="opt" id="o-payment"><b>Update payment method</b><span>Card expired or changed? Update it securely with Stripe — takes about a minute, and nothing else about your membership changes.</span></button>' +
     '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now and refund the rest of this month automatically — no questions, no follow-ups.</span></button>' +
     '<button class="opt" id="o-pause"><b>We need a break — pause up to 3 months</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
     '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal. Compasse keeps running until the end of the time you’ve already paid for, then stops — and you won’t be charged again.</span></button>'
   );
+  document.getElementById('o-payment').onclick = openPortal;
   document.getElementById('o-endcare').onclick = confirmEndCare;
   document.getElementById('o-pause').onclick = confirmPause;
   document.getElementById('o-cancel').onclick = confirmCancel;
+}
+
+// ---------- Stripe Billing Portal (card update + invoices only) ----------
+// The portal session is minted server-side (manage-subscription action
+// 'portal') and scoped to payment_method_update + invoice_history — cancel
+// and pause are deliberately NOT in the portal, so the compassionate
+// end_care flow above can never be bypassed by Stripe's generic cancel.
+async function openPortal() {
+  const btn = document.getElementById('o-payment');
+  if (btn) { btn.disabled = true; btn.querySelector('b').textContent = 'One moment…'; }
+  try {
+    const r = await fetch(SB + '/functions/v1/manage-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': ANON, 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ action: 'portal' }),
+    });
+    const d = await r.json();
+    if (d && d.ok && d.url) { window.location.href = d.url; return; }
+    showPortalError();
+  } catch (e) {
+    showPortalError();
+  }
+}
+
+function showPortalError() {
+  screen(
+    '<p class="err">Couldn’t open the payment page. Check your connection and try again, or email <a href="mailto:hello@compasse.care">hello@compasse.care</a>.</p>' +
+    '<button class="primary" id="retry">Try again</button>' +
+    '<button class="ghost" id="back">Back to options</button>'
+  );
+  document.getElementById('retry').onclick = openPortal;
+  document.getElementById('back').onclick = showOptions;
 }
 
 function confirmEndCare() {
