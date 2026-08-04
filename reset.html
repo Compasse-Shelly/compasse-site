@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Reset your password — Compasse</title>
+<title>Reset your password · Compasse</title>
 <style>
   :root { --bg:#FAF7F2; --text:#1E1E1E; --muted:#5A5A5A; --accent:#2C6A85; --border:#E5DFD2; --good:#2E7D32; --warn:#C0392B; }
   * { box-sizing: border-box; margin: 0; }
@@ -67,7 +67,7 @@
     const err = document.getElementById('err');
     err.hidden = true;
     if (pw.length < 6) { err.textContent = 'At least 6 characters, please.'; err.hidden = false; return; }
-    if (pw !== pw2) { err.textContent = "Those don't match — try again."; err.hidden = false; return; }
+    if (pw !== pw2) { err.textContent = "Those don't match. Try again."; err.hidden = false; return; }
     document.getElementById('save').disabled = true;
     const { error } = await client.auth.updateUser({ password: pw });
     if (error) {
