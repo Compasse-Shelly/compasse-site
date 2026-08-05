@@ -1,0 +1,462 @@
+<title>What is Compasse?</title>
+<style>
+  /* Committed single-world design: this is a film frame. The page is the
+     theater; the stage carries its own light. */
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: #0E0C0A; display: flex; align-items: center;
+    justify-content: center; min-height: 100vh; padding: 24px; box-sizing: border-box;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .frame { width: min(100%, 177vh); }
+  .stage {
+    position: relative; aspect-ratio: 16 / 9; width: 100%;
+    container-type: size; overflow: hidden; border-radius: 10px;
+    background: #171310; box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  }
+  .scene {
+    position: absolute; inset: 0; opacity: 0; pointer-events: none;
+    transition: opacity .8s ease;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 2cqi;
+  }
+  .scene.on { opacity: 1; }
+
+  /* ── Night world (the app's real night-dim tokens) ─────────────── */
+  .night { background: #171310; color: #F0E6D9; }
+  .night .muted { color: #B0A593; }
+
+  /* ── Day world ─────────────────────────────────────────────────── */
+  .day { background: #FAF7F2; color: #2B2A28; }
+
+  /* Kinetic type */
+  .line { opacity: 0; transform: translateY(1.2cqi); transition: opacity .9s ease, transform .9s ease; transition-delay: var(--d, 0s); }
+  .scene.on .line { opacity: 1; transform: none; }
+  .clockmark { position: absolute; top: 5cqi; font-size: 2.4cqi; letter-spacing: .4cqi; color: #B0A593; font-family: -apple-system, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+  .eyebrow { font-size: 2.2cqi; letter-spacing: .5cqi; text-transform: uppercase; font-family: -apple-system, system-ui, sans-serif; font-weight: 600; }
+  .big { font-size: 7cqi; line-height: 1.15; max-width: 80cqi; text-wrap: balance; font-weight: 400; }
+  .quote { font-size: 8.4cqi; font-style: italic; }
+  .mid { font-size: 4.2cqi; line-height: 1.3; max-width: 78cqi; text-wrap: balance; }
+  .small { font-size: 2.8cqi; }
+
+  /* Logo scenes */
+  .mark { width: 12cqi; height: 12cqi; border-radius: 2.6cqi; }
+  .wordmark { font-size: 8cqi; color: #2C6A85; font-weight: 700; letter-spacing: .1cqi; }
+  .tagline { font-size: 3.4cqi; font-style: italic; color: #6B6660; }
+
+  /* ── Recreated app UI (system sans, real tokens) ──────────────── */
+  .ui { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+  /* iPad board */
+  .ipad {
+    width: 62cqi; border-radius: 2.4cqi; background: #1c1c1e; padding: 1.6cqi;
+    box-shadow: 0 2cqi 5cqi rgba(43,42,40,.25);
+    opacity: 0; transform: translateY(2cqi) scale(.97); transition: all 1s ease;
+  }
+  .scene.on .ipad { opacity: 1; transform: none; }
+  .board {
+    background: #FAF7F2; border-radius: 1.2cqi; padding: 2.4cqi 3cqi;
+    display: flex; flex-direction: column; align-items: center; gap: 1.4cqi; text-align: center;
+  }
+  .b-clock { font-size: 6.4cqi; font-weight: 700; color: #2B2A28; font-variant-numeric: tabular-nums; line-height: 1; }
+  .b-day { font-size: 3.6cqi; font-weight: 700; color: #2B2A28; line-height: 1.05; }
+  .b-sub { font-size: 2cqi; color: #6B6660; font-weight: 500; }
+  .b-status { font-size: 2.8cqi; font-weight: 700; color: #2B2A28; max-width: 50cqi; transition: color .5s ease, text-shadow .5s ease; }
+  .cue-reply .b-status { color: #2C6A85; }
+  .b-label { font-size: 1.3cqi; letter-spacing: .35cqi; color: #6B6660; font-weight: 600; }
+  .b-next { font-size: 2.4cqi; font-weight: 700; color: #2B2A28; }
+  .voicebar {
+    margin-top: .6cqi; width: 46cqi; height: 4.4cqi; border-radius: 3cqi;
+    background: #2C6A85; color: #fff; display: flex; align-items: center;
+    justify-content: center; gap: 1cqi; font-size: 1.9cqi; font-weight: 600;
+  }
+  .voicebar .dot { width: 1.5cqi; height: 1.5cqi; border-radius: 50%; background: #fff; opacity: .9; }
+  .voicebar .idlelabel { display: inline; }
+  .wave { display: none; align-items: center; gap: .5cqi; height: 2.6cqi; }
+  .wave i { width: .55cqi; background: #fff; border-radius: .3cqi; height: 30%; animation: none; }
+  .cue-listen .voicebar .idlelabel, .cue-listen .voicebar .dot { display: none; }
+  .cue-listen .wave { display: flex; }
+  .cue-listen .wave i { animation: bounce .55s ease-in-out infinite alternate; }
+  .wave i:nth-child(2) { animation-delay: .1s; } .wave i:nth-child(3) { animation-delay: .2s; }
+  .wave i:nth-child(4) { animation-delay: .05s; } .wave i:nth-child(5) { animation-delay: .15s; }
+  .wave i:nth-child(6) { animation-delay: .25s; } .wave i:nth-child(7) { animation-delay: .12s; }
+  @keyframes bounce { from { height: 22%; } to { height: 100%; } }
+
+  /* Speech chips */
+  .chips { position: absolute; bottom: 5cqi; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 1.2cqi; }
+  .chip {
+    font-family: -apple-system, system-ui, sans-serif; font-size: 2.5cqi; font-weight: 600;
+    padding: 1.3cqi 2.6cqi; border-radius: 3cqi; opacity: 0; transform: translateY(1.5cqi);
+    transition: all .6s ease; max-width: 76cqi;
+  }
+  .chip.her { background: #2B2A28; color: #FAF7F2; }
+  .chip.cassi { background: #2C6A85; color: #fff; }
+  .chip .who { font-size: 1.5cqi; letter-spacing: .25cqi; text-transform: uppercase; opacity: .65; display: block; font-weight: 700; }
+  .cue-ask .chip.her { opacity: 1; transform: none; }
+  .cue-reply .chip.cassi { opacity: 1; transform: none; }
+  .badge {
+    font-family: Georgia, serif; font-style: italic; font-size: 2.2cqi; color: #B3543F;
+    opacity: 0; transition: opacity .8s ease .5s;
+  }
+  .cue-reply .badge { opacity: 1; }
+
+  /* iPhone dashboard */
+  .phonewrap { display: flex; align-items: center; gap: 5cqi; }
+  .iphone {
+    width: 21cqi; border-radius: 3cqi; background: #1c1c1e; padding: .9cqi;
+    box-shadow: 0 2cqi 5cqi rgba(43,42,40,.25);
+    opacity: 0; transform: translateY(2cqi); transition: all 1s ease;
+  }
+  .scene.on .iphone { opacity: 1; transform: none; }
+  .screen {
+    position: relative; background: #FAF7F2; border-radius: 2.2cqi; height: 42cqi;
+    padding: 2.6cqi 1.5cqi 1.5cqi; display: flex; flex-direction: column; gap: 1.1cqi;
+    overflow: hidden; text-align: left;
+  }
+  .notch { position: absolute; top: .8cqi; left: 50%; transform: translateX(-50%); width: 6cqi; height: 1.2cqi; border-radius: 1cqi; background: #1c1c1e; }
+  .s-title { font-size: 1.7cqi; font-weight: 700; color: #2B2A28; }
+  .statuscard { background: #EAF3EC; border: 1px solid #CFE3D4; border-radius: 1.2cqi; padding: 1.2cqi; }
+  .statuscard b { display: block; font-size: 1.5cqi; color: #2F6B45; }
+  .statuscard span { font-size: 1.15cqi; color: #557A63; }
+  .btn {
+    position: relative; border-radius: 1.4cqi; padding: 1.3cqi; text-align: center;
+    font-size: 1.5cqi; font-weight: 700; overflow: hidden;
+  }
+  .btn.solid { background: #2C6A85; color: #fff; }
+  .btn.line { border: 1px solid #D8D2C8; color: #2B2A28; background: #fff; }
+  .btn .alt { display: none; }
+  .cue-tap #checkinBtn .base { display: none; }
+  .cue-tap #checkinBtn .alt { display: inline; font-weight: 600; opacity: .95; }
+  .ripple {
+    position: absolute; left: 50%; top: 50%; width: 1cqi; height: 1cqi; border-radius: 50%;
+    background: rgba(255,255,255,.55); transform: translate(-50%,-50%) scale(0); opacity: 0;
+  }
+  .cue-tap .ripple { animation: rip .9s ease-out 1; }
+  @keyframes rip { 0% { transform: translate(-50%,-50%) scale(0); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(26); opacity: 0; } }
+  .banner {
+    position: absolute; top: 2.4cqi; left: 1cqi; right: 1cqi;
+    background: rgba(28,28,30,.92); color: #fff; border-radius: 1.2cqi; padding: 1cqi 1.2cqi;
+    font-size: 1.25cqi; transform: translateY(-6cqi); transition: transform .6s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .banner b { color: #8FD6A4; }
+  .cue-banner .banner { transform: none; }
+  .side-note { font-family: Georgia, serif; text-align: left; max-width: 34cqi; }
+  .side-note h3 { font-size: 4.2cqi; margin: 0 0 1.2cqi; font-weight: 400; color: #2B2A28; text-wrap: balance; }
+  .side-note p { font-size: 2.4cqi; color: #6B6660; margin: 0; font-style: italic; }
+
+  /* Feature triptych */
+  .cards { display: flex; gap: 2.4cqi; }
+  .fcard {
+    width: 24cqi; background: #fff; border: 1px solid #E8E2D8; border-radius: 1.6cqi;
+    padding: 2.6cqi 2.2cqi; text-align: left; opacity: 0; transform: translateY(2cqi);
+    transition: all .7s ease; transition-delay: var(--d, 0s);
+  }
+  .scene.on .fcard { opacity: 1; transform: none; }
+  .fcard .g {
+    width: 4cqi; height: 4cqi; border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 2cqi; font-weight: 700; margin-bottom: 1.4cqi;
+    font-family: -apple-system, system-ui, sans-serif;
+  }
+  .g1 { background: #EAF3EC; color: #2F6B45; } .g2 { background: #F6E8E4; color: #B3543F; } .g3 { background: #E3EEF3; color: #2C6A85; }
+  .fcard h4 { font-size: 2.5cqi; margin: 0 0 .8cqi; font-weight: 400; font-style: italic; }
+  .fcard p { font-family: -apple-system, system-ui, sans-serif; font-size: 1.7cqi; color: #6B6660; margin: 0; line-height: 1.45; }
+
+  /* Close */
+  .url { font-family: -apple-system, system-ui, sans-serif; font-size: 2cqi; color: #6B6660; letter-spacing: .05cqi; }
+  .trialpill {
+    font-family: -apple-system, system-ui, sans-serif; font-size: 2cqi; font-weight: 600;
+    color: #fff; background: #2C6A85; padding: 1.2cqi 2.8cqi; border-radius: 3cqi;
+  }
+
+  /* ── Player chrome ─────────────────────────────────────────────── */
+  .poster { position: absolute; inset: 0; background: #171310; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.4cqi; transition: opacity .5s ease; }
+  .poster.hide { opacity: 0; pointer-events: none; }
+  .poster .mark { width: 9cqi; height: 9cqi; border-radius: 2cqi; }
+  .poster h1 { font-size: 4.6cqi; color: #F0E6D9; font-weight: 400; margin: 0; }
+  .poster .sub { font-size: 2cqi; color: #B0A593; font-family: -apple-system, system-ui, sans-serif; }
+  .playbtn {
+    width: 9cqi; height: 9cqi; border-radius: 50%; border: none; cursor: pointer;
+    background: #2C6A85; color: #fff; font-size: 3.2cqi; display: flex; align-items: center; justify-content: center;
+  }
+  .playbtn:hover { filter: brightness(1.1); }
+  .playbtn:focus-visible, .ctl:focus-visible { outline: 3px solid #8FC1D6; outline-offset: 2px; }
+  .progress { position: absolute; left: 0; bottom: 0; height: .7cqi; background: #2C6A85; width: 0%; z-index: 4; }
+  .ctl {
+    position: absolute; top: 2cqi; right: 2cqi; z-index: 6; border: none; cursor: pointer;
+    background: rgba(28,28,30,.55); color: #fff; border-radius: 2cqi; padding: .8cqi 1.6cqi;
+    font-family: -apple-system, system-ui, sans-serif; font-size: 1.6cqi; display: none;
+  }
+  .stage.playing .ctl { display: block; }
+  .endcard { position: absolute; inset: 0; z-index: 5; display: none; align-items: center; justify-content: center; background: rgba(23,19,16,0); }
+  .stage.ended .endcard { display: flex; }
+  .replay {
+    border: none; cursor: pointer; background: rgba(28,28,30,.75); color: #fff;
+    font-family: Georgia, serif; font-size: 2.4cqi; padding: 1.4cqi 3.2cqi; border-radius: 3cqi;
+  }
+  .credit { text-align: center; color: #6B6660; font-family: -apple-system, system-ui, sans-serif; font-size: 12px; margin-top: 14px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene, .line, .ipad, .iphone, .fcard, .chip, .banner { transition-duration: .01s !important; }
+    .wave i, .cue-tap .ripple { animation: none !important; }
+  }
+</style>
+<style>
+  /* what-film additions: brighter, springier than the launch film. */
+  .scene.day.ui .ipad { transition: all .8s cubic-bezier(.2,.9,.3,1.15); }
+  #s4 .ipad { margin-bottom: 22cqi; }
+  #s4 .chips { bottom: 4.5cqi; }
+  .b-status.swap { color: #2C6A85; }
+  .cue-med #statusLine { color: #2C6A85; }
+  .appline { font-family: -apple-system, system-ui, sans-serif; font-size: 1.9cqi; color: #6B6660; font-weight: 600; }
+</style>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+  WHAT IS COMPASSE, 64s, 16:9. Base video: captions carry the story so the
+  silent render works on the site today. VO drops in later via cut-video.
+
+  VO CUE SHEET (record each as its own clip; timecodes are clip START times;
+  script is the claims-audited draft from ad-builder 2026-07-16, two
+  claims-safe passes applied 7/23):
+    [00.5] My mom asks what day it is nine times before noon.
+    [05.0] She's not being difficult. Her memory is changing.
+    [08.5] And I can't be there every hour. But my voice can.
+    [14.5] This is Compasse. It lives on a tablet she never has to set up.
+    [20.0] I record reminders in my own voice, from my phone. A soft chime,
+           and she hears me. Not a robot. Me.
+    [27.0] At eight, Cassi asks about her medication. Mom just says, I took it.
+    [33.0] When I'm worried, I tap Check In. Cassi asks. I get her answer.
+    [38.5] And if a dose is ever missed, my phone gets an alert.
+    [44.0] When she misses me, she taps the board and says, Call Sarah.
+           The tablet calls my phone.
+    [51.5] Compasse won't replace being there. Nothing should.
+           It's for every hour in between.
+    [58.0] Compasse. First week free, at compasse care.
+  ══════════════════════════════════════════════════════════════════════ -->
+
+<div class="frame">
+  <div class="stage" id="stage">
+
+    <!-- S1 0-8 · the hook (night) -->
+    <section class="scene night" id="s1">
+      <div class="clockmark">9:12&nbsp;AM</div>
+      <div class="line mid muted" style="--d:.5s">Before noon.</div>
+      <div class="line quote" style="--d:1.8s">&ldquo;What day is it?&rdquo;</div>
+      <div class="line mid muted" style="--d:4.2s">The ninth time today.</div>
+    </section>
+
+    <!-- S2 8-14.5 · empathy turn (night) -->
+    <section class="scene night" id="s2">
+      <div class="line mid" style="--d:.3s">She&rsquo;s not being difficult. Her memory is changing.</div>
+      <div class="line big" style="--d:2.4s">You can&rsquo;t be there every hour.<br>Your voice can.</div>
+    </section>
+
+    <!-- S3 14.5-19.5 · logo reveal (day) -->
+    <section class="scene day" id="s3">
+      <img class="mark line" style="--d:.3s" src="../../logo.png" alt="Compasse logo">
+      <div class="wordmark line" style="--d:.8s">This is Compasse.</div>
+      <div class="tagline line" style="--d:1.6s">The iPad in your drawer, turned into a companion in your voice.</div>
+    </section>
+
+    <!-- S4 19.5-33 · the board (day, ui) -->
+    <section class="scene day ui" id="s4">
+      <div class="ipad">
+        <div class="board">
+          <div class="b-clock">8:00</div>
+          <div class="b-day">TUESDAY <span class="b-sub">morning</span></div>
+          <div class="b-status" id="statusLine">Sarah recorded your reminders herself.</div>
+          <div class="b-label">THIS MORNING</div>
+          <div class="b-next">Blood pressure pill &middot; 8:00 AM</div>
+          <div class="voicebar">
+            <span class="dot"></span><span class="idlelabel">Tap and talk to Cassi</span>
+            <span class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          </div>
+        </div>
+      </div>
+      <div class="chips">
+        <div class="chip her"><span class="who">Mom</span>&ldquo;What day is it?&rdquo;</div>
+        <div class="chip cassi"><span class="who">Cassi answers</span>&ldquo;Today is Tuesday, August 4th.&rdquo;</div>
+        <div class="badge">In your recorded voice. The same patience, every single time.</div>
+      </div>
+    </section>
+
+    <!-- S5 33-43.5 · your phone (day, ui) -->
+    <section class="scene day ui" id="s5">
+      <div class="phonewrap">
+        <div class="side-note">
+          <h3>From your phone, anywhere.</h3>
+          <p>Record reminders in your own voice. Check in the moment you&rsquo;re worried.</p>
+        </div>
+        <div class="iphone">
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="banner"><b>&#10003;</b>&nbsp; Mom says she&rsquo;s doing okay</div>
+            <div class="s-title">Mom &middot; Tuesday</div>
+            <div class="statuscard"><b>All quiet.</b><span>Meds on track. Tablet online.</span></div>
+            <div class="btn solid" id="checkinBtn">
+              <span class="base">Check in on Mom</span><span class="alt">Cassi is asking&hellip;</span>
+              <span class="ripple"></span>
+            </div>
+            <div class="btn line">Call Mom</div>
+            <div class="btn line">Send your voice</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S6 43.5-51.5 · three promises (day) -->
+    <section class="scene day" id="s6">
+      <div class="cards">
+        <div class="fcard" style="--d:.2s"><div class="g g1">&#10003;</div><h4>&ldquo;I took it.&rdquo;</h4><p>Medication confirmed by voice at dose time, and logged for you. No nagging.</p></div>
+        <div class="fcard" style="--d:.8s"><div class="g g2">!</div><h4>If a dose is missed</h4><p>Your phone gets an alert. Her board stays calm.</p></div>
+        <div class="fcard" style="--d:1.4s"><div class="g g3">&#9742;</div><h4>&ldquo;Call Sarah.&rdquo;</h4><p>She taps the board and asks. The tablet rings your phone on FaceTime.</p></div>
+      </div>
+    </section>
+
+    <!-- S7 51.5-57.5 · the honest kicker (day) -->
+    <section class="scene day" id="s7">
+      <div class="line big" style="--d:.4s">Compasse won&rsquo;t replace being there.</div>
+      <div class="line mid" style="--d:2.2s;color:#6B6660;font-style:italic">Nothing should. It&rsquo;s for every hour in between.</div>
+    </section>
+
+    <!-- S8 57.5-66 · close (day) -->
+    <section class="scene day" id="s8">
+      <img class="mark line" style="--d:.3s" src="../../logo.png" alt="">
+      <div class="wordmark line" style="--d:.8s">Compasse</div>
+      <div class="line trialpill" style="--d:1.8s">First week free &middot; $29/month &middot; cancel anytime</div>
+      <div class="line url" style="--d:2.5s">compasse.care</div>
+      <div class="line appline" style="--d:3.1s">On the App Store</div>
+    </section>
+
+    <!-- Player chrome -->
+    <div class="poster" id="poster">
+      <img class="mark" src="../../logo.png" alt="Compasse logo">
+      <h1>What is Compasse?</h1>
+      <div class="sub">64 seconds &middot; sound recommended</div>
+      <button class="playbtn" id="playBtn" aria-label="Play">&#9654;</button>
+    </div>
+    <div class="endcard"><button class="replay" id="replayBtn">Watch again</button></div>
+    <button class="ctl" id="muteBtn">Sound on</button>
+    <div class="progress" id="bar"></div>
+  </div>
+  <div class="credit">Compasse &middot; compasse.care</div>
+</div>
+
+<script>
+if (location.search.includes('render')) {
+  const s = document.createElement('style');
+  s.textContent = '.progress,.ctl,.credit{display:none!important}';
+  document.head ? document.head.appendChild(s) : document.documentElement.appendChild(s);
+}
+(() => {
+  const END = 64;
+  const SCENES = [
+    ['s1', 0, 8], ['s2', 8, 14.5], ['s3', 14.5, 19.5],
+    ['s4', 19.5, 33], ['s5', 33, 43.5], ['s6', 43.5, 51.5],
+    ['s7', 51.5, 57.5], ['s8', 57.5, END + 2],
+  ];
+  const CUES = [[21.5, 'cue-ask'], [21.5, 'cue-listen'], [24.5, 'cue-reply'], [28.5, 'cue-med'], [35.5, 'cue-tap'], [38.2, 'cue-banner']];
+  const MEDLINE = [28.5, 'It&rsquo;s time for your blood pressure pill.'];
+
+  const stage = document.getElementById('stage');
+  const bar = document.getElementById('bar');
+  let ctx = null, master = null, start = null, raf = null, muted = false, medDone = false;
+
+  // Music: the launch film engine, a notch brighter. 96 BPM, C-G-Am-F,
+  // denser plucks from the logo reveal on; the real Compasse chime lands
+  // on the check-in banner.
+  const BEAT = 60 / 96, BAR = BEAT * 4;
+  const CHORDS = [
+    [261.63, 329.63, 392.0], [246.94, 293.66, 392.0],
+    [220.0, 261.63, 329.63], [174.61, 220.0, 261.63],
+  ];
+  function pluck(freq, when) {
+    const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    o.type = 'triangle'; o.frequency.value = freq;
+    f.type = 'lowpass'; f.frequency.value = 1500;
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(0.2, when + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 0.85);
+    o.connect(f); f.connect(g); g.connect(master);
+    o.start(when); o.stop(when + 1);
+  }
+  function pad(freqs, when, dur) {
+    freqs.forEach((fr) => [0.998, 1.002].forEach((d) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = fr * d;
+      g.gain.setValueAtTime(0, when);
+      g.gain.linearRampToValueAtTime(0.016, when + 0.5);
+      g.gain.setValueAtTime(0.016, when + dur - 0.5);
+      g.gain.linearRampToValueAtTime(0, when + dur);
+      o.connect(g); g.connect(master);
+      o.start(when); o.stop(when + dur + 0.1);
+    }));
+  }
+  function bell(freq, when) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(0.09, when + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 1.4);
+    o.connect(g); g.connect(master);
+    o.start(when); o.stop(when + 1.5);
+  }
+  function buildMusic(t0) {
+    master = ctx.createGain();
+    master.gain.value = muted ? 0 : 0.75;
+    master.connect(ctx.destination);
+    const bars = Math.ceil(END / BAR);
+    for (let i = 0; i < bars; i++) {
+      const when = t0 + i * BAR, ch = CHORDS[i % 4], barStart = i * BAR;
+      if (barStart > 58) continue;                       // let the close breathe
+      pad(ch, when, BAR);
+      const pattern = barStart < 14 ? [0] : [0, 2, 1, 2];
+      pattern.forEach((tone, b) => pluck(ch[tone] * (b === 3 ? 2 : 1), when + b * BEAT));
+    }
+    bell(784, t0 + 38.2); bell(1046.5, t0 + 38.5);       // the Compasse chime
+    master.gain.setValueAtTime(muted ? 0 : 0.75, t0 + 57);
+    master.gain.linearRampToValueAtTime(0.0001, t0 + 63.5);
+  }
+
+  function tick() {
+    const t = (performance.now() - start) / 1000;
+    SCENES.forEach(([id, a, b]) =>
+      document.getElementById(id).classList.toggle('on', t >= a && t < b));
+    CUES.forEach(([at, cls]) => { if (t >= at) stage.classList.add(cls); });
+    if (!medDone && t >= MEDLINE[0]) {
+      medDone = true;
+      document.getElementById('statusLine').innerHTML = MEDLINE[1];
+    }
+    bar.style.width = Math.min(100, (t / END) * 100) + '%';
+    if (t >= END) { stage.classList.add('ended'); return; }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function play() {
+    document.getElementById('poster').classList.add('hide');
+    stage.classList.add('playing');
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    buildMusic(ctx.currentTime + 0.05);
+    start = performance.now();
+    raf = requestAnimationFrame(tick);
+  }
+  function reset() {
+    cancelAnimationFrame(raf);
+    if (ctx) ctx.close();
+    stage.classList.remove('ended');
+    CUES.forEach(([, cls]) => stage.classList.remove(cls));
+    SCENES.forEach(([id]) => document.getElementById(id).classList.remove('on'));
+    document.getElementById('statusLine').innerHTML = 'Sarah recorded your reminders herself.';
+    medDone = false;
+    bar.style.width = '0%';
+    play();
+  }
+
+  document.getElementById('playBtn').addEventListener('click', play);
+  document.getElementById('replayBtn').addEventListener('click', reset);
+  document.getElementById('muteBtn').addEventListener('click', (e) => {
+    muted = !muted;
+    if (master) master.gain.value = muted ? 0 : 0.75;
+    e.target.textContent = muted ? 'Sound off' : 'Sound on';
+  });
+})();
+</script>
