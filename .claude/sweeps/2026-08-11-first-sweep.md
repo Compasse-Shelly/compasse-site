@@ -6,6 +6,17 @@ session (MCP approval wall / no tokens / egress policy), so live halves ran degr
 This file is the actionable pack; the narrative report is the "Agents in Your Stack"
 artifact.
 
+> **UPDATE (same night): findings 1-3 are FIXED and pushed.** Product repo branch
+> `claude/sweep-fixes-findings-1-3` (640c3ce agent definitions, f999f76 fixes:
+> strict framing for custom check-in questions + 7 eval probe cases,
+> pickSubscriptionRow + tests + reactivate links, parenthesis defect + em-dash
+> round two + GO-LIVE pointer). Site half: commits ac379d7 and this one on
+> `claude/managed-agents-ltp-compass-py0kkx`. Verified: typecheck clean, lint 0
+> errors, 80/80 tests, independent compasse-verifier pass (done-with-risks).
+> Still open: execute the eval with a real GROQ_API_KEY (the decisive probe has
+> not run against the model), and nothing reaches users until an OTA + an
+> assistant-chat redeploy. Findings 4-8 remain as written below.
+
 ## Ranked cross-agent findings
 
 1. **Candidate live safety bug (eval-runner).** Custom caregiver-set check-in questions
