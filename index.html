@@ -483,6 +483,10 @@ fbq('init','1039692688431979');
       document.getElementById('pricing').hidden = false;
       document.querySelectorAll('[data-launch]').forEach(function(el){ el.hidden = false; });
       document.querySelectorAll('[data-prelaunch]').forEach(function(el){ el.hidden = true; });
+      // The section was hidden when the browser tried to honor #pricing on
+      // load, so re-scroll now that it exists (manage.html and the app's
+      // reactivate link land here with ?pricing=preview#pricing).
+      if (location.hash === '#pricing') document.getElementById('pricing').scrollIntoView();
     }
     const buy = document.getElementById('buy-btn');
     if (buy) buy.addEventListener('click', async () => {

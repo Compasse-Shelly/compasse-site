@@ -142,7 +142,7 @@ function showOptions() {
     screen(
       '<p><b>Your membership has ended.</b> The board at home keeps working, and Cassi is still there. ' +
       'Restarting brings your dashboard, alerts, and recordings back exactly as you left them.</p>' +
-      '<a class="primary" style="display:block;text-align:center;text-decoration:none;padding:12px" href="https://compasse.care/#pricing">Restart at compasse.care</a>' +
+      '<a class="primary" style="display:block;text-align:center;text-decoration:none;padding:12px" href="https://compasse.care/?pricing=preview#pricing">Restart at compasse.care</a>' +
       '<p style="margin-top:10px">Questions or receipts? Email <a href="mailto:hello@compasse.care">hello@compasse.care</a>.</p>'
     );
     return;
@@ -213,7 +213,7 @@ function confirmEndCare() {
     '<button class="warn" id="go">Stop billing and refund</button>' +
     '<button class="ghost" id="back">Go back</button>'
   );
-  wireConfirm('end_care', 'Billing has stopped and we’ve refunded the rest of this month. Take care — we were glad we could help.');
+  wireConfirm('end_care', 'Billing has stopped and we’ve refunded the rest of this month. Take care. We were glad we could help.');
 }
 
 function confirmPause() {
