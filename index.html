@@ -7,7 +7,7 @@
 <!-- Meta pixel, privacy-disciplined. Loads the library but fires NO PageView and
      NO automatic form/button scraping (autoConfig false, the email-leak vector).
      Only explicit conversion events (Lead, InitiateCheckout, StartTrial) are ever
-     sent — browsing is never tracked. See metaEvent() in the page script. -->
+     sent. Browsing is never tracked. See metaEvent() in the page script. -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -19,414 +19,462 @@ fbq('init','1039692688431979');
 /* Intentionally NO fbq('track','PageView'). */
 </script>
 <title>Compasse, a companion for families living with cognitive decline</title>
-<meta name="description" content="Compasse turns an iPad into a calm companion for a parent with cognitive decline. Endless patience for repeated questions, and your good mornings, reminders, and messages play in your own recorded voice.">
+<meta name="description" content="Compasse turns an iPad into a calm companion board for an older adult with cognitive decline. Cassi answers repeated questions with endless patience, and short recordings from family play back in the voices she knows.">
 <link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* Hallmark · genre: playful · macrostructure: Bento Grid · theme: brand-locked (Compasse app palette) · enrichment: real video + live board tile · nav: N1a · footer: Ft5
-   * pre-emit critique: P5 H4 E5 S5 R4 V5
-   * app tokens carried onto the web: sky #D9E8EE · surface-muted #F1ECE3 · good #2E7D32 · warn #C0392B · border #E5DFD2 · radii 20/28 · rounded display type.
-   * Honest content only: real copy, real video, live clock. No fabricated metrics, no fake device chrome. */
+  /* Rebuild 2026-08-13. One argument, top to bottom: her side, your side, setup,
+   * trust, price, questions, ask. Honest content only: real copy, real video,
+   * live clock. No fabricated metrics, no fake testimonials, no fake chrome.
+   * Previous page preserved at index-classic-2026-08.html. */
   :root{
-    /* --- palette: site brand + app theme.tsx, merged --- */
-    --cream:#FAF7F2; --white:#FFFFFF;
-    --surface-muted:#F1ECE3;      /* app surfaceMuted */
-    --sky:#D9E8EE;                /* app accentMuted — the board wash */
-    --ink:#1E1E1E;                /* app text */
-    --muted:#5A5A5A;              /* app textMuted */
-    --teal:#2C6A85; --teal-deep:#235468;
-    --terra:#B3543F;              /* site marginalia, kept */
-    --good:#2E7D32; --good-bg:#EAF3EC;   /* app good */
-    --warn:#C0392B; --warn-bg:#F9ECEA;   /* app warn */
-    --border:#E5DFD2;             /* app border */
-    --footer:#2A2622;
-    /* --- type: rounded display (closest web match to the app's friendly weight) --- */
-    --display:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    /* --- rhythm: app radii + 8pt spacing (spacing(n)=n*8 in theme.tsx) --- */
-    --r-sm:12px; --r-md:20px; --r-lg:28px;
-    --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s6:48px; --s8:64px; --s12:96px;
-    --ease-out:cubic-bezier(.22,.61,.36,1);
+    --cream:#FAF6EF; --paper:#FFFFFF; --ink:#2B2A28; --muted:#5D5852;
+    --terra:#A8542F; --terra-deep:#8F4526; --teal:#2F6D66; --teal-deep:#25574F;
+    --border:#E5DFD2; --sky:#D9E8EE; --warm:#F1ECE3; --good:#2E7D32; --warn:#C0392B;
+    --r:20px; --r-lg:28px; --shadow:0 2px 8px rgba(43,42,40,.06),0 12px 32px rgba(43,42,40,.07);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{overflow-x:clip}
+  /* The launch-flip depends on the hidden attribute beating every display rule. */
+  [hidden]{display:none!important}
   html{scroll-behavior:smooth}
-  body{background:var(--cream);color:var(--ink);font:16.5px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
-  img,video{max-width:100%}
-  h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.14;font-style:normal;
-           letter-spacing:-.02em;overflow-wrap:anywhere}
-  h1,h2{text-wrap:balance}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+  body{font:400 18px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream)}
+  h1,h2,h3{font-family:Lora,Georgia,serif;line-height:1.18;font-weight:600}
+  h1{font-size:clamp(34px,5.4vw,54px)}
+  h2{font-size:clamp(27px,3.6vw,38px)}
+  h3{font-size:21px;margin-bottom:8px}
+  p{max-width:62ch}
   a{color:var(--teal)}
-  .wrap{max-width:1160px;margin:0 auto;padding:0 32px}
-  .overline{font:700 11.5px/1 var(--sans);letter-spacing:2.5px;text-transform:uppercase;color:var(--teal)}
-  :focus-visible{outline:3px solid #8FC1D6;outline-offset:2px;border-radius:4px}
+  a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:6px}
+  img,video{max-width:100%;display:block}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  section{padding:72px 0}
+  .overline{display:block;font-size:14px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--terra);margin-bottom:10px}
+  .center{text-align:center}
+  .center p{margin-left:auto;margin-right:auto}
 
-  .btn{display:inline-block;background:var(--teal);color:#fff !important;text-decoration:none;
-       padding:15px 30px;border-radius:999px;font:700 16.5px var(--display);border:none;cursor:pointer;
-       box-shadow:0 1px 2px rgba(30,30,30,.16);transition:background .18s var(--ease-out),transform .18s var(--ease-out)}
-  .btn:hover{background:var(--teal-deep);transform:translateY(-1px)}
-  .btn:active{transform:translateY(1px)}
-  .btn.ghost{background:transparent;color:var(--teal) !important;border:2px solid var(--teal);box-shadow:none}
-  .btn.ghost:hover{background:rgba(44,106,133,.07)}
+  /* buttons: ONE primary style everywhere */
+  .btn{display:inline-block;background:var(--terra);color:#fff;border:0;border-radius:999px;
+    padding:16px 30px;font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;
+    min-height:52px;transition:background .18s ease}
+  .btn:hover{background:var(--terra-deep)}
+  .btn[disabled]{opacity:.55;cursor:default}
+  .btn-quiet{display:inline-block;color:var(--teal);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 
-  /* N1a nav — wordmark, three anchors, one button */
-  header.nav{background:var(--cream);border-bottom:1px solid var(--border)}
-  .nav .wrap{display:flex;align-items:center;gap:12px;padding:16px 32px}
-  .nav img{width:34px;height:34px;border-radius:9px}
-  .nav .name{font-family:var(--display);font-size:21px;font-weight:800;color:var(--teal);text-decoration:none}
-  .nav nav{margin-left:auto;display:flex;gap:24px;align-items:center}
-  .nav nav a{text-decoration:none;color:var(--muted);font-size:15px;font-weight:600;white-space:nowrap}
-  .nav nav a:hover{color:var(--ink)}
-  .nav .btn{padding:11px 20px;font-size:14.5px}
+  /* nav */
+  nav{position:sticky;top:0;z-index:50;background:rgba(250,246,239,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
+  .navrow{display:flex;align-items:center;justify-content:space-between;min-height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:Lora,Georgia,serif;font-weight:700;font-size:22px;color:var(--ink);text-decoration:none}
+  .brand img{width:30px;height:30px}
+  .navlinks{display:flex;align-items:center;gap:22px}
+  .navlinks a.plain{color:var(--ink);text-decoration:none;font-weight:600;font-size:17px}
+  .navlinks a.plain:hover{color:var(--teal)}
+  nav .btn{padding:11px 22px;min-height:44px;font-size:16px}
 
-  /* Fixed-height centered hero (bento spec) */
-  .hero{padding:var(--s12) 0 var(--s6);text-align:center}
-  .hero .overline{color:var(--terra)}
-  .hero h1{font-size:clamp(34px,4.8vw,58px);max-width:19ch;margin:var(--s2) auto var(--s3)}
-  .hero p{font-size:19px;color:var(--muted);max-width:38em;margin:0 auto var(--s4)}
-  .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-  .hero .fineprint{margin-top:var(--s2);font-size:13.5px;color:var(--muted)}
+  /* launch banner */
+  #launch-banner{background:var(--teal);color:#fff;text-align:center;padding:10px 16px;font-size:16px}
+  #launch-banner a{color:#fff;font-weight:700}
 
-  /* Bento grid */
-  .bento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;padding:var(--s4) 0 var(--s8)}
-  .cell{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
-        padding:var(--s4);position:relative;overflow:hidden;
-        transition:transform .18s var(--ease-out),box-shadow .18s var(--ease-out)}
-  .cell:hover{transform:translateY(-2px);box-shadow:0 12px 28px -14px rgba(44,106,133,.28)}
-  .cell h3{font-size:19.5px;margin-bottom:8px}
-  .cell>p{color:var(--muted);font-size:15px;max-width:34em}
-  .cell .overline{display:block;margin-bottom:10px}
-  .span-2x2{grid-column:span 2;grid-row:span 2}
-  .span-2x1{grid-column:span 2}
-  .cell.sky{background:var(--sky);border-color:transparent}
-  .cell.warm{background:var(--surface-muted);border-color:transparent}
+  /* hero */
+  .hero{padding:64px 0 72px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .hero p.sub{font-size:20px;color:var(--muted);margin:18px 0 26px}
+  .micro{font-size:15px;color:var(--muted);margin-top:10px}
 
-  /* The board tile — the product's real UI as a flat tile, live clock, no fake bezel */
-  .board{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-         text-align:center;min-height:380px}
-  .board .b-label{font:700 11px/1 var(--sans);letter-spacing:2.5px;color:var(--teal-deep);opacity:.75}
-  .board .b-clock{font-family:var(--display);font-size:clamp(52px,6vw,76px);font-weight:800;line-height:1;
-                  font-variant-numeric:tabular-nums;color:var(--ink)}
-  .board .b-day{font-family:var(--display);font-size:22px;font-weight:700}
-  .board .b-day small{display:block;font:600 13.5px var(--sans);color:var(--muted);margin-top:2px}
-  .board .b-next{background:var(--white);border-radius:var(--r-md);padding:12px 20px;font-size:15px;
-                 font-weight:600;box-shadow:0 4px 14px -8px rgba(30,30,30,.2)}
-  .board .b-next span{color:var(--teal)}
-  .voicebar{margin-top:6px;min-width:64%;height:44px;border-radius:999px;background:var(--teal);color:#fff;
-            display:flex;align-items:center;justify-content:center;gap:9px;font:700 14px var(--display);
-            padding:0 22px}
-  .voicebar .dot{width:9px;height:9px;border-radius:50%;background:#fff}
-  @media(prefers-reduced-motion:no-preference){
-    .voicebar .dot{animation:breathe 2.4s var(--ease-out) infinite}
-    @keyframes breathe{0%,100%{opacity:.45}50%{opacity:1}}
-  }
-  .board .b-cap{font-size:12.5px;color:var(--teal-deep);opacity:.75;margin-top:4px}
+  /* waitlist form */
+  .wlform{display:flex;gap:10px;flex-wrap:wrap;max-width:460px}
+  .wlform input{flex:1 1 220px;min-height:52px;padding:12px 16px;font:inherit;font-size:17px;
+    border:2px solid #8A857D;border-radius:14px;background:var(--paper);color:var(--ink)}
+  .wlform input::placeholder{color:var(--muted)}
+  .wlmsg{font-size:16px;color:var(--teal);font-weight:600;min-height:1.4em;margin-top:8px}
 
-  /* Dialogue chips (app conversation voice) */
-  .chipline{display:flex;flex-direction:column;gap:10px;align-items:flex-start;margin-top:var(--s2)}
-  .chip{font-size:14.5px;font-weight:600;padding:12px 16px;border-radius:var(--r-md);max-width:92%}
-  .chip small{display:block;font-size:10px;letter-spacing:1.5px;opacity:.62;text-transform:uppercase;font-weight:700;margin-bottom:2px}
-  .chip.her{background:var(--surface-muted);color:var(--ink);border-bottom-left-radius:6px}
-  .chip.cassi{background:var(--teal);color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
-  .chip-tag{color:var(--terra);font-size:13.5px;margin-top:10px;font-weight:600;font-style:italic}
+  /* the live board */
+  .board{background:var(--sky);border:1px solid var(--border);border-radius:var(--r-lg);
+    padding:34px 30px;box-shadow:var(--shadow)}
+  .b-label{display:block;font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--teal);margin-bottom:6px}
+  .b-clock{font-family:Lora,Georgia,serif;font-weight:700;font-size:clamp(52px,7vw,76px);line-height:1.05;font-variant-numeric:tabular-nums}
+  .b-day{font-size:22px;font-weight:600;margin-top:2px}
+  .b-day small{display:block;font-size:17px;font-weight:400;color:var(--muted)}
+  .b-next{margin-top:16px;background:var(--paper);border:1px solid var(--border);border-radius:12px;
+    padding:10px 14px;font-size:17px;display:inline-block}
+  .b-next span{font-weight:600}
+  .voicebar{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:17px;color:var(--muted)}
+  .voicebar .dot{width:10px;height:10px;border-radius:50%;background:var(--teal);flex:none}
+  .b-cap{font-size:15px;color:var(--muted);margin-top:14px}
 
-  /* Status rows (app dashboard voice) */
-  .rows{display:flex;flex-direction:column;gap:10px;margin-top:var(--s2)}
-  .row{border-radius:var(--r-sm);padding:12px 14px;font-size:14px;font-weight:600;border:1px solid var(--border);background:var(--cream)}
-  .row.good{background:var(--good-bg);border-color:#CFE3D4;color:var(--good)}
-  .row.warn{background:var(--warn-bg);border-color:#EBCFCA;color:var(--warn)}
-  .row.action{background:var(--teal);border-color:var(--teal);color:#fff;text-align:center;font-family:var(--display);font-weight:700}
+  /* tiles */
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
+  .tile{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:26px;box-shadow:var(--shadow)}
+  .tile.warmbg{background:var(--warm)}
+  .tile p{font-size:17px;color:var(--muted)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:36px}
 
-  /* Video tile */
-  .cell.filmcell{padding:0;background:#171310;border:none;display:flex}
-  .cell.filmcell video{width:100%;height:100%;object-fit:cover;display:block;border-radius:var(--r-lg)}
+  /* chips (recorded voice demo) */
+  .chip{border-radius:14px;padding:12px 14px;font-size:16.5px;margin-top:10px}
+  .chip small{display:block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;color:var(--muted)}
+  .chip.her{background:var(--warm);border:1px solid var(--border)}
+  .chip.cassi{background:var(--sky);border:1px solid var(--border)}
+  .chip-tag{font-size:15px;color:var(--muted);margin-top:10px}
 
-  /* Steps tile */
-  .mini-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);margin-top:var(--s2)}
-  .mini-steps div{font-size:14px;color:var(--muted)}
-  .mini-steps b{display:block;font-family:var(--display);color:var(--ink);font-size:15.5px;margin-bottom:4px}
-  .mini-steps .n{display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;
-                 font:700 14px/1 var(--display);align-items:center;justify-content:center;margin-bottom:10px}
+  /* caregiver rows */
+  .rows{display:grid;gap:8px;margin-top:12px}
+  .row{background:var(--cream);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:16.5px}
+  .row.good{color:var(--good);font-weight:600}
+  .row.warn{color:var(--warn);font-weight:600}
 
-  /* Quote tile */
-  .qcell blockquote{font-family:var(--display);font-size:19px;font-weight:700;line-height:1.35;color:var(--ink)}
-  .qcell .sig{display:flex;align-items:center;gap:10px;margin-top:var(--s2)}
-  .qcell .sig img{width:40px;height:40px;border-radius:12px}
-  .qcell .sig span{font-size:13px;color:var(--muted);font-weight:600}
+  /* setup */
+  .setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;margin-top:36px}
+  .steps{display:grid;gap:18px}
+  .step{display:flex;gap:14px;align-items:flex-start}
+  .step .n{flex:none;width:36px;height:36px;border-radius:50%;background:var(--teal);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px}
+  .step b{display:block;margin-bottom:2px}
+  .step p{font-size:16.5px;color:var(--muted)}
+  .filmcell video{border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);width:100%}
+  .film-cap{font-size:15px;color:var(--muted);margin-top:10px}
+
+  /* story */
+  .story blockquote{font-family:Lora,Georgia,serif;font-size:clamp(22px,3vw,28px);line-height:1.4;max-width:26ch;margin:0 auto}
+  .sig{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px;color:var(--muted);font-size:16px}
+  .sig img{width:34px;height:34px;border-radius:50%}
+
+  /* pricing */
+  #pricing .card{max-width:520px;margin:36px auto 0;background:var(--paper);border:1px solid var(--border);
+    border-radius:var(--r-lg);padding:36px 32px;text-align:center;box-shadow:var(--shadow)}
+  .price{font-family:Lora,Georgia,serif;font-size:56px;font-weight:700}
+  .price span{font-size:19px;font-weight:400;color:var(--muted);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .fit{max-width:520px;margin:22px auto 0;background:var(--warm);border:1px solid var(--border);border-radius:var(--r);padding:22px 26px;text-align:left}
+  .fit ul{list-style:none;margin-top:8px}
+  .fit li{padding-left:26px;position:relative;font-size:17px;margin-top:6px}
+  .fit li::before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:700}
+  .anchorline{max-width:56ch;margin:0 auto;font-size:19px}
 
   /* FAQ */
-  .faq{padding:var(--s8) 0}
-  .faq .head{text-align:center;max-width:560px;margin:0 auto var(--s4)}
-  .faq .head h2{font-size:clamp(26px,3.2vw,36px);margin-top:10px}
-  .faqgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
-  details{background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);padding:18px 22px}
-  summary{cursor:pointer;font-family:var(--display);font-weight:700;font-size:16px;list-style:none;position:relative;padding-right:30px}
-  summary::-webkit-details-marker{display:none}
-  summary::after{content:"+";position:absolute;right:0;top:-3px;font-size:22px;color:var(--teal);font-weight:400;font-family:var(--sans)}
-  details[open] summary::after{content:"\2013"}
-  details p{margin-top:10px;color:var(--muted);font-size:15px}
+  .faqlist{max-width:760px;margin:36px auto 0}
+  details{background:var(--paper);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;padding:0 20px}
+  summary{cursor:pointer;font-weight:600;font-size:18px;padding:16px 0;list-style-position:inside}
+  details p{padding:0 0 16px;color:var(--muted);font-size:17px;max-width:none}
+  details a{color:var(--teal)}
 
-  /* CTA band */
-  .get{background:var(--teal);color:#fff;padding:var(--s12) 0;border-radius:var(--r-lg) var(--r-lg) 0 0}
-  .get .wrap{max-width:720px;text-align:center}
-  .get h2{font-size:clamp(27px,3.4vw,40px);color:#fff}
-  .get p{margin:16px auto 30px;color:rgba(255,255,255,.86);max-width:36em;font-size:17px}
-  #wl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-  #wl input{font:16px var(--sans);padding:15px 22px;border-radius:999px;border:none;min-width:min(300px,100%);flex:0 1 320px}
-  #wl button{background:var(--ink);box-shadow:none}
-  #wl button:hover{background:#000}
-  #wl-msg{margin-top:16px;font-weight:600;min-height:24px;color:#fff}
-  .get .alt{font-size:14px;color:rgba(255,255,255,.72)}
-  .get .alt a{color:#fff}
+  /* final cta */
+  .final{background:var(--teal);color:#fff}
+  .final h2,.final p{color:#fff}
+  .final .btn{background:#fff;color:var(--teal-deep)}
+  .final .btn:hover{background:var(--cream)}
+  .final .wlform input{border-color:transparent}
+  .final .wlmsg{color:#fff}
+  .final :focus-visible,#launch-banner a:focus-visible{outline-color:#fff}
 
-  /* Ft5 statement footer */
-  footer{background:var(--footer);color:#C9C2B8;font-size:14.5px}
-  footer .wrap{padding:var(--s8) 32px var(--s4);text-align:center}
-  footer .statement{font-family:var(--display);font-weight:700;font-size:clamp(22px,3vw,32px);
-                    color:#F0E6D9;max-width:22ch;margin:0 auto var(--s4);line-height:1.25}
-  footer .links{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--s4)}
-  footer a{color:#E4DACB;text-decoration:none;font-weight:600}
-  footer a:hover{color:#fff}
-  footer .legal{border-top:1px solid rgba(255,255,255,.12);padding:var(--s3) 0 0;font-size:12.5px;
-                color:#8F877C;max-width:62em;margin:0 auto;text-align:center}
+  footer{padding:56px 0 64px;font-size:15.5px;color:var(--muted)}
+  footer .statement{font-family:Lora,Georgia,serif;font-size:20px;color:var(--ink);margin-bottom:18px}
+  footer .links{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:18px}
+  footer a{color:var(--muted)}
+  footer .legal{max-width:72ch}
 
-  /* one-shot tile fade */
-  @media(prefers-reduced-motion:no-preference){
-    .cell{opacity:0;transform:translateY(10px);animation:tile .5s var(--ease-out) forwards}
-    .cell:nth-child(2){animation-delay:.05s}.cell:nth-child(3){animation-delay:.1s}
-    .cell:nth-child(4){animation-delay:.15s}.cell:nth-child(5){animation-delay:.2s}
-    .cell:nth-child(6){animation-delay:.25s}.cell:nth-child(7){animation-delay:.3s}
-    .cell:nth-child(8){animation-delay:.35s}.cell:nth-child(9){animation-delay:.4s}
-    @keyframes tile{to{opacity:1;transform:none}}
+  @media (max-width:900px){
+    .tiles{grid-template-columns:1fr}
+    .two,.setup-grid,.hero-grid{grid-template-columns:1fr}
+    section{padding:56px 0}
+    .hero{padding:40px 0 56px}
   }
-
-  @media(max-width:960px){
-    .bento{grid-template-columns:repeat(2,minmax(0,1fr))}
-  }
-  @media(max-width:640px){
-    .hero{padding:var(--s8) 0 var(--s4)}
-    .bento{grid-template-columns:minmax(0,1fr)}
-    .span-2x2,.span-2x1{grid-column:span 1;grid-row:span 1}
-    .board{min-height:320px}
-    .mini-steps{grid-template-columns:minmax(0,1fr)}
-    .faqgrid{grid-template-columns:minmax(0,1fr)}
-    .nav nav a.hide-sm{display:none}
+  @media (max-width:640px){
+    .navlinks a.plain{display:none}
+    nav .btn{padding:10px 18px;font-size:15px}
+    .brand{font-size:20px}
   }
 </style>
 </head>
 <body>
 
-<!-- Launch banner. Hidden until launch day (revealed by the same flag
-     as the pricing section). No countdown timers, real dates only. -->
-<div id="launch-banner" data-launch hidden
-     style="background:var(--teal);color:#fff;text-align:center;padding:10px 16px;font-size:15px;line-height:1.45">
-  <strong>Compasse is live.</strong> First week free, then $29 a month, everything included, cancel anytime.
-  <a href="#pricing" style="color:#fff;text-decoration:underline;white-space:nowrap">Start Compasse</a>
+<!-- launch banner: hidden until LAUNCHED -->
+<div id="launch-banner" data-launch hidden>
+  Compasse is live. $29 a month, first week free. <a href="#pricing">Start your free week</a>
 </div>
 
-<header class="nav">
-  <div class="wrap">
-    <img src="logo.png" alt="">
-    <a class="name" href="#top">Compasse</a>
-    <nav>
-      <a href="#tour" class="hide-sm">A quick tour</a>
-      <a href="#faq" class="hide-sm">FAQ</a>
-      <a class="btn" href="#get">Join the free trial</a>
-    </nav>
+<nav aria-label="Main">
+  <div class="wrap navrow">
+    <a class="brand" href="/"><img src="logo.png" alt="">Compasse</a>
+    <div class="navlinks">
+      <a class="plain" href="#tour">How it works</a>
+      <a class="btn" data-prelaunch href="#join">Join the waitlist</a>
+      <a class="btn" data-launch hidden href="#pricing">Start your free week</a>
+    </div>
   </div>
-</header>
+</nav>
 
-<main id="top">
+<main>
 
-  <!-- Fixed hero, centered -->
-  <section class="hero">
-    <div class="wrap">
-      <div class="overline">For families living with cognitive decline</div>
-      <h1>The calmest screen in the house.</h1>
-      <p>Compasse turns an iPad into a companion named Cassi. When Mom asks the same question for
-      the fifth time, Cassi answers with the same patience as the first. And the words that matter
-      most, your good mornings, your reminders, your I love yous, play in your own recorded voice.</p>
-      <div class="cta-row">
-        <a class="btn" href="#get">Join the free trial</a>
-        <a class="btn ghost" href="#tour">Take the tour</a>
+  <!-- HERO: one claim, one mechanism, one ask, and the real board -->
+  <header class="hero" id="join">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="overline">For families living with cognitive decline</span>
+        <h1>She asks. Cassi answers. As many times as it takes.</h1>
+        <p class="sub">Compasse turns an iPad into a calm companion board for an older adult with
+        cognitive decline. Cassi answers her questions in a warm, patient voice, keeps the day in
+        plain view, and plays back short recordings from the people she loves. You set it up from
+        your phone and see that she is okay.</p>
+
+        <div data-prelaunch>
+          <form id="wl" class="wlform" aria-label="Join the waitlist">
+            <input id="wl-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
+            <button class="btn" type="submit">Join the waitlist</button>
+          </form>
+          <p id="wl-msg" class="wlmsg" aria-live="polite"></p>
+          <p class="micro"><b>The family trial is free.</b> We are bringing on a small group of first families and will email you when your spot opens. No spam, ever.</p>
+        </div>
+
+        <div data-launch hidden>
+          <a class="btn" href="#pricing">Start your free week</a>
+          <p class="micro">Then $29 a month. Cancel anytime.</p>
+        </div>
       </div>
-      <p class="fineprint">Family trial &middot; free &middot; no new hardware to buy</p>
+
+      <!-- The real board. That clock is live. -->
+      <div class="board" role="group" aria-label="The Compasse board, showing the current time">
+        <span class="b-label">ALWAYS ON, ALWAYS TODAY</span>
+        <div class="b-clock" id="live-clock">--:--</div>
+        <div class="b-day" id="live-day">&nbsp;<small id="live-date">&nbsp;</small></div>
+        <div class="b-next">Next: <span>Sarah visits at 2:00</span></div>
+        <div class="voicebar"><span class="dot"></span>&ldquo;Hey Cassi&hellip;&rdquo;</div>
+        <p class="b-cap">This clock is live. The board really is this simple: the day, the time, what comes next, and a voice that listens.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- HER SIDE -->
+  <section id="tour">
+    <div class="wrap">
+      <div class="center">
+        <span class="overline">Her side</span>
+        <h2>What she sees, and who she talks to</h2>
+      </div>
+      <div class="tiles">
+        <article class="tile">
+          <h3>Steady ground</h3>
+          <p>The day, the date, and what comes next. Always in view, never a button to find, nothing
+          for her to learn. The board stays on and stays simple.</p>
+        </article>
+        <article class="tile">
+          <h3>Voices she knows</h3>
+          <div class="chip her"><small>You record once</small>&ldquo;Good morning, Mom. It&rsquo;s Sarah. I love you.&rdquo;</div>
+          <div class="chip cassi"><small>Her board, 8:00 AM</small>&ldquo;Good morning, Mom. It&rsquo;s Sarah. I love you.&rdquo;</div>
+          <p class="chip-tag">What you record is exactly what she hears, played at the right moments. Cassi answers everything else in her own calm voice.</p>
+        </article>
+        <article class="tile warmbg">
+          <h3>Patience that never runs out</h3>
+          <p>The fourth time she asks what day it is, Cassi answers the same way she did the first
+          time. Warm, unhurried, never annoyed. That patience is the whole point.</p>
+        </article>
+      </div>
     </div>
   </section>
 
-  <!-- Bento -->
-  <section id="tour">
+  <!-- YOUR SIDE -->
+  <section style="padding-top:0">
     <div class="wrap">
-      <div class="bento">
-
-        <!-- 2x2 · the board itself, live -->
-        <article class="cell sky span-2x2 board" aria-label="The Compasse board, showing the current time">
-          <span class="b-label">ALWAYS ON, ALWAYS TODAY</span>
-          <div class="b-clock" id="live-clock">--:--</div>
-          <div class="b-day" id="live-day">&nbsp;<small id="live-date">&nbsp;</small></div>
-          <div class="b-next">Next: <span>Sarah visits at 2:00</span></div>
-          <div class="voicebar"><span class="dot"></span>&ldquo;Hey Cassi&hellip;&rdquo;</div>
-          <p class="b-cap">This clock is live. The board really is this simple.</p>
-        </article>
-
-        <!-- 1x1 · your voice -->
-        <article class="cell">
-          <span class="overline">The familiar voice</span>
-          <h3>Your voice, at the right moments</h3>
-          <div class="chipline">
-            <div class="chip her"><small>You record once</small>&ldquo;Good morning, Mom. It&rsquo;s Sarah. I love you.&rdquo;</div>
-            <div class="chip cassi"><small>Her board, 8:00 AM</small>&ldquo;Good morning, Mom. It&rsquo;s Sarah. I love you.&rdquo;</div>
-          </div>
-          <p class="chip-tag">what you record is exactly what she hears. Cassi answers everything else in her own calm voice</p>
-        </article>
-
-        <!-- 1x1 · your side -->
-        <article class="cell">
-          <span class="overline">Your side</span>
-          <h3>You always know, without hovering</h3>
+      <div class="center">
+        <span class="overline">Your side</span>
+        <h2>Your phone stays quiet. You stay informed.</h2>
+      </div>
+      <div class="two">
+        <article class="tile">
+          <h3>A glance, not a vigil</h3>
           <div class="rows">
             <div class="row good">&#10003;&nbsp; All quiet. Meds on track. Tablet online.</div>
-            <div class="row action">Check in on Mom</div>
+            <div class="row">Check in on Mom</div>
             <div class="row">Call Mom</div>
           </div>
+          <p style="margin-top:12px">Open the Compasse app on your iPhone to see the board is running
+          and messages were heard. No cameras, no listening in on her day. The caregiver app is
+          iPhone only for now.</p>
         </article>
+        <article class="tile">
+          <h3>Interrupted only when it matters</h3>
+          <div class="rows">
+            <div class="row warn">!&nbsp; Mom missed her 8 AM medication</div>
+          </div>
+          <p style="margin-top:12px">Compasse interrupts you for four things only: a missed
+          medication, an answer to a check-in you sent, a call request, and the tablet going offline. Everything
+          else waits calmly on your dashboard.</p>
+          <div class="chip her" style="margin-top:14px"><small>Mom</small>&ldquo;Cassi, call Sarah.&rdquo;</div>
+          <div class="chip cassi"><small>Cassi</small>&ldquo;Calling Sarah now.&rdquo;</div>
+          <p class="chip-tag">The tablet rings your phone on FaceTime. Company between your calls, not instead of them.</p>
+        </article>
+      </div>
+    </div>
+  </section>
 
-        <!-- 2x1 · the real setup video -->
-        <article class="cell filmcell span-2x1">
+  <!-- SETUP -->
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="center">
+        <span class="overline">Getting started</span>
+        <h2>Set up in minutes, from your own phone</h2>
+      </div>
+      <div class="setup-grid">
+        <div class="steps">
+          <div class="step"><span class="n">1</span><div><b>Set up your phone</b><p>Add medications, the day&rsquo;s plan, and record a few short messages in your voice.</p></div></div>
+          <div class="step"><span class="n">2</span><div><b>One code on the iPad</b><p>She never needs an email, a password, or any setup of her own.</p></div></div>
+          <div class="step"><span class="n">3</span><div><b>Place it where she&rsquo;ll see it</b><p>The board stays on. She just talks to it, and you stay in the loop.</p></div></div>
+          <p style="margin-top:6px;font-size:16.5px;color:var(--muted)">Works on most iPads families
+          already have, 2017 or newer, plugged in on a simple stand.</p>
+          <div data-launch hidden style="margin-top:10px">
+            <a class="btn" href="#pricing">Start your free week</a>
+          </div>
+          <div data-prelaunch style="margin-top:10px">
+            <a class="btn" href="#join">Join the waitlist</a>
+          </div>
+        </div>
+        <div class="filmcell">
           <video controls playsinline preload="none" poster="setup-poster.jpg"
             aria-label="Compasse setup video, 45 seconds, narrated by Shelly">
             <source src="setup-video.mp4" type="video/mp4">
           </video>
-        </article>
-
-        <!-- 1x1 · honest alerts -->
-        <article class="cell warm">
-          <span class="overline" style="color:var(--warn)">When it matters</span>
-          <h3>Your phone stays quiet until it shouldn&rsquo;t</h3>
-          <div class="rows">
-            <div class="row warn">!&nbsp; Mom missed her 8 AM medication</div>
-          </div>
-          <p style="margin-top:12px">Compasse interrupts you for four things only: a missed medication, a check-in answer, a call request, and the tablet going offline. Everything else waits calmly on your dashboard.</p>
-        </article>
-
-        <!-- 1x1 · calls -->
-        <article class="cell">
-          <span class="overline">Staying close</span>
-          <h3>Calls without the confusion</h3>
-          <div class="chipline">
-            <div class="chip her"><small>Mom</small>&ldquo;Cassi, call Sarah.&rdquo;</div>
-            <div class="chip cassi"><small>Cassi</small>&ldquo;Calling Sarah now.&rdquo;</div>
-          </div>
-          <p class="chip-tag">the tablet rings your phone on FaceTime</p>
-        </article>
-
-        <!-- 2x1 · setup steps -->
-        <article class="cell span-2x1">
-          <span class="overline">Setup in 5 minutes</span>
-          <h3>Most of it is you talking</h3>
-          <div class="mini-steps">
-            <div><span class="n">1</span><b>Set up your phone</b>Add medications, the day&rsquo;s plan, and record a few answers in your voice.</div>
-            <div><span class="n">2</span><b>One code on the iPad</b>Your parent never needs an email, a password, or any setup of their own.</div>
-            <div><span class="n">3</span><b>Place it where she&rsquo;ll see it</b>The board stays on. She just talks to it; you stay in the loop.</div>
-          </div>
-        </article>
-
-        <!-- 1x1 · story -->
-        <article class="cell warm qcell span-2x1">
-          <span class="overline" style="color:var(--terra)">Our story</span>
-          <blockquote>&ldquo;Compasse was started by a mother and her son. Mom has the ideas; her son writes the code.&rdquo;</blockquote>
-          <div class="sig"><img src="logo.png" alt=""><span>Aidan &amp; Shelly · the whole company</span></div>
-        </article>
-
-        <!-- 2x1 · privacy -->
-        <article class="cell span-2x1">
-          <span class="overline">Private by design</span>
-          <h3>Only listens when spoken to</h3>
-          <p>Conversations happen only when your parent talks to Cassi. Recordings are used only to make
-          Compasse work, and the speech partners that power Cassi are named in our
-          <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>,
-          written in plain English.</p>
-        </article>
-
+          <p class="film-cap">Shelly, the mom who co-founded Compasse, walks through the real setup in 45 seconds.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="faq" id="faq">
+  <!-- STORY -->
+  <section class="story center" style="padding-top:0">
     <div class="wrap">
-      <div class="head">
-        <div class="overline" style="color:var(--terra)">Questions</div>
-        <h2>Before you decide</h2>
-      </div>
-      <div class="faqgrid">
-        <details><summary>What do I need to run Compasse?</summary>
-          <p>An iPad from 2017 or newer for your parent, and an iPhone for you. The iPad sitting in a drawer somewhere is probably perfect. A simple stand helps, and it should stay plugged in.</p></details>
-        <details><summary>Does my parent need to learn anything?</summary>
-          <p>No. The board is always on and they just talk to it. There are no passwords or menus on their side. Setup on their iPad is a one-time code that you enter yourself.</p></details>
-        <details><summary>Is this a medical device? Can it call 911?</summary>
-          <p>No. Compasse is a comfort and communication tool, not a medical device, an emergency response system, or a monitoring service. It does not call 911, detect falls, or guarantee that medication gets taken. It gives your parent a calm, familiar presence and gives you a clearer picture of the day. If your family needs emergency response or medical monitoring, please use a dedicated service alongside Compasse, and always keep your existing emergency plans in place.</p></details>
-        <details><summary>What about privacy? Is it always listening?</summary>
-          <p>Conversations happen only when your parent talks to Cassi. Recordings are used only to make Compasse work, and the speech partners that power Cassi are named in our <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>, which is written in plain English and covers all of it.<span data-launch hidden> Payments are handled by Stripe, so your card number never touches our servers. We never sell your family&rsquo;s information or use it for advertising.</span></p></details>
-        <details data-prelaunch><summary>What does it cost?</summary>
-          <p>During our family trial, Compasse is free. At launch it will be a monthly subscription you can cancel anytime.</p></details>
-        <details data-launch hidden><summary>What does it cost?</summary>
-          <p>Your first week is free, then it&rsquo;s $29 a month, everything included. We ask for a card up front, and if you cancel during the free week you are never charged. There are no tiers, no setup fee, no contract, and nothing else to buy, because Compasse runs on any iPad from 2017 or newer. You can cancel anytime in one tap.</p></details>
-        <details data-launch hidden><summary>Can I really cancel anytime?</summary>
-          <p>Yes, in one tap, from the app or the website, with no phone call and no retention script. If care has ended, tell us with one tap: billing stops immediately and we automatically refund the unused part of the month, no request needed. You will never hear from us again unless you reach out first. If you just need a pause, you can stop billing for up to three months and everything stays saved for when you&rsquo;re ready.</p></details>
-        <details><summary>Can more than one family member use it?</summary>
-          <p>Right now each family has one caregiver phone connected. Support for siblings and other family members is on the way.</p></details>
-        <details data-prelaunch><summary>What if it doesn&rsquo;t work for us?</summary>
-          <p>Tell us. There&rsquo;s a Send Feedback button right on your dashboard and one of us answers it. If Compasse isn&rsquo;t a fit, we&rsquo;ll help you close out and delete your family&rsquo;s data completely.</p></details>
-        <details data-launch hidden><summary>What if it doesn&rsquo;t work for us?</summary>
-          <p>Tell us. There&rsquo;s a Send Feedback button right on your dashboard and one of us answers it. Your first week is free, and if Compasse isn&rsquo;t right for your family, cancel in one tap and that&rsquo;s the end of it. We&rsquo;ll help you close out and delete your family&rsquo;s data completely.</p></details>
-      </div>
+      <span class="overline">Our story</span>
+      <blockquote>Compasse was started by a mother and her son. Mom has the ideas; her son writes the code.</blockquote>
+      <div class="sig"><img src="logo.png" alt=""><span>Aidan &amp; Shelly &middot; the whole company</span></div>
     </div>
   </section>
 
-  <!-- Pricing — hidden until launch (revealed by ?pricing=preview or the launch flag in main.js logic below) -->
-  <section id="pricing" class="faq" hidden>
+  <!-- PRIVACY -->
+  <section class="center" style="padding-top:0">
     <div class="wrap">
-      <div class="head">
-        <div class="overline" style="color:var(--terra)">Simple pricing</div>
-        <h2>One plan, everything included</h2>
-      </div>
-      <div style="max-width:520px;margin:0 auto;background:#fff;border:1px solid #E8E2D8;border-radius:16px;padding:32px;text-align:center">
-        <div style="font-size:48px;font-weight:700;color:var(--ink,#2B2A28)">$29<span style="font-size:18px;font-weight:400;color:#6B6660">/month</span></div>
-        <p style="margin:8px 0 0;color:#6B6660">Your first week is free. Cancel anytime, online, in two clicks.</p>
-        <ul style="list-style:none;padding:0;margin:20px 0;text-align:left;color:#2B2A28;line-height:2">
-          <li>✓ The always-on board for their iPad</li>
-          <li>✓ Cassi, with your recorded voice</li>
-          <li>✓ Medication and calendar reminders</li>
-          <li>✓ Voice notes, check-ins, and calls</li>
-          <li>✓ A real person at hello@compasse.care</li>
-        </ul>
+      <span class="overline">Private by design</span>
+      <h2>Only listens when spoken to</h2>
+      <p style="margin:16px auto 0">Conversations happen only when your parent talks to Cassi.
+      Recordings are used only to make Compasse work, and the speech partners that power Cassi are
+      named in our <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>,
+      written in plain English.<span data-launch hidden> Payments are handled by Stripe, so your card
+      number never touches our servers.</span></p>
+    </div>
+  </section>
+
+  <!-- PRICING: hidden until LAUNCHED -->
+  <section id="pricing" hidden>
+    <div class="wrap center">
+      <span class="overline">Simple pricing</span>
+      <h2>One plan, everything included</h2>
+      <!-- Anchor before price. In-home care median ~$35/hr: Genworth Cost of Care Survey. -->
+      <p class="anchorline" style="margin-top:16px">One hour of in-home care runs about $35 (Genworth Cost of Care Survey).
+      Compasse is $29 for the whole month. It will never replace the care you give. It keeps her company in between.</p>
+      <div class="card">
+        <div class="price">$29<span>/month</span></div>
+        <p style="margin:8px auto 0;color:var(--muted)">First week free. Cancel anytime, online, in one tap.</p>
+        <p style="margin:12px auto 20px;font-size:16px;color:var(--muted)">Your card is charged after
+        the free week ends. Cancel before then and you pay nothing.</p>
         <button class="btn" id="buy-btn" type="button">Start your free week</button>
-        <p style="margin-top:6px;font-size:12px;color:#6B6660">If care ends, tell us. We stop the subscription immediately and refund the current month.</p>
-        <!-- Escape hatch for an EXISTING member who landed here by mistake. The
-             app's "Update payment" banner sends a caregiver with a failing card
-             to the site; if they reach this card and press the button they would
-             start a SECOND subscription with a second free week while the first
-             keeps dunning. The footer already links to manage.html, but that is
-             easy to miss when you are stressed and holding a declined card. -->
-        <p style="margin-top:14px;padding-top:14px;border-top:1px solid #E8E2D8;font-size:14px;color:#6B6660">
-          Already a member? <a href="/manage.html" style="color:var(--teal);font-weight:600">Manage your membership</a> to update your card.
+        <p style="margin-top:8px;font-size:14px;color:var(--muted)">If care ends, tell us. We stop the
+        subscription immediately and refund the unused part of the month.</p>
+        <p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:15px;color:var(--muted)">
+          Already a member? <a href="/manage.html" style="font-weight:600">Manage your membership</a> to update your card.
         </p>
       </div>
+      <div class="fit">
+        <b>Will Compasse fit your family?</b>
+        <ul role="list">
+          <li>An iPad from 2017 or newer for your parent</li>
+          <li>An iPhone for the caregiver app</li>
+          <li>Home Wi-Fi where the board will live</li>
+        </ul>
+      </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section id="get" class="get">
+  <!-- FAQ: last objections, right before the last ask -->
+  <section class="faq" id="faq" style="padding-top:56px">
     <div class="wrap">
-      <h2>Be one of our first families</h2>
-      <p>We&rsquo;re bringing on a small group of trial families right now. The trial is free, and we help
-      you with setup personally. Leave your email and we&rsquo;ll reach out when your spot opens.</p>
-      <form id="wl">
-        <input id="wl-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
-        <button class="btn" type="submit">Join the trial waitlist</button>
-      </form>
-      <p id="wl-msg" aria-live="polite"></p>
-      <p class="alt">Prefer email? Write us at <a href="mailto:hello@compasse.care">hello@compasse.care</a></p>
+      <div class="center">
+        <span class="overline">Questions</span>
+        <h2>Before you decide</h2>
+      </div>
+      <div class="faqlist">
+        <details><summary>Does my parent need to learn anything?</summary>
+          <p>No. The board is always on and they just talk to it. There are no passwords or menus on
+          their side. Setup on their iPad is a one-time code that you enter yourself.</p></details>
+        <details><summary>What if she asks the same question many times?</summary>
+          <p>That is what Cassi is for. The same patient answer, every time, without a sigh and
+          without a &ldquo;like I said.&rdquo; Repeated questions are normal with cognitive decline,
+          and answering them kindly is the job.</p></details>
+        <details><summary>What about privacy? Is it always listening?</summary>
+          <p>Conversations happen only when your parent talks to Cassi. Recordings are used only to
+          make Compasse work, and the speech partners that power Cassi are named in our
+          <a href="https://compasse-shelly.github.io/compasse-privacy/">privacy policy</a>, which is
+          written in plain English and covers all of it.<span data-launch hidden> Payments are
+          handled by Stripe, so your card number never touches our servers.</span></p></details>
+        <details><summary>Is this a medical device? Can it call 911?</summary>
+          <p>No. Compasse is a comfort and communication tool, not a medical device, an emergency
+          response system, or a monitoring service. It does not call 911, detect falls, or guarantee
+          that medication gets taken. It gives your parent a calm, familiar presence and gives you a
+          clearer picture of the day. If your family needs emergency response or medical monitoring,
+          please use a dedicated service alongside Compasse, and always keep your existing emergency
+          plans in place.</p></details>
+        <details><summary>Does it replace visits and calls?</summary>
+          <p>No, and it never should. Compasse is company between your visits and calls, not a
+          substitute for them. Many families use the board to feel closer: a good morning in your
+          voice, a photo of the day, a call she can start by asking.</p></details>
+        <!-- GATE: an offline-behavior FAQ ("What if the Wi-Fi goes out?") belongs here, but the
+             answer must describe CONFIRMED real product behavior. Do not invent it. Ship it with
+             the buy button era once verified. -->
+        <details><summary>What do I need to run Compasse?</summary>
+          <p>An iPad from 2017 or newer for your parent, and an iPhone for you. The iPad sitting in a
+          drawer somewhere is probably perfect. A simple stand helps, and it should stay plugged in.</p></details>
+        <details><summary>Can more than one family member use it?</summary>
+          <p>Right now each family has one caregiver phone connected. Support for siblings and other
+          family members is on the way.</p></details>
+        <details data-prelaunch><summary>What does it cost?</summary>
+          <p>During our family trial, Compasse is free. At launch it will be a monthly subscription
+          you can cancel anytime.</p></details>
+        <details data-launch hidden><summary>What does it cost?</summary>
+          <p>Your first week is free, then it&rsquo;s $29 a month, everything included. We ask for a
+          card up front, and if you cancel during the free week you are never charged. There are no
+          tiers, no setup fee, no contract, and nothing else to buy.</p></details>
+        <details data-launch hidden><summary>Can I really cancel anytime? What if it doesn&rsquo;t work for us?</summary>
+          <p>Yes: one tap, from the app or the website, with no phone call and no retention script.
+          If care has ended, tell us with one tap. Billing stops immediately and we automatically
+          refund the unused part of the month, no request needed. If you just need a pause, you can
+          stop billing for up to three months and everything stays saved. And if Compasse simply
+          isn&rsquo;t right for your family, there is a Send Feedback button on your dashboard and
+          one of us answers it. We will help you close out and delete your family&rsquo;s data
+          completely.</p></details>
+        <details data-prelaunch><summary>What if it doesn&rsquo;t work for us?</summary>
+          <p>Tell us. There&rsquo;s a Send Feedback button right on your dashboard and one of us
+          answers it. If Compasse isn&rsquo;t a fit, we&rsquo;ll help you close out and delete your
+          family&rsquo;s data completely.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final center">
+    <div class="wrap">
+      <div data-prelaunch>
+        <h2>Be first to bring Compasse home</h2>
+        <p style="margin:14px auto 24px">We are onboarding a small group of first families, personally.
+        Leave your email and we will reach out when your spot opens.</p>
+        <form id="wl2" class="wlform" style="margin:0 auto;justify-content:center" aria-label="Join the waitlist">
+          <input id="wl2-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
+          <button class="btn" type="submit">Join the waitlist</button>
+        </form>
+        <p id="wl2-msg" class="wlmsg" aria-live="polite"></p>
+      </div>
+      <div data-launch hidden>
+        <h2>Give her a week of calm, on us</h2>
+        <p style="margin:14px auto 24px">First week free, then $29 a month. Cancel anytime, online, in one tap.</p>
+        <a class="btn" href="#pricing">Start your free week</a>
+      </div>
+      <p style="margin-top:22px;font-size:16px">Prefer email? Write us at <a style="color:#fff" href="mailto:hello@compasse.care">hello@compasse.care</a></p>
     </div>
   </section>
 
@@ -436,19 +484,17 @@ fbq('init','1039692688431979');
   <div class="wrap">
     <p class="statement">A familiar voice for the moments you can&rsquo;t be there.</p>
     <div class="links">
-      <a href="#tour">A quick tour</a>
+      <a href="#tour">How it works</a>
       <a href="#faq">FAQ</a>
       <a href="mailto:hello@compasse.care">Contact</a>
-      <a href="/manage.html">Manage membership</a>
+      <a href="/manage.html" data-launch hidden>Manage membership</a>
       <a href="https://compasse-shelly.github.io/compasse-privacy/">Privacy policy</a>
       <a href="/terms.html">Terms</a>
     </div>
-    <p class="legal">
-      Compasse is a comfort and communication tool. It is not a medical device, does not provide medical
-      advice, monitoring, or emergency services, and must not be relied upon to detect or respond to
-      emergencies. Always maintain your family&rsquo;s existing care and emergency arrangements.
-      <br><br>&copy; 2026 Compasse. Built by a mother and son.
-    </p>
+    <p class="legal">Compasse is a comfort and communication tool, not a medical device, an emergency
+    response system, or a monitoring service. It does not call 911, detect falls, or guarantee that
+    medication gets taken. Always keep your existing emergency plans in place.</p>
+    <p style="margin-top:14px">Built by a mother and son. &copy; 2026 Compasse LLC</p>
   </div>
 </footer>
 
@@ -484,7 +530,7 @@ fbq('init','1039692688431979');
     if (qs.get('pricing') === 'off') localStorage.removeItem('compasse_pricing');
     // ONE flag runs the whole launch-day swap. Flip LAUNCHED to true and the
     // pricing section, the launch banner, and the paid-era FAQ
-    // answers all appear, while the pre-launch (free trial) copy disappears.
+    // answers all appear, while the pre-launch (waitlist) copy disappears.
     // Preview any time with ?pricing=preview, undo with ?pricing=off.
     const LAUNCHED = false; // ← flip to true on launch day
     const live = LAUNCHED || localStorage.getItem('compasse_pricing') === '1';
@@ -513,7 +559,7 @@ fbq('init','1039692688431979');
     });
   })();
 
-  // Live board clock — the hero tile shows the real time, like the real board.
+  // Live board clock — the hero board shows the real time, like the real board.
   function tickBoard(){
     const now = new Date();
     let h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
@@ -528,41 +574,48 @@ fbq('init','1039692688431979');
 
   // Waitlist: writes to our own database. The key below is the public
   // publishable key; the table is insert-only, so it can add an email but
-  // never read the list. (Unchanged from the live site.)
+  // never read the list. Two identical forms (hero + final CTA) share the
+  // same handler; both keep the 409 duplicate handling and the Lead event.
   const SB_URL = 'https://cklagdabffzbikvtnnzo.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8';
-  document.getElementById('wl').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('wl-email').value.trim();
-    const msg = document.getElementById('wl-msg');
-    msg.textContent = 'One moment…';
-    try {
-      const r = await fetch(SB_URL + '/rest/v1/waitlist_signups', {
-        method: 'POST',
-        headers: {
-          apikey: SB_KEY,
-          Authorization: 'Bearer ' + SB_KEY,
-          'Content-Type': 'application/json',
-          Prefer: 'return=minimal',
-        },
-        body: JSON.stringify({
-          email,
-          source: new URLSearchParams(location.search).get('src'),
-        }),
-      });
-      if (r.status === 409) {
-        msg.textContent = "You're already on the list. We'll be in touch soon.";
-      } else if (r.ok) {
-        msg.textContent = "You're on the list. We'll email you when your spot opens.";
-        metaEvent('Lead');
-        e.target.reset();
-      } else {
-        throw new Error(String(r.status));
+  function wireWaitlist(formId, emailId, msgId){
+    const form = document.getElementById(formId);
+    if (!form) return;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById(emailId).value.trim();
+      const msg = document.getElementById(msgId);
+      msg.textContent = 'One moment…';
+      try {
+        const r = await fetch(SB_URL + '/rest/v1/waitlist_signups', {
+          method: 'POST',
+          headers: {
+            apikey: SB_KEY,
+            Authorization: 'Bearer ' + SB_KEY,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({
+            email,
+            source: new URLSearchParams(location.search).get('src'),
+          }),
+        });
+        if (r.status === 409) {
+          msg.textContent = "You're already on the list. We'll be in touch soon.";
+        } else if (r.ok) {
+          msg.textContent = "You're on the list. We'll email you when your spot opens.";
+          metaEvent('Lead');
+          e.target.reset();
+        } else {
+          throw new Error(String(r.status));
+        }
+      } catch {
+        msg.textContent = "That didn't go through. Please email us instead: hello@compasse.care";
       }
-    } catch {
-      msg.textContent = "That didn't go through. Please email us instead: hello@compasse.care";
-    }
-  });
+    });
+  }
+  wireWaitlist('wl', 'wl-email', 'wl-msg');
+  wireWaitlist('wl2', 'wl2-email', 'wl2-msg');
 </script>
 </body>
 </html>
