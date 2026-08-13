@@ -402,6 +402,15 @@ fbq('init','1039692688431979');
         </ul>
         <button class="btn" id="buy-btn" type="button">Start your free week</button>
         <p style="margin-top:6px;font-size:12px;color:#6B6660">If care ends, tell us. We stop the subscription immediately and refund the current month.</p>
+        <!-- Escape hatch for an EXISTING member who landed here by mistake. The
+             app's "Update payment" banner sends a caregiver with a failing card
+             to the site; if they reach this card and press the button they would
+             start a SECOND subscription with a second free week while the first
+             keeps dunning. The footer already links to manage.html, but that is
+             easy to miss when you are stressed and holding a declined card. -->
+        <p style="margin-top:14px;padding-top:14px;border-top:1px solid #E8E2D8;font-size:14px;color:#6B6660">
+          Already a member? <a href="/manage.html" style="color:var(--teal);font-weight:600">Manage your membership</a> to update your card.
+        </p>
       </div>
     </div>
   </section>
