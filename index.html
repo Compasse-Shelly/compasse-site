@@ -104,6 +104,13 @@ fbq('init','1039692688431979');
   .voicebar .dot{width:10px;height:10px;border-radius:50%;background:var(--teal);flex:none}
   .b-cap{font-size:15px;color:var(--muted);margin-top:14px}
 
+  /* real-home photos */
+  .photofig{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .photofig img{width:100%;max-width:560px;height:auto;border-radius:var(--r-lg);box-shadow:var(--shadow)}
+  .photofig figcaption{font-size:15.5px;color:var(--muted);text-align:center;max-width:52ch}
+  .photoduo{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;max-width:960px;margin:0 auto}
+  @media (max-width:760px){.photoduo{grid-template-columns:1fr}}
+
   /* tiles */
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}
   .tile{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:26px;box-shadow:var(--shadow)}
@@ -244,6 +251,17 @@ fbq('init','1039692688431979');
     </div>
   </header>
 
+  <!-- REAL HOMES: honest photographs, no staging beyond real life -->
+  <section style="padding-top:0">
+    <div class="wrap">
+      <figure class="photofig">
+        <img src="real-home-patio.jpg" width="1200" height="1600" loading="lazy"
+          alt="The Compasse board on a patio table overlooking a lake, showing Thursday afternoon, dinner with Sue at 6, and cards with Sam at 4">
+        <figcaption>A real board on a real Thursday afternoon. Dinner with Sue at 6, cards with Sam at 4.</figcaption>
+      </figure>
+    </div>
+  </section>
+
   <!-- HER SIDE -->
   <section id="tour">
     <div class="wrap">
@@ -342,6 +360,16 @@ fbq('init','1039692688431979');
   <!-- STORY -->
   <section class="story center" style="padding-top:0">
     <div class="wrap">
+      <div class="photoduo" style="margin-bottom:44px">
+        <figure class="photofig">
+          <img src="real-home-evening.jpg" width="1200" height="1600" loading="lazy"
+            alt="The Compasse board at dusk by a window, showing Wednesday evening with tomorrow's medication reminder queued">
+          <figcaption>The same board at day&rsquo;s end, with tomorrow already queued.</figcaption>
+        </figure>
+        <!-- SLOT: the "Love you." photo (yellow wall, Dr. Lee 2:00 PM) goes here
+             when Aidan sends the file. Same figure markup, alt describing the
+             family message on screen. -->
+      </div>
       <span class="overline">Our story</span>
       <blockquote>Compasse began at home. Our co-founder&rsquo;s father uses the board every day, and every feature is tested in a real family before it reaches yours.</blockquote>
       <div class="sig"><img src="logo.png" alt=""><span>Aidan &amp; Shelly, co-founders</span></div>
