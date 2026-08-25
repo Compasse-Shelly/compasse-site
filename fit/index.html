@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Ad landing route. Deliberately not indexed: this page exists for paid
+     traffic, not search. -->
+<meta name="robots" content="noindex">
+<!-- NEUTRAL BY DESIGN (docs/gtm/FIT-CHECK.md in the app repo is the binding
+     spec). No condition terms appear anywhere in this file, this URL, or any
+     event name. The situation answers below live in BROWSER MEMORY ONLY:
+     they render the preview and are gone when the tab closes. The ONLY data
+     that ever leaves this page: an email IF the visitor submits one, a
+     source tag, and which hardware qualifier (if any) ended the check.
+     Never weaken any of this without reading FIT-CHECK.md first. -->
+<meta name="facebook-domain-verification" content="101q9uwdevv5efsa598gxavkvyuztw" />
+<!-- Meta pixel, same discipline as index.html: library loads, autoConfig off
+     (the email-leak vector), NO PageView, NO events on any question step.
+     Exactly one Lead fires, on email submit, browser + CAPI with a shared
+     eventID. Quiz answers never reach this function. -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('set','autoConfig',false,'1039692688431979');
+fbq('init','1039692688431979');
+/* Intentionally NO fbq('track','PageView'). */
+</script>
+<title>Compasse, the 2-minute fit check</title>
+<meta name="description" content="Answer a few questions about your family's routine and see what a Compasse board would look like on the wall. We will tell you honestly if it is not the right fit.">
+<link rel="icon" href="../logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Tokens and core styles mirror index.html so the check feels like the
+     same house. Keep in step with index.html if the palette ever changes. */
+  :root{
+    --cream:#FAF6EF; --paper:#FFFFFF; --ink:#2B2A28; --muted:#5D5852;
+    --terra:#A8542F; --terra-deep:#8F4526; --teal:#2F6D66; --teal-deep:#25574F;
+    --border:#E5DFD2; --sky:#D9E8EE; --warm:#F1ECE3; --good:#2E7D32; --warn:#C0392B;
+    --r:20px; --r-lg:28px; --shadow:0 2px 8px rgba(43,42,40,.06),0 12px 32px rgba(43,42,40,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  [hidden]{display:none!important}
+  body{font:400 18px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--cream)}
+  h1,h2,h3{font-family:Lora,Georgia,serif;line-height:1.2;font-weight:600}
+  h1{font-size:clamp(28px,4.6vw,40px)}
+  h2{font-size:clamp(23px,3.4vw,30px)}
+  p{max-width:62ch}
+  a{color:var(--teal)}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:6px}
+  .wrap{max-width:660px;margin:0 auto;padding:0 22px}
+  .btn{display:inline-block;background:var(--terra);color:#fff;border:0;border-radius:999px;
+    padding:16px 30px;font-size:18px;font-weight:700;font-family:inherit;cursor:pointer;text-decoration:none;
+    min-height:52px;transition:background .18s ease}
+  .btn:hover{background:var(--terra-deep)}
+  .btn[disabled]{opacity:.55;cursor:default}
+  .btn-quiet{background:none;border:0;color:var(--teal);font:inherit;font-weight:600;cursor:pointer;
+    text-decoration:underline;text-underline-offset:3px;padding:8px 4px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+  nav{background:rgba(250,246,239,.94);border-bottom:1px solid var(--border)}
+  .navrow{display:flex;align-items:center;justify-content:space-between;min-height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:Lora,Georgia,serif;font-weight:700;font-size:22px;color:var(--ink);text-decoration:none}
+  .brand img{width:30px;height:30px}
+  .navnote{font-size:15px;color:var(--muted)}
+
+  main{padding:40px 0 80px}
+  .step{background:var(--paper);border:1px solid var(--border);border-radius:var(--r-lg);
+    padding:34px 30px;box-shadow:var(--shadow);margin-top:22px}
+  .step h2{margin-bottom:6px}
+  .step .why{font-size:15.5px;color:var(--muted);margin-top:10px;max-width:none}
+  .choices{display:grid;gap:10px;margin-top:20px}
+  .choice{display:block;width:100%;text-align:left;background:var(--cream);border:2px solid var(--border);
+    border-radius:14px;padding:14px 18px;font:inherit;font-size:17.5px;cursor:pointer;color:var(--ink);
+    min-height:56px;transition:border-color .15s ease}
+  .choice:hover{border-color:var(--teal)}
+  .choice[aria-pressed="true"]{border-color:var(--teal);background:var(--sky);font-weight:600}
+  .stepnav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:22px;flex-wrap:wrap}
+  .progress{height:8px;background:var(--warm);border-radius:99px;margin-top:26px;overflow:hidden}
+  .progress>div{height:100%;background:var(--teal);border-radius:99px;width:0;transition:width .25s ease}
+  .plabel{font-size:14px;color:var(--muted);margin-top:8px}
+  .namefield{width:100%;min-height:54px;padding:12px 16px;font:inherit;font-size:18px;margin-top:18px;
+    border:2px solid #8A857D;border-radius:14px;background:var(--paper);color:var(--ink)}
+
+  .wlform{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .wlform input{flex:1 1 220px;min-height:52px;padding:12px 16px;font:inherit;font-size:17px;
+    border:2px solid #8A857D;border-radius:14px;background:var(--paper);color:var(--ink)}
+  .wlmsg{font-size:16px;color:var(--teal);font-weight:600;min-height:1.4em;margin-top:8px}
+
+  /* The preview board: same visual language as the live-clock board on the
+     home page, filled from the visitor's own answers. */
+  .board{background:var(--sky);border:1px solid var(--border);border-radius:var(--r-lg);
+    padding:30px 26px;box-shadow:var(--shadow);margin-top:22px}
+  .b-label{display:block;font-size:13px;font-weight:700;letter-spacing:.14em;color:var(--teal);margin-bottom:6px}
+  .b-clock{font-family:Lora,Georgia,serif;font-weight:700;font-size:clamp(44px,6vw,64px);line-height:1.05;font-variant-numeric:tabular-nums}
+  .b-day{font-size:21px;font-weight:600;margin-top:2px}
+  .b-day small{display:block;font-size:16px;font-weight:400;color:var(--muted)}
+  .b-line{margin-top:12px;background:var(--paper);border:1px solid var(--border);border-radius:12px;
+    padding:10px 14px;font-size:17px}
+  .b-line span{font-weight:600}
+  .voicebar{margin-top:14px;display:flex;align-items:center;gap:10px;font-size:16.5px;color:var(--muted)}
+  .voicebar .dot{width:10px;height:10px;border-radius:50%;background:var(--teal);flex:none}
+
+  .because{margin-top:22px;display:grid;gap:10px}
+  .because li{list-style:none;background:var(--warm);border:1px solid var(--border);border-radius:12px;
+    padding:12px 16px;font-size:16.5px}
+  .anti{margin-top:22px;font-weight:600}
+  .procline{font-size:18px;padding:8px 0;color:var(--muted)}
+  .procline.on{color:var(--ink);font-weight:600}
+
+  footer{padding:36px 0 48px;font-size:15px;color:var(--muted);border-top:1px solid var(--border)}
+  footer .links{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:14px}
+  footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<nav aria-label="Main">
+  <div class="wrap navrow">
+    <a class="brand" href="/"><img src="../logo.png" alt="">Compasse</a>
+    <span class="navnote">The 2-minute fit check</span>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- START -->
+    <section class="step" id="s-start" data-step>
+      <h1>See what a Compasse board would look like in your family</h1>
+      <p style="margin-top:14px">Answer a few questions about your family's routine. We will show
+      you what a Grounding Board would look like on the wall, and tell you honestly if Compasse is
+      not the right fit.</p>
+      <p class="anti" style="margin-top:16px">No phone calls. No salespeople. Your answers stay on this page.</p>
+      <div class="stepnav">
+        <button class="btn" data-next>Start the fit check</button>
+        <span style="font-size:15px;color:var(--muted)">About 2 minutes</span>
+      </div>
+    </section>
+
+    <!-- Q1 who -->
+    <section class="step" id="s-who" data-step hidden>
+      <h2 data-focus tabindex="-1">Who would this be for?</h2>
+      <div class="choices" data-single="who">
+        <button class="choice" data-value="mom">My mom</button>
+        <button class="choice" data-value="dad">My dad</button>
+        <button class="choice" data-value="spouse">My spouse</button>
+        <button class="choice" data-value="other">Someone else I care for</button>
+      </div>
+    </section>
+
+    <!-- Q2 name -->
+    <section class="step" id="s-name" data-step hidden>
+      <h2 data-focus tabindex="-1" id="name-q">What name does she go by at home?</h2>
+      <input class="namefield" id="name-input" type="text" maxlength="30" autocomplete="off"
+        placeholder="Her first name" aria-labelledby="name-q">
+      <p class="why">We use it so the next screens feel like your family, not a form. It stays on
+      this page. We do not store it.</p>
+      <div class="stepnav">
+        <button class="btn" data-next id="name-next">Continue</button>
+        <button class="btn-quiet" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- CONSENT interstitial -->
+    <section class="step" id="s-consent" data-step hidden>
+      <h2 data-focus tabindex="-1">Before the next questions</h2>
+      <p style="margin-top:12px">The next questions ask about your family's daily routine. We use
+      your answers only to build the preview at the end. They are not stored and never shared.</p>
+      <div class="stepnav">
+        <button class="btn" data-next>Continue</button>
+        <button class="btn-quiet" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- Q3 which questions -->
+    <section class="step" id="s-asks" data-step hidden>
+      <h2 data-focus tabindex="-1">Which of these comes up more than once a day?</h2>
+      <p class="why">Choose all that fit. If none do, just continue.</p>
+      <div class="choices" data-multi="asks">
+        <button class="choice" data-value="day" aria-pressed="false">What day it is</button>
+        <button class="choice" data-value="appt" aria-pressed="false">When an appointment is</button>
+        <button class="choice" data-value="meds" aria-pressed="false">Whether the medicine was taken</button>
+        <button class="choice" data-value="visit" aria-pressed="false">When someone is coming to visit</button>
+        <button class="choice" data-value="where" aria-pressed="false">Where you are</button>
+      </div>
+      <div class="stepnav">
+        <button class="btn" data-next>Continue</button>
+        <button class="btn-quiet" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- Q4 how often -->
+    <section class="step" id="s-often" data-step hidden>
+      <h2 data-focus tabindex="-1">About how many times a day does someone in the family answer those questions?</h2>
+      <div class="choices" data-single="often">
+        <button class="choice" data-value="few">A few</button>
+        <button class="choice" data-value="5to10">5 to 10</button>
+        <button class="choice" data-value="10plus">More than 10</button>
+        <button class="choice" data-value="lostcount">Honestly, we have lost count</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- Q5 when hardest -->
+    <section class="step" id="s-when" data-step hidden>
+      <h2 data-focus tabindex="-1">When is it hardest?</h2>
+      <div class="choices" data-single="hardest">
+        <button class="choice" data-value="morning">Mornings</button>
+        <button class="choice" data-value="evening">Late afternoon and evening</button>
+        <button class="choice" data-value="overnight">Overnight</button>
+        <button class="choice" data-value="varies">It moves around</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- Q6 distance -->
+    <section class="step" id="s-distance" data-step hidden>
+      <h2 data-focus tabindex="-1" id="dist-q">How far do you live from her?</h2>
+      <div class="choices" data-single="distance">
+        <button class="choice" data-value="samehouse">Same house</button>
+        <button class="choice" data-value="sametown">Same town</button>
+        <button class="choice" data-value="hours">An hour or two away</button>
+        <button class="choice" data-value="far">A flight or a long drive</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- Q7 worry -->
+    <section class="step" id="s-worry" data-step hidden>
+      <h2 data-focus tabindex="-1">When you cannot pick up, how often does the worry sit with you until you can call back?</h2>
+      <div class="choices" data-single="worry">
+        <button class="choice" data-value="always">Almost every time</button>
+        <button class="choice" data-value="often">Often</button>
+        <button class="choice" data-value="sometimes">Sometimes</button>
+        <button class="choice" data-value="rarely">Rarely</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- validation interstitial -->
+    <section class="step" id="s-valid" data-step hidden>
+      <h2 data-focus tabindex="-1">You are not doing this wrong</h2>
+      <p style="margin-top:12px">Most families who get this far tell us the same thing. The
+      questions repeat, and the worry fills the space between calls. That is what a Grounding
+      Board is for.</p>
+      <div class="stepnav">
+        <button class="btn" data-next>Keep going</button>
+        <button class="btn-quiet" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- Q8 tried -->
+    <section class="step" id="s-tried" data-step hidden>
+      <h2 data-focus tabindex="-1">What have you tried so far?</h2>
+      <p class="why">Choose all that fit.</p>
+      <div class="choices" data-multi="tried">
+        <button class="choice" data-value="calls" aria-pressed="false">More calls and check-ins</button>
+        <button class="choice" data-value="notes" aria-pressed="false">Notes and whiteboards</button>
+        <button class="choice" data-value="speaker" aria-pressed="false">A smart speaker</button>
+        <button class="choice" data-value="clock" aria-pressed="false">A clock that shows the date</button>
+        <button class="choice" data-value="paidhelp" aria-pressed="false">Paid help at home</button>
+        <button class="choice" data-value="starting" aria-pressed="false">We are just getting started</button>
+      </div>
+      <div class="stepnav">
+        <button class="btn" data-next>Continue</button>
+        <button class="btn-quiet" data-back>Back</button>
+      </div>
+    </section>
+
+    <!-- Q9 iPad -->
+    <section class="step" id="s-ipad" data-step hidden>
+      <h2 data-focus tabindex="-1" id="ipad-q">Is there an iPad at her home, or could one live there?</h2>
+      <p class="why">Why we ask: the board runs on an iPad the family already owns, from 2017 or
+      newer. We do not sell hardware.</p>
+      <div class="choices" data-single="ipad">
+        <button class="choice" data-value="yes">Yes, 2017 or newer</button>
+        <button class="choice" data-value="unsure">Yes, but I am not sure how old</button>
+        <button class="choice" data-value="no">No</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- iPad model check (only from "not sure") -->
+    <section class="step" id="s-ipadcheck" data-step hidden>
+      <h2 data-focus tabindex="-1">A one-minute way to check</h2>
+      <p style="margin-top:12px">On the iPad: Settings, then General, then About, then Model Name.
+      Any iPad from 2017 or newer works, which covers the iPad 5th generation and everything after
+      it. Most iPads in a drawer qualify.</p>
+      <div class="choices" data-single="ipadcheck">
+        <button class="choice" data-value="yes">It is 2017 or newer, or I will check later</button>
+        <button class="choice" data-value="no">It is older than 2017</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- Q10 iPhone -->
+    <section class="step" id="s-iphone" data-step hidden>
+      <h2 data-focus tabindex="-1">Do you use an iPhone?</h2>
+      <p class="why">The caregiver app is iPhone only for now. We would rather tell you here than
+      after you have paid.</p>
+      <div class="choices" data-single="iphone">
+        <button class="choice" data-value="yes">Yes</button>
+        <button class="choice" data-value="no">No</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- Q11 wifi -->
+    <section class="step" id="s-wifi" data-step hidden>
+      <h2 data-focus tabindex="-1" id="wifi-q">Is there Wi-Fi at her home?</h2>
+      <div class="choices" data-single="wifi">
+        <button class="choice" data-value="yes">Yes</button>
+        <button class="choice" data-value="unsure">Not sure</button>
+        <button class="choice" data-value="no">No</button>
+      </div>
+      <div class="stepnav"><button class="btn-quiet" data-back>Back</button></div>
+    </section>
+
+    <!-- PROCESSING: every line below corresponds to something the results
+         builder really does; see buildPlan(). Honest theater only. -->
+    <section class="step" id="s-processing" data-step hidden aria-live="polite">
+      <h2 data-focus tabindex="-1">Building the board</h2>
+      <div id="proc-lines" style="margin-top:14px"></div>
+    </section>
+
+    <!-- EMAIL GATE -->
+    <section class="step" id="s-email" data-step hidden>
+      <h2 data-focus tabindex="-1" id="email-h">The plan is ready</h2>
+      <p style="margin-top:12px" id="email-sub">Where should we send it?</p>
+      <form class="wlform" id="gate-form" aria-label="Email the plan">
+        <input id="gate-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
+        <button class="btn" type="submit">Email me the plan</button>
+      </form>
+      <p class="wlmsg" id="gate-msg" aria-live="polite"></p>
+      <p class="why" id="gate-terms">We will email you the plan and let you know when Compasse
+      opens to new families. No spam, and no phone calls ever.</p>
+      <div class="stepnav">
+        <button class="btn-quiet" id="gate-skip">Show me the plan without saving it</button>
+      </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="step" id="s-results" data-step hidden>
+      <h2 data-focus tabindex="-1" id="r-head">The board, the way your family would set it up</h2>
+
+      <div class="board" role="group" aria-label="A preview of the board built from your answers">
+        <span class="b-label">ALWAYS ON, ALWAYS TODAY</span>
+        <div class="b-clock" id="r-clock">--:--</div>
+        <div class="b-day" id="r-day">&nbsp;<small id="r-date">&nbsp;</small></div>
+        <div id="r-lines"></div>
+        <div class="voicebar"><span class="dot"></span><span id="r-voice">This is where your voice goes.</span></div>
+      </div>
+
+      <ul class="because" id="r-because"></ul>
+
+      <p class="anti">No phone calls. No advisors. Ever.</p>
+
+      <!-- Anchor line matches the one on the home page; no competitor names
+           or prices on the site (house rule, SITE-UPGRADE-PLAN section 2). -->
+      <p style="margin-top:14px;color:var(--muted);font-size:16.5px">One hour of in-home care runs
+      about $35 (Genworth Cost of Care Survey). Compasse is $29 for the whole month, on the iPad
+      the family already owns. It will never replace the care you give. It keeps her company in
+      between.</p>
+      <p class="why" id="r-wifi-note" hidden>One thing to check: the board needs home Wi-Fi. Any
+      family member can confirm it in a minute on their next visit.</p>
+
+      <!-- Pre-launch ask -->
+      <div data-prelaunch style="margin-top:22px">
+        <h3>Compasse is onboarding its first families</h3>
+        <p class="why" style="margin-top:6px">Leave your email and we will reach out when your
+        spot opens. First week free when we do.</p>
+        <form class="wlform" id="r-form" aria-label="Get launch access">
+          <input id="r-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
+          <button class="btn" type="submit">Get launch access</button>
+        </form>
+        <p class="wlmsg" id="r-msg" aria-live="polite"></p>
+      </div>
+
+      <!-- Post-launch ask (LAUNCHED flag, kept in step with index.html) -->
+      <div data-launch hidden style="margin-top:22px">
+        <p style="font-weight:600" id="r-tonight">The board can be live on the wall tonight.</p>
+        <p class="why" style="margin-top:6px">First week free, then $29 a month, everything
+        included. Cancel anytime, online, in one tap. Your card is charged only after the free
+        week ends.</p>
+        <button class="btn" id="r-buy" type="button" style="margin-top:10px">Start the free week</button>
+        <p class="wlmsg" id="r-buy-msg" aria-live="polite"></p>
+      </div>
+
+      <p style="margin-top:20px;font-size:15.5px;color:var(--muted)">Questions first? Write us at
+      <a href="mailto:hello@compasse.care">hello@compasse.care</a>. A real person answers, usually
+      Shelly or Aidan.</p>
+    </section>
+
+    <!-- DISQUALIFY: honest exits, one per reason -->
+    <section class="step" id="s-dq" data-step hidden>
+      <h2 data-focus tabindex="-1" id="dq-head"></h2>
+      <p style="margin-top:12px" id="dq-body"></p>
+      <form class="wlform" id="dq-form" aria-label="Email me the setup checklist">
+        <input id="dq-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
+        <button class="btn" type="submit">Email me the 5-minute setup checklist</button>
+      </form>
+      <p class="wlmsg" id="dq-msg" aria-live="polite"></p>
+      <p class="why">We will also let you know if this changes. No spam, and no phone calls ever.</p>
+      <p style="margin-top:16px;font-size:15.5px;color:var(--muted)">Questions first? Write us at
+      <a href="mailto:hello@compasse.care">hello@compasse.care</a>. A real person answers, usually
+      Shelly or Aidan.</p>
+      <div class="stepnav">
+        <button class="btn-quiet" data-back>Tapped the wrong answer? Go back</button>
+      </div>
+    </section>
+
+    <div class="progress" aria-hidden="true"><div id="pbar"></div></div>
+    <p class="plabel" id="plabel"></p>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="links">
+      <a href="/">Home</a>
+      <a href="https://compasse-shelly.github.io/compasse-privacy/">Privacy policy</a>
+      <a href="https://compasse-shelly.github.io/compasse-privacy/consumer-health.html">Consumer health data</a>
+      <a href="/terms.html">Terms</a>
+      <a href="mailto:hello@compasse.care">Contact</a>
+    </div>
+    <p>Compasse is a comfort and communication tool, not a medical device, an emergency response
+    system, or a monitoring service. Always keep your existing emergency plans in place.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  // ---------- data rules (the whole ballgame; see FIT-CHECK.md) ----------
+  // `answers` lives here and only here. It is never written to storage, never
+  // sent to any server, and never joined to anything. The only network calls
+  // this page makes: (1) insert email+source into waitlist_signups on submit,
+  // (2) insert a bare event name+source into fit_check_events, (3) one Lead
+  // to metaEvent() on email submit, (4) create-checkout after launch.
+  const answers = { who:null, name:'', asks:[], often:null, hardest:null,
+                    distance:null, worry:null, tried:[], ipad:null, iphone:null, wifi:null };
+
+  const SB_URL = 'https://cklagdabffzbikvtnnzo.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8';
+  const src = new URLSearchParams(location.search).get('src') || '';
+  const tag = function(base){ return src ? base + ':' + src : base; };
+
+  // Count-only funnel telemetry, first party, no identifiers. Insert-only
+  // table; fails silently (the check must never break on analytics).
+  function logEvent(event){
+    try {
+      fetch(SB_URL + '/rest/v1/fit_check_events', {
+        method:'POST', keepalive:true,
+        headers:{ apikey:SB_KEY, Authorization:'Bearer '+SB_KEY,
+                  'Content-Type':'application/json', Prefer:'return=minimal' },
+        body: JSON.stringify({ event: event, source: src || null }),
+      }).catch(function(){});
+    } catch(e){}
+  }
+
+  // metaEvent: identical discipline to index.html. Lead only, on email submit.
+  function _cookie(n){ const m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
+  function metaEvent(name, value){
+    const eventID = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+Math.random();
+    const cd = (value!=null) ? { value: value, currency: 'USD' } : {};
+    try { if (window.fbq) fbq('track', name, cd, { eventID: eventID }); } catch(e){}
+    try {
+      fetch(SB_URL + '/functions/v1/capi-event', {
+        method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
+        body: JSON.stringify({
+          event_name: name, event_id: eventID,
+          event_source_url: location.origin + location.pathname,
+          value: (value!=null)?value:undefined, currency: (value!=null)?'USD':undefined,
+          fbp: _cookie('_fbp'), fbc: _cookie('_fbc'),
+        }),
+      }).catch(function(){});
+    } catch(e){}
+  }
+
+  // ---------- pronouns ----------
+  // Name-first everywhere; a pronoun appears only in the three question
+  // headings where grammar needs one before the name exists or for variety.
+  function pron(){
+    if (answers.who === 'mom') return { subj:'she', obj:'her', poss:'her' };
+    if (answers.who === 'dad') return { subj:'he', obj:'him', poss:'his' };
+    return { subj:'they', obj:'them', poss:'their' };
+  }
+  function displayName(){ return (answers.name || '').trim().slice(0,30); }
+  function nameOr(fallback){ return displayName() || fallback; }
+
+  // ---------- step machine ----------
+  const ORDER = ['s-start','s-who','s-name','s-consent','s-asks','s-often','s-when',
+                 's-distance','s-worry','s-valid','s-tried','s-ipad','s-ipadcheck',
+                 's-iphone','s-wifi','s-processing','s-email','s-results','s-dq'];
+  const COUNTED = ['s-who','s-name','s-asks','s-often','s-when','s-distance','s-worry',
+                   's-tried','s-ipad','s-iphone','s-wifi'];
+  let history = ['s-start'];
+  let startedLogged = false;
+
+  // Questions completed BEFORE each step, so interstitials keep the bar where
+  // the last question left it instead of snapping around.
+  const PROG = { 's-start':0, 's-who':0, 's-name':1, 's-consent':2, 's-asks':2, 's-often':3,
+                 's-when':4, 's-distance':5, 's-worry':6, 's-valid':7, 's-tried':7, 's-ipad':8,
+                 's-ipadcheck':9, 's-iphone':9, 's-wifi':10, 's-processing':11, 's-email':11,
+                 's-results':11, 's-dq':11 };
+  function show(id){
+    document.querySelectorAll('[data-step]').forEach(function(s){ s.hidden = (s.id !== id); });
+    const f = document.querySelector('#' + id + ' [data-focus]');
+    if (f) f.focus({ preventScroll:false });
+    window.scrollTo({ top: 0 });
+    const n = COUNTED.indexOf(id);
+    const done = PROG[id] != null ? PROG[id] : 0;
+    document.getElementById('pbar').style.width = Math.round(100 * done / COUNTED.length) + '%';
+    document.getElementById('plabel').textContent =
+      (n >= 0) ? 'Question ' + (n + 1) + ' of ' + COUNTED.length : '';
+  }
+
+  function goTo(id){
+    // Adapt pronoun-bearing headings the moment they are shown.
+    const p = pron();
+    if (id === 's-name') {
+      document.getElementById('name-q').textContent =
+        'What name does ' + p.subj + ' go by at home?';
+      document.getElementById('name-input').placeholder =
+        (p.subj === 'they') ? 'Their first name' : (p.poss.charAt(0).toUpperCase()+p.poss.slice(1)) + ' first name';
+    }
+    if (id === 's-distance') {
+      document.getElementById('dist-q').textContent =
+        'How far do you live from ' + nameOr(p.obj) + '?';
+    }
+    if (id === 's-ipad') {
+      document.getElementById('ipad-q').textContent =
+        'Is there an iPad at ' + nameOr(p.poss === 'their' ? 'their loved one' : p.obj) + "'s home, or could one live there?";
+    }
+    if (id === 's-wifi') {
+      document.getElementById('wifi-q').textContent =
+        'Is there Wi-Fi at ' + nameOr(p.obj) + "'s home?";
+    }
+    history.push(id);
+    show(id);
+  }
+
+  function next(from){
+    switch (from) {
+      case 's-start': return goTo('s-who');
+      case 's-who': return goTo('s-name');
+      case 's-name': return goTo('s-consent');
+      case 's-consent': return goTo('s-asks');
+      case 's-asks': return goTo('s-often');
+      case 's-often': return goTo('s-when');
+      case 's-when': return goTo('s-distance');
+      case 's-distance': return goTo('s-worry');
+      case 's-worry': return goTo('s-valid');
+      case 's-valid': return goTo('s-tried');
+      case 's-tried': return goTo('s-ipad');
+      case 's-ipad':
+        if (answers.ipad === 'no') return disqualify('no_ipad');
+        if (answers.ipad === 'unsure') return goTo('s-ipadcheck');
+        return goTo('s-iphone');
+      case 's-ipadcheck':
+        if (answers.ipadcheck === 'no') return disqualify('no_ipad');
+        return goTo('s-iphone');
+      case 's-iphone':
+        if (answers.iphone === 'no') return disqualify('no_iphone');
+        return goTo('s-wifi');
+      case 's-wifi':
+        if (answers.wifi === 'no') return disqualify('no_wifi');
+        return startProcessing();
+    }
+  }
+
+  function back(){
+    if (history.length < 2) return;
+    history.pop();
+    show(history[history.length - 1]);
+  }
+
+  // single-choice groups advance on tap
+  document.querySelectorAll('[data-single]').forEach(function(group){
+    const key = group.getAttribute('data-single');
+    group.querySelectorAll('.choice').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        answers[key] = btn.getAttribute('data-value');
+        if (!startedLogged) { startedLogged = true; logEvent('started'); }
+        next(group.closest('[data-step]').id);
+      });
+    });
+  });
+
+  // multi-choice groups toggle; Continue advances
+  document.querySelectorAll('[data-multi]').forEach(function(group){
+    const key = group.getAttribute('data-multi');
+    group.querySelectorAll('.choice').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const v = btn.getAttribute('data-value');
+        const i = answers[key].indexOf(v);
+        if (i >= 0) { answers[key].splice(i,1); btn.setAttribute('aria-pressed','false'); }
+        else { answers[key].push(v); btn.setAttribute('aria-pressed','true'); }
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-next]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const step = btn.closest('[data-step]').id;
+      if (step === 's-name') answers.name = document.getElementById('name-input').value;
+      if (!startedLogged && step !== 's-start') { startedLogged = true; logEvent('started'); }
+      next(step);
+    });
+  });
+  document.querySelectorAll('[data-back]').forEach(function(btn){
+    btn.addEventListener('click', back);
+  });
+
+  // ---------- disqualification: honest, logged by reason, never to checkout ----------
+  const DQ_COPY = {
+    no_ipad: {
+      head: 'Compasse is not the right fit today, and we would rather say so now',
+      body: 'The board runs on an iPad from 2017 or newer that can live at the home. We do not ' +
+            'sell hardware, and we will not take your card for a setup that cannot work. What ' +
+            'would fix it: a used iPad from 2017 or newer, which typically runs about $100 ' +
+            'refurbished. If that happens, we would love to help.',
+    },
+    no_iphone: {
+      head: 'Compasse is not the right fit today, and we would rather say so now',
+      body: 'The caregiver app is iPhone only for now, and we will not take your card for a ' +
+            'setup that cannot work. Android support is something we hear about often and we ' +
+            'will email you if that changes.',
+    },
+    no_wifi: {
+      head: 'Compasse is not the right fit today, and we would rather say so now',
+      body: 'The board needs home Wi-Fi to speak, listen, and stay in touch with your phone. We ' +
+            'will not take your card for a setup that cannot work. What would fix it: basic ' +
+            'home internet, or in some homes a low-cost hotspot plan. If that happens, we would ' +
+            'love to help.',
+    },
+  };
+  let dqReason = null;
+  function disqualify(reason){
+    dqReason = reason;
+    logEvent('dq_' + reason);
+    document.getElementById('dq-head').textContent = DQ_COPY[reason].head;
+    document.getElementById('dq-body').textContent = DQ_COPY[reason].body;
+    goTo('s-dq');
+  }
+
+  // ---------- waitlist inserts (email leaves the page ONLY here) ----------
+  function saveEmail(email, source, msgEl, onOk){
+    msgEl.textContent = 'One moment…';
+    fetch(SB_URL + '/rest/v1/waitlist_signups', {
+      method:'POST',
+      headers:{ apikey:SB_KEY, Authorization:'Bearer '+SB_KEY,
+                'Content-Type':'application/json', Prefer:'return=minimal' },
+      body: JSON.stringify({ email: email, source: source }),
+    }).then(function(r){
+      if (r.status === 409) { msgEl.textContent = "You're already on the list. We'll be in touch soon."; if (onOk) onOk(true); }
+      else if (r.ok) { msgEl.textContent = "Done. Watch your inbox."; metaEvent('Lead'); if (onOk) onOk(false); }
+      else { throw new Error(String(r.status)); }
+    }).catch(function(){
+      msgEl.textContent = "That didn't go through. Please email us instead: hello@compasse.care";
+    });
+  }
+
+  document.getElementById('dq-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    saveEmail(document.getElementById('dq-email').value.trim(),
+      tag('quiz-dq-' + (dqReason || 'unknown')),
+      document.getElementById('dq-msg'), null);
+  });
+
+  // ---------- processing: every line names work buildPlan() really does ----------
+  function startProcessing(){
+    logEvent('qualified');
+    goTo('s-processing');
+    const plan = buildPlan(); // assembled NOW; the lines below narrate it
+    const lines = plan.procLines;
+    const box = document.getElementById('proc-lines');
+    box.innerHTML = '';
+    const els = lines.map(function(t){
+      const d = document.createElement('p');
+      d.className = 'procline'; d.textContent = t; box.appendChild(d); return d;
+    });
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stepMs = reduced ? 250 : 1400;
+    els.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, stepMs * (i + 1)); });
+    setTimeout(function(){
+      renderResults(plan);
+      goTo('s-email');
+    }, stepMs * (els.length + 1));
+  }
+
+  // ---------- the plan: genuine branching from the answers ----------
+  function buildPlan(){
+    const name = nameOr('your loved one');
+    const p = pron();
+    const lines = [];       // board preview lines
+    const because = [];     // "because you said" bullets
+    const proc = [];        // processing narration (must match real work)
+
+    proc.push('Placing today’s date and time first…');
+
+    if (answers.asks.indexOf('visit') >= 0 || answers.asks.indexOf('appt') >= 0) {
+      lines.push({ label:'Next', text:'Sarah visits at 2:00' });
+      because.push('Because you said ' + name + ' asks about visits and plans, the board keeps ' +
+        'what comes next in plain view all day.');
+      proc.push('Adding the visit line…');
+    }
+    if (answers.asks.indexOf('meds') >= 0) {
+      lines.push({ label:'Morning', text:'Medicine at 8:00, with a gentle chime' });
+      because.push('Because you said the medicine question repeats, reminders play at the right ' +
+        'time, in your recorded voice, and you see when they were heard.');
+      proc.push('Setting the medicine reminder…');
+    }
+    if (answers.asks.indexOf('day') >= 0 || answers.asks.length === 0) {
+      because.push('Because the day and date are the most-asked questions in most families, ' +
+        'they lead the board. ' + (name === 'your loved one' ? 'Your loved one' : name) +
+        ' can also just ask, and Cassi answers warmly every single time.');
+    }
+    if (answers.asks.indexOf('where') >= 0) {
+      because.push('Because you said "where are you" comes up, the board can hold a simple line ' +
+        'like "Sarah is at work. She will call at 5." so the answer is always in view.');
+      lines.push({ label:'Today', text:'Sarah is at work. She will call at 5.' });
+      proc.push('Writing the where-you-are line…');
+    }
+
+    if (answers.hardest === 'evening') {
+      because.push('Because you said late afternoon is hardest, a calming line in your voice is ' +
+        'scheduled for 6pm, before the hard hours start.');
+      proc.push('Setting the evening reassurance for 6pm…');
+    } else if (answers.hardest === 'morning') {
+      because.push('Because you said mornings are hardest, the day opens with a good morning ' +
+        'recorded in your voice.');
+      proc.push('Scheduling the good morning message…');
+    } else if (answers.hardest === 'overnight') {
+      because.push('Because you said overnight is hardest, the board dims to a calm night face ' +
+        'and never rings or glows in a dark bedroom.');
+      proc.push('Setting the quiet night hours…');
+    } else if (answers.hardest === 'varies') {
+      because.push('Because you said the hard moments move around, Cassi answers the same way ' +
+        'at 7am or 7pm, and you can add a reassuring line any time from your phone.');
+      proc.push('Keeping the whole day covered…');
+    }
+
+    if (answers.distance === 'far' || answers.distance === 'hours') {
+      because.push('Because you live ' + (answers.distance === 'far' ? 'a flight away' : 'an hour or two away') +
+        ', your phone shows the board is on and messages were heard, without calling to check.');
+      proc.push('Connecting the caregiver app…');
+    } else if (answers.distance) {
+      because.push('Because you are close by, the board carries your voice between visits, and ' +
+        'a glance at your phone replaces the check-the-clock worry.');
+      proc.push('Connecting the caregiver app…');
+    }
+
+    if (answers.tried.indexOf('clock') >= 0) {
+      because.push('A day clock shows the date. The board shows the date, answers back kindly, ' +
+        'and plays your voice. That is the difference families notice first.');
+    }
+    if (answers.tried.indexOf('speaker') >= 0) {
+      because.push('A smart speaker needs the right words. Cassi is built for this one job: ' +
+        'patient answers, no commands to remember, nothing for ' + name + ' to learn.');
+    }
+
+    if (lines.length === 0) lines.push({ label:'Next', text:'Sarah visits at 2:00' });
+    proc.push('Done. Building the preview…');
+
+    return { lines: lines.slice(0,2), because: because.slice(0,5), procLines: proc.slice(0,6), name: name, p: p };
+  }
+
+  function renderResults(plan){
+    const name = plan.name;
+    document.getElementById('r-head').textContent =
+      (name === 'your loved one') ? 'The board, the way your family would set it up'
+                                  : 'The board, the way ' + name + "'s family would set it up";
+    const rl = document.getElementById('r-lines');
+    rl.innerHTML = '';
+    plan.lines.forEach(function(l){
+      const d = document.createElement('div');
+      d.className = 'b-line';
+      d.innerHTML = l.label + ': <span></span>';
+      d.querySelector('span').textContent = l.text;
+      rl.appendChild(d);
+    });
+    const bc = document.getElementById('r-because');
+    bc.innerHTML = '';
+    plan.because.forEach(function(t){
+      const li = document.createElement('li'); li.textContent = t; bc.appendChild(li);
+    });
+    document.getElementById('r-wifi-note').hidden = (answers.wifi !== 'unsure');
+    if (name !== 'your loved one') {
+      document.getElementById('r-tonight').textContent =
+        'The board can be live on ' + name + "'s wall tonight.";
+    }
+    tickPreviewClock();
+  }
+
+  function tickPreviewClock(){
+    const now = new Date();
+    let h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
+    const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+    document.getElementById('r-clock').textContent = h + ':' + m + ' ' + ampm;
+    const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('r-day').firstChild.textContent = days[now.getDay()];
+    document.getElementById('r-date').textContent = months[now.getMonth()] + ' ' + now.getDate();
+  }
+  setInterval(tickPreviewClock, 15000);
+
+  // ---------- email gate ----------
+  document.getElementById('gate-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    saveEmail(document.getElementById('gate-email').value.trim(), tag('quiz'),
+      document.getElementById('gate-msg'),
+      function(){ setTimeout(function(){ goTo('s-results'); }, 650); });
+  });
+  document.getElementById('gate-skip').addEventListener('click', function(){
+    goTo('s-results');
+  });
+
+  // ---------- results asks ----------
+  document.getElementById('r-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    saveEmail(document.getElementById('r-email').value.trim(), tag('quiz'),
+      document.getElementById('r-msg'), null);
+  });
+
+  // Launch flag: identical mechanics to index.html (flip together on launch
+  // day; ?pricing=preview / ?pricing=off shares the same localStorage key).
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('pricing') === 'preview') { try { localStorage.setItem('compasse_pricing','1'); } catch(e){} }
+  if (qs.get('pricing') === 'off') { try { localStorage.removeItem('compasse_pricing'); } catch(e){} }
+  const LAUNCHED = false; // ← flip to true on launch day, together with index.html
+  let stored = null; try { stored = localStorage.getItem('compasse_pricing'); } catch(e){}
+  if (LAUNCHED || stored === '1') {
+    document.querySelectorAll('[data-launch]').forEach(function(el){ el.hidden = false; });
+    document.querySelectorAll('[data-prelaunch]').forEach(function(el){ el.hidden = true; });
+  }
+  const buy = document.getElementById('r-buy');
+  if (buy) buy.addEventListener('click', function(){
+    buy.disabled = true; buy.textContent = 'One moment…';
+    metaEvent('InitiateCheckout', 29);
+    fetch(SB_URL + '/functions/v1/create-checkout', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({}),
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if (d.url) { location.href = d.url; return; }
+      throw new Error('no url');
+    }).catch(function(){
+      buy.disabled = false; buy.textContent = 'Start the free week';
+      document.getElementById('r-buy-msg').textContent =
+        'Something went wrong starting checkout. Please try again or email hello@compasse.care';
+    });
+  });
+
+  show('s-start');
+})();
+</script>
+</body>
+</html>
