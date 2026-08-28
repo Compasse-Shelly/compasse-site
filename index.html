@@ -18,8 +18,36 @@ fbq('set','autoConfig',false,'1039692688431979');
 fbq('init','1039692688431979');
 /* Intentionally NO fbq('track','PageView'). */
 </script>
-<title>Compasse, a companion for families living with cognitive decline</title>
-<meta name="description" content="Compasse turns an iPad into a calm companion board for an older adult with cognitive decline. Cassi answers repeated questions with endless patience, and short recordings from family play back in the voices she knows.">
+<title>Compasse, the iPad companion board for families living with cognitive decline</title>
+<meta name="description" content="Compasse turns an iPad into a calm digital reassurance board for an older adult with cognitive decline. Cassi answers repeated questions with endless patience, and short recordings from family play back in the voices she knows.">
+<link rel="canonical" href="https://compasse.care/">
+<meta property="og:title" content="Compasse, the iPad companion board for families living with cognitive decline">
+<meta property="og:description" content="Cassi answers repeated questions with endless patience, and short recordings from family play back in the voices she knows.">
+<meta property="og:image" content="https://compasse.care/setup-poster.jpg">
+<meta property="og:url" content="https://compasse.care/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Compasse">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Does my loved one need to learn anything?",
+     "acceptedAnswer": {"@type": "Answer", "text": "No. The board is always on and they just talk to it. There are no passwords or menus on their side. Setup on their iPad is a one-time code that you enter yourself."}},
+    {"@type": "Question", "name": "What if she asks the same question many times?",
+     "acceptedAnswer": {"@type": "Answer", "text": "That is what Cassi is for. The same patient answer, every time. Repeated questions are normal with cognitive decline, and answering them kindly is the job."}},
+    {"@type": "Question", "name": "What about privacy? Is it always listening?",
+     "acceptedAnswer": {"@type": "Answer", "text": "A conversation happens only when your loved one speaks to Cassi. Recordings are used only to make Compasse work, and the speech partners that power Cassi are named in our privacy policy, written in plain English."}},
+    {"@type": "Question", "name": "Is this a medical device? Can it call 911?",
+     "acceptedAnswer": {"@type": "Answer", "text": "No. Compasse is a comfort and communication tool, not a medical device, an emergency response system, or a monitoring service. It does not call 911, detect falls, or guarantee that medication gets taken. Always keep your existing emergency plans in place."}},
+    {"@type": "Question", "name": "What do I need to run Compasse?",
+     "acceptedAnswer": {"@type": "Answer", "text": "An iPad from 2017 or newer for your loved one, and an iPhone for you. A simple stand helps, and the iPad should stay plugged in, with home Wi-Fi."}},
+    {"@type": "Question", "name": "Does it replace visits and calls?",
+     "acceptedAnswer": {"@type": "Answer", "text": "No, and it never should. Compasse is company between your visits and calls, not a substitute for them."}}
+  ]
+}
+</script>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -184,12 +212,24 @@ fbq('init','1039692688431979');
     .tiles{grid-template-columns:1fr}
     .two,.setup-grid,.hero-grid{grid-template-columns:1fr}
     section{padding:56px 0}
-    .hero{padding:40px 0 56px}
+    .hero{padding:28px 0 56px}
+    /* On a phone, the board demo IS the "what is this" answer. Show it first. */
+    .hero-grid > .board{order:-1;padding:24px 22px}
   }
   @media (max-width:640px){
     .navlinks a.plain{display:none}
     nav .btn{padding:10px 18px;font-size:15px}
     .brand{font-size:20px}
+  }
+
+  /* fixed bottom CTA bar, phones only: the one ask, always in thumb reach */
+  .mobilebar{display:none}
+  @media (max-width:640px){
+    .mobilebar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;
+      padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+      background:rgba(250,246,239,.94);backdrop-filter:blur(8px);border-top:1px solid var(--border)}
+    .mobilebar .btn{flex:1;text-align:center}
+    body{padding-bottom:88px}
   }
 </style>
 </head>
@@ -230,13 +270,19 @@ fbq('init','1039692688431979');
             <button class="btn" type="submit">Join the waitlist</button>
           </form>
           <p id="wl-msg" class="wlmsg" aria-live="polite"></p>
-          <p class="micro"><b>The family trial is free.</b> We are bringing on a small group of first families and will email you when your spot opens. No spam, ever.</p>
+          <p class="micro"><b>The family trial is free.</b> At launch, Compasse will be $29 a month with the first week free. We will email you when your spot opens. No spam, ever.</p>
         </div>
 
         <div data-launch hidden>
           <a class="btn" href="#pricing">Start your free week</a>
-          <p class="micro">Then $29 a month. Cancel anytime.</p>
+          <p class="micro">Then $29 a month. Cancel anytime, in one tap. If care ends, billing stops immediately and we refund the unused part of the month.</p>
         </div>
+
+        <p class="micro" style="margin-top:14px">
+          <a class="btn-quiet" href="/fit.html">Not sure it fits? Take the two minute fit check</a>
+          <span style="margin:0 6px;color:var(--border)">&middot;</span>
+          <a class="btn-quiet" href="/film/what/">Watch the 60 second film</a>
+        </p>
       </div>
 
       <!-- The real board. That clock is live. -->
@@ -389,6 +435,40 @@ fbq('init','1039692688431979');
     </div>
   </section>
 
+  <!-- TRUST: only true things, stated plainly. No invented numbers, no fake
+       reviews, ever. Founding-family quotes join this section as written,
+       consented permissions land (first name + state, free access disclosed). -->
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="center">
+        <span class="overline">Straight answers</span>
+        <h2>How we earn your trust</h2>
+      </div>
+      <div class="tiles">
+        <article class="tile">
+          <h3>Real claims only</h3>
+          <p>Every claim on this page is true and checked. No paid reviews, no invented ratings,
+          no stock families. The photos are real homes. When founding families share their
+          stories, we will publish them with their permission and their names.</p>
+        </article>
+        <article class="tile">
+          <h3>Clear about what Compasse is not</h3>
+          <p>Not a medical device. Not emergency response. Not monitoring. It does not call 911
+          or detect falls. We say this plainly because you are trusting us with someone you
+          love. The full answer is in the <a href="#faq">questions below</a>.</p>
+        </article>
+        <article class="tile warmbg">
+          <h3>Easy to leave</h3>
+          <p data-prelaunch>If Compasse is not right for your family, tell us. A real person answers,
+          and we help you close out and delete your family&rsquo;s data completely.</p>
+          <p data-launch hidden>Cancel anytime in one tap, no phone call, no retention script. If care
+          ends, billing stops immediately and we refund the unused part of the month. And a real
+          person answers every message.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- PRICING: hidden until LAUNCHED -->
   <section id="pricing" hidden>
     <div class="wrap center">
@@ -416,6 +496,7 @@ fbq('init','1039692688431979');
           <li>An iPhone for the caregiver app</li>
           <li>Home Wi-Fi where the board will live</li>
         </ul>
+        <p style="margin-top:12px;font-size:16px"><a class="btn-quiet" href="/fit.html">Not sure? Take the two minute fit check</a></p>
       </div>
     </div>
   </section>
@@ -462,8 +543,9 @@ fbq('init','1039692688431979');
           <p>Right now each family has one caregiver phone connected. Support for siblings and other
           family members is on the way.</p></details>
         <details data-prelaunch><summary>What does it cost?</summary>
-          <p>During our family trial, Compasse is free. At launch it will be a monthly subscription
-          you can cancel anytime.</p></details>
+          <p>During our family trial, Compasse is free. At launch it will be $29 a month with the
+          first week free, everything included, cancel anytime. No tiers, no setup fee, no
+          contract, and nothing else to buy.</p></details>
         <details data-launch hidden><summary>What does it cost?</summary>
           <p>Your first week is free, then it&rsquo;s $29 a month, everything included. We ask for a
           card up front, and if you cancel during the free week you are never charged. There are no
@@ -514,6 +596,8 @@ fbq('init','1039692688431979');
     <p style="margin:-10px 0 18px;font-size:16.5px">A familiar voice for the moments you can&rsquo;t be there.</p>
     <div class="links">
       <a href="#tour">How it works</a>
+      <a href="/fit.html">The fit check</a>
+      <a href="/reassurance-board/">What is a reassurance board?</a>
       <a href="#faq">FAQ</a>
       <a href="mailto:hello@compasse.care">Contact</a>
       <a href="/manage.html" data-launch hidden>Manage membership</a>
@@ -526,6 +610,12 @@ fbq('init','1039692688431979');
     <p style="margin-top:14px">Compasse LLC &middot; Winston-Salem, North Carolina &copy; 2026</p>
   </div>
 </footer>
+
+<!-- phones only: the one ask, pinned in thumb reach -->
+<div class="mobilebar">
+  <a class="btn" data-prelaunch href="#join">Join the waitlist</a>
+  <a class="btn" data-launch hidden href="#pricing">Start your free week</a>
+</div>
 
 <script>
   // metaEvent — the ONLY way this site talks to Meta. Fires the browser pixel
