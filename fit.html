@@ -19,7 +19,7 @@
   :root{
     --cream:#FAF6EF; --paper:#FFFFFF; --ink:#2B2A28; --muted:#5D5852;
     --terra:#A8542F; --teal:#2F6D66; --teal-deep:#25574F; --border:#E5DFD2;
-    --sky:#D9E8EE; --warm:#F1ECE3; --good:#2E7D32;
+    --sky:#D9E8EE; --warm:#F1ECE3; --good:#2E7D32; --on-accent:#FFFFFF;
     --r:20px; --r-lg:28px; --bezel:#2B2A28;
     --shadow:0 2px 8px rgba(43,42,40,.06),0 12px 32px rgba(43,42,40,.07);
   }
@@ -27,14 +27,14 @@
     :root:not([data-theme="light"]){
       --cream:#1A1410; --paper:#241D16; --ink:#F0E6D9; --muted:#B0A593;
       --terra:#D98D74; --teal:#8FC0B8; --teal-deep:#A8D2CA; --border:#3B3227;
-      --sky:#2C3A40; --warm:#2C241B; --good:#8FC493;
+      --sky:#2C3A40; --warm:#2C241B; --good:#8FC493; --on-accent:#1A1410;
       --shadow:0 2px 8px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.35); --bezel:#0E0B08;
     }
   }
   :root[data-theme="dark"]{
     --cream:#1A1410; --paper:#241D16; --ink:#F0E6D9; --muted:#B0A593;
     --terra:#D98D74; --teal:#8FC0B8; --teal-deep:#A8D2CA; --border:#3B3227;
-    --sky:#2C3A40; --warm:#2C241B; --good:#8FC493;
+    --sky:#2C3A40; --warm:#2C241B; --good:#8FC493; --on-accent:#1A1410;
     --shadow:0 2px 8px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.35); --bezel:#0E0B08;
   }
   *{box-sizing:border-box}
@@ -72,12 +72,12 @@
   .opt:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
   .opt[aria-pressed="true"]{border-color:var(--teal);background:var(--sky)}
   .tick{flex:0 0 22px;height:22px;border-radius:50%;border:1.5px solid var(--border);display:grid;place-items:center;font-size:13px;color:transparent}
-  .opt[aria-pressed="true"] .tick{background:var(--teal);border-color:var(--teal);color:#fff}
+  .opt[aria-pressed="true"] .tick{background:var(--teal);border-color:var(--teal);color:var(--on-accent)}
   .cta{
     display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    background:var(--teal);color:#fff;border:0;border-radius:999px;
+    background:var(--teal);color:var(--on-accent);border:0;border-radius:999px;
     padding:16px 30px;min-height:56px;font:inherit;font-weight:700;cursor:pointer;
-    transition:background .16s,transform .1s;
+    transition:background .16s,transform .1s;text-decoration:none;
   }
   .cta:hover{background:var(--teal-deep)}
   .cta:active{transform:scale(.99)}
@@ -85,6 +85,8 @@
   .cta:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   .quiet{background:none;border:0;color:var(--teal);font:inherit;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:12px 2px}
   .quiet:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+  .backrow{margin:0 0 -30px;padding-top:18px}
+  .backrow .quiet{font-size:15px;padding:8px 2px}
   .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:22px}
   input[type=text],input[type=email]{
     width:100%;background:var(--paper);color:var(--ink);border:1.5px solid var(--border);
@@ -133,7 +135,7 @@
   .phone .status strong{font-weight:700;font-size:14px}
   .phone .status span{color:var(--muted);font-size:12px}
   .phone .pbtns{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-  .phone .pbtn{border-radius:14px;padding:11px 6px;text-align:center;font-weight:700;font-size:13px;background:var(--teal);color:#fff}
+  .phone .pbtn{border-radius:14px;padding:11px 6px;text-align:center;font-weight:700;font-size:13px;background:var(--teal);color:var(--on-accent)}
   .phone .pbtn.alt{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}
   .phone .plbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:2px}
   .phone .prow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}
@@ -169,11 +171,14 @@
 
 <div class="wrap" id="wrap">
 
+  <div class="backrow" id="backrow" hidden><button class="quiet" id="backBtn" type="button">&#8249; Back</button></div>
+
   <!-- 0 start -->
   <section class="step on" id="s0">
     <p class="eyebrow">Compasse</p>
     <h1>A two-minute fit check</h1>
-    <p>Answer a few questions about your family’s routine. We will show you what a Grounding Board would look like on the wall, and tell you honestly if Compasse is not the right fit.</p>
+    <p>Answer a few questions about your family&rsquo;s routine. We will show you what a Grounding Board would look like on the wall, and tell you honestly if Compasse is not the right fit.</p>
+    <p class="fine">The three things Compasse needs: an iPad from 2017 or newer that can live at their home, one iPhone somewhere in the family, and home Wi-Fi. If you are missing one, we will say so plainly instead of taking your money.</p>
     <div class="note">No phone calls. No salespeople. Your answers stay on this page.</div>
     <button class="cta" data-next>Start the fit check</button>
   </section>
@@ -182,10 +187,10 @@
   <section class="step" id="s1">
     <h2>Who would this be for?</h2>
     <div class="opts" data-single="who">
-      <button class="opt" data-v="My mom"><span class="tick">✓</span>My mom</button>
-      <button class="opt" data-v="My dad"><span class="tick">✓</span>My dad</button>
-      <button class="opt" data-v="My spouse"><span class="tick">✓</span>My spouse</button>
-      <button class="opt" data-v="Someone else I care for"><span class="tick">✓</span>Someone else I care for</button>
+      <button class="opt" data-v="My mom" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>My mom</button>
+      <button class="opt" data-v="My dad" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>My dad</button>
+      <button class="opt" data-v="My spouse" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>My spouse</button>
+      <button class="opt" data-v="Someone else I care for" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Someone else I care for</button>
     </div>
   </section>
 
@@ -195,15 +200,10 @@
     <p class="sub">First name is plenty.</p>
     <input type="text" id="nm" autocomplete="off" placeholder="e.g. Margaret" aria-label="Their first name">
     <div class="note">It stays on this page. We do not store it.</div>
-    <button class="cta" id="nmGo" disabled>Continue</button>
-  </section>
-
-  <!-- 3 consent -->
-  <section class="step" id="s3">
-    <h2>Before we go on</h2>
-    <p>The next few questions are about your family’s routine, not a medical assessment. Your answers build the preview on this page and are not stored, not shared, and not sent anywhere.</p>
-    <p>Only your email, if you choose to give it at the end, reaches us.</p>
-    <button class="cta" data-next>I understand</button>
+    <div class="row">
+      <button class="cta" id="nmGo" disabled>Continue</button>
+      <button class="quiet" id="nmSkip" type="button">Continue without a name</button>
+    </div>
   </section>
 
   <!-- 4 which questions -->
@@ -211,34 +211,35 @@
     <h2>Which of these does <span data-name>your loved one</span> ask about more than once a day?</h2>
     <p class="sub">Choose as many as fit.</p>
     <div class="opts" data-multi="asks">
-      <button class="opt" data-v="day"><span class="tick">✓</span>What day it is</button>
-      <button class="opt" data-v="appt"><span class="tick">✓</span>When an appointment is</button>
-      <button class="opt" data-v="meds"><span class="tick">✓</span>Whether the medicine was taken</button>
-      <button class="opt" data-v="visit"><span class="tick">✓</span>When someone is coming to visit</button>
-      <button class="opt" data-v="where"><span class="tick">✓</span>Where you are</button>
+      <button class="opt" data-v="day" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>What day it is</button>
+      <button class="opt" data-v="appt" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>When an appointment is</button>
+      <button class="opt" data-v="meds" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Whether the medicine was taken</button>
+      <button class="opt" data-v="visit" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>When someone is coming to visit</button>
+      <button class="opt" data-v="where" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Where you are</button>
     </div>
     <button class="cta" data-next>Continue</button>
+    <p class="fine" style="margin-top:18px">These questions are about your family&rsquo;s routine, not a medical assessment. Your answers build the preview on this page and are not stored, shared, or sent anywhere. Only your email, if you choose to give it at the end, reaches us, along with how you found this page.</p>
   </section>
 
   <!-- 5 how many times -->
   <section class="step" id="s5">
     <h2>About how many times a day does someone in the family answer those?</h2>
     <div class="opts" data-single="freq">
-      <button class="opt" data-v="A few"><span class="tick">✓</span>A few</button>
-      <button class="opt" data-v="5 to 10"><span class="tick">✓</span>5 to 10</button>
-      <button class="opt" data-v="More than 10"><span class="tick">✓</span>More than 10</button>
-      <button class="opt" data-v="Lost count"><span class="tick">✓</span>Honestly, we have lost count</button>
+      <button class="opt" data-v="A few" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>A few</button>
+      <button class="opt" data-v="5 to 10" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>5 to 10</button>
+      <button class="opt" data-v="More than 10" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>More than 10</button>
+      <button class="opt" data-v="Lost count" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Honestly, we have lost count</button>
     </div>
   </section>
 
-  <!-- 6 hardest -->
+  <!-- 6 hardest time of day -->
   <section class="step" id="s6">
     <h2>When is it hardest?</h2>
     <div class="opts" data-single="hard">
-      <button class="opt" data-v="Mornings"><span class="tick">✓</span>Mornings</button>
-      <button class="opt" data-v="Late afternoon and evening"><span class="tick">✓</span>Late afternoon and evening</button>
-      <button class="opt" data-v="Overnight"><span class="tick">✓</span>Overnight</button>
-      <button class="opt" data-v="It moves around"><span class="tick">✓</span>It moves around</button>
+      <button class="opt" data-v="Mornings" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Mornings</button>
+      <button class="opt" data-v="Late afternoon and evening" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Late afternoon and evening</button>
+      <button class="opt" data-v="Overnight" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Overnight</button>
+      <button class="opt" data-v="It moves around" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>It moves around</button>
     </div>
   </section>
 
@@ -246,28 +247,33 @@
   <section class="step" id="s7">
     <h2>How far do you live from <span data-name>your loved one</span>?</h2>
     <div class="opts" data-single="dist">
-      <button class="opt" data-v="Same house"><span class="tick">✓</span>Same house</button>
-      <button class="opt" data-v="Same town"><span class="tick">✓</span>Same town</button>
-      <button class="opt" data-v="An hour or two"><span class="tick">✓</span>An hour or two</button>
-      <button class="opt" data-v="A flight or a long drive"><span class="tick">✓</span>A flight or a long drive</button>
+      <button class="opt" data-v="Same house" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Same house</button>
+      <button class="opt" data-v="Same town" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Same town</button>
+      <button class="opt" data-v="An hour or two" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>An hour or two</button>
+      <button class="opt" data-v="A flight or a long drive" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>A flight or a long drive</button>
     </div>
   </section>
 
-  <!-- 8 worry -->
+  <!-- 8 the direct question: what is hardest right now -->
   <section class="step" id="s8">
-    <h2>When you cannot pick up, how often does the worry sit with you until you can call back?</h2>
-    <div class="opts" data-single="worry">
-      <button class="opt" data-v="Almost every time"><span class="tick">✓</span>Almost every time</button>
-      <button class="opt" data-v="Often"><span class="tick">✓</span>Often</button>
-      <button class="opt" data-v="Sometimes"><span class="tick">✓</span>Sometimes</button>
-      <button class="opt" data-v="Rarely"><span class="tick">✓</span>Rarely</button>
+    <h2>Of everything, what is hardest right now?</h2>
+    <p class="sub">Your answer shapes the plan we show you. There is no wrong one.</p>
+    <div class="opts" data-single="hardest">
+      <button class="opt" data-v="repeat" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>The same questions, over and over</button>
+      <button class="opt" data-v="calls" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>The phone calls, all day, any time</button>
+      <button class="opt" data-v="away" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>The worry when I am not there</button>
+      <button class="opt" data-v="meds" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>The medicine. Was it taken or not</button>
+      <button class="opt" data-v="evening" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Evenings. Everything gets harder late in the day</button>
+      <button class="opt" data-v="alone" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Being the only one who answers</button>
+      <button class="opt" data-v="all" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>All of it, honestly</button>
     </div>
   </section>
 
-  <!-- 9 validation -->
+  <!-- 9 validation: mirror what she said, then the true founder line -->
   <section class="step" id="s9">
-    <h2>Most families who get this far tell us the same thing.</h2>
-    <p>The questions are not the hard part. The hard part is being the only answer to them, and not being in the room.</p>
+    <h2>Here is the honest part.</h2>
+    <p id="mirrorLine" class="sub"></p>
+    <p>Shelly built Compasse with her son, Aidan. Her father uses the board every day. She will tell you the questions were never the hard part. The hard part is being the only answer to them, and not being in the room.</p>
     <button class="cta" data-next>Keep going</button>
   </section>
 
@@ -276,12 +282,12 @@
     <h2>What have you tried so far?</h2>
     <p class="sub">Choose as many as fit.</p>
     <div class="opts" data-multi="tried">
-      <button class="opt" data-v="More calls"><span class="tick">✓</span>More calls</button>
-      <button class="opt" data-v="Notes and whiteboards"><span class="tick">✓</span>Notes and whiteboards</button>
-      <button class="opt" data-v="A smart speaker"><span class="tick">✓</span>A smart speaker</button>
-      <button class="opt" data-v="A clock that shows the date"><span class="tick">✓</span>A clock that shows the date</button>
-      <button class="opt" data-v="Paid help at home"><span class="tick">✓</span>Paid help at home</button>
-      <button class="opt" data-v="Just getting started"><span class="tick">✓</span>Just getting started</button>
+      <button class="opt" data-v="More calls" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>More calls</button>
+      <button class="opt" data-v="Notes and whiteboards" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Notes and whiteboards</button>
+      <button class="opt" data-v="A smart speaker" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>A smart speaker</button>
+      <button class="opt" data-v="A clock that shows the date" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>A clock that shows the date</button>
+      <button class="opt" data-v="Paid help at home" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Paid help at home</button>
+      <button class="opt" data-v="Just getting started" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Just getting started</button>
     </div>
     <button class="cta" data-next>Continue</button>
   </section>
@@ -291,18 +297,18 @@
     <h2>Is there an iPad at <span data-poss>their</span> home, or could one live there?</h2>
     <p class="sub">Compasse runs on an iPad on the wall or a stand. We would rather tell you now than after you have paid.</p>
     <div class="opts" data-single="ipad">
-      <button class="opt" data-v="yes"><span class="tick">✓</span>Yes, there is one or we could get one</button>
-      <button class="opt" data-v="no"><span class="tick">✓</span>No, and that is not likely</button>
+      <button class="opt" data-v="yes" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Yes, there is one or we could get one</button>
+      <button class="opt" data-v="no" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>No, and that is not likely</button>
     </div>
   </section>
 
-  <!-- 12 iphone -->
+  <!-- 12 iphone in the family -->
   <section class="step" id="s12">
-    <h2>Do you use an iPhone?</h2>
-    <p class="sub">You set the board up from your own phone. The app only works on iPhone today.</p>
+    <h2>Is there an iPhone in the family?</h2>
+    <p class="sub">Any family member with an iPhone can set up the board and record reminders. It only takes one. The family app runs on iPhone today.</p>
     <div class="opts" data-single="iphone">
-      <button class="opt" data-v="yes"><span class="tick">✓</span>Yes</button>
-      <button class="opt" data-v="no"><span class="tick">✓</span>No, I use Android</button>
+      <button class="opt" data-v="yes" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Yes, mine or a family member&rsquo;s</button>
+      <button class="opt" data-v="no" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>No, we are an Android family</button>
     </div>
   </section>
 
@@ -310,15 +316,15 @@
   <section class="step" id="s13">
     <h2>Is there Wi-Fi at <span data-poss>their</span> home?</h2>
     <div class="opts" data-single="wifi">
-      <button class="opt" data-v="yes"><span class="tick">✓</span>Yes</button>
-      <button class="opt" data-v="no"><span class="tick">✓</span>No</button>
+      <button class="opt" data-v="yes" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Yes</button>
+      <button class="opt" data-v="no" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>No</button>
     </div>
   </section>
 
-  <!-- 14 processing -->
+  <!-- 14 building the preview -->
   <section class="step" id="s14">
     <h2>Building <span data-poss>their</span> board</h2>
-    <div class="proc" id="proc"></div>
+    <div class="proc" id="proc" role="status" aria-label="Building the preview"></div>
   </section>
 
   <!-- 15 email gate -->
@@ -336,15 +342,15 @@
   <!-- 16 results -->
   <section class="step" id="s16">
     <p class="eyebrow">The plan</p>
-    <h1><span data-poss>Their</span> board</h1>
+    <h1>What <span data-poss>their</span> board would do with what you told us</h1>
     <p>This is what would be on the wall. Every line comes from something you told us.</p>
     <div class="grid2">
       <div>
         <div class="board" id="board"></div>
-        <p class="fine" style="text-align:center;margin-top:14px">This is where your voice goes. Cassi speaks the reminders in a voice you record.</p>
+        <p class="fine" style="text-align:center;margin-top:14px">This is where your voice goes. You record a reminder once, and the board plays your recording at the right time.</p>
       </div>
       <div>
-        <h3>Because you said</h3>
+        <h3>Because you told us</h3>
         <ul class="because" id="because"></ul>
         <div class="note" style="margin-top:24px">No phone calls. No salespeople. Your answers stayed on this page.</div>
       </div>
@@ -364,7 +370,7 @@
             <div class="status">
               <span class="pill"><b></b>All quiet</span>
               <strong id="phStatus">Tablet online, checked in 4 minutes ago.</strong>
-              <span id="phSub">No missed medicine, no repeat question spikes.</span>
+              <span id="phSub">Reminders answered. Nothing needs you right now.</span>
             </div>
             <div class="pbtns">
               <div class="pbtn">Check in</div>
@@ -383,8 +389,8 @@
         <ul class="caps">
           <li><span class="dot"></span><div><b>Change the wall from anywhere.</b><span>Type the bottom line on your phone. It appears on the board at home the same second.</span></div></li>
           <li><span class="dot"></span><div><b>See the board without calling.</b><span>The mirror shows you exactly what is on that screen right now, at the same proportions.</span></div></li>
-          <li><span class="dot"></span><div><b>Record once, repeat forever.</b><span>You record the reminders in your own voice. Cassi plays them back at the right time, every time, without you.</span></div></li>
-          <li><span class="dot"></span><div><b>Know before you worry.</b><span>Missed medicine and a spike in repeat questions come to you. Quiet days stay quiet.</span></div></li>
+          <li><span class="dot"></span><div><b>Record once, repeat forever.</b><span>You record the reminders in your own voice. The board plays your recording back at the right time, every time, without you.</span></div></li>
+          <li><span class="dot"></span><div><b>Know without calling.</b><span>If a medicine reminder is not confirmed, or the tablet goes offline, the app tells you. Quiet days stay quiet.</span></div></li>
         </ul>
       </div>
       <p class="fine" style="margin-top:22px">One membership covers the whole family. Brothers, sisters and a paid aide can each have the app, and everyone sees the same board.</p>
@@ -392,7 +398,7 @@
 
     <div class="card" style="margin-top:38px">
       <h3>What it costs</h3>
-      <p class="fine">On the iPad you already own, or one you buy once.</p>
+      <p class="fine">No hardware to buy from us. It runs on the family&rsquo;s iPad, 2017 or newer, or one you buy once.</p>
       <ul class="price">
         <li><span>Compasse, first year</span><span class="amt">$348</span></li>
         <li><span>Every month, after the free first week</span><span class="amt">$29</span></li>
@@ -402,16 +408,22 @@
     </div>
 
     <div style="margin-top:34px">
-      <h2 id="ctaHead">The board can be live on <span data-poss>their</span> wall tonight.</h2>
+      <h2 id="ctaHeadPre">When your spot opens, the board can be on <span data-poss>their</span> wall the same day.</h2>
+      <h2 id="ctaHeadLive" hidden>The board can be live on <span data-poss>their</span> wall tonight.</h2>
       <div id="preLaunch">
-        <p>We are opening spots to families in small groups. Leave your email and we will tell you the moment yours is ready.</p>
-        <input type="email" id="em2" autocomplete="email" placeholder="you@example.com" aria-label="Your email address">
-        <div class="row"><button class="cta" id="em2Go">Join the waitlist</button></div>
-        <p class="msg" id="em2Msg" role="status"></p>
+        <div id="wlAsk">
+          <p>We are opening spots to families in small groups. Leave your email and we will tell you the moment yours is ready.</p>
+          <input type="email" id="em2" autocomplete="email" placeholder="you@example.com" aria-label="Your email address">
+          <div class="row"><button class="cta" id="em2Go">Join the waitlist</button></div>
+          <p class="msg" id="em2Msg" role="status"></p>
+        </div>
+        <div id="wlDone" hidden>
+          <p>You are on the list. We will email you the plan, and the moment your spot opens. No phone calls, ever.</p>
+        </div>
       </div>
       <div id="atLaunch" hidden>
         <p>The first week is free, then $29 a month. Cancel anytime, online, in one tap. If care ends, billing stops immediately and we refund the unused part of the month.</p>
-        <div class="row"><a class="cta" style="text-decoration:none" href="/#pricing">Start your free week</a></div>
+        <div class="row"><a class="cta" href="/#pricing">Start your free week</a></div>
       </div>
     </div>
   </section>
@@ -425,7 +437,8 @@
     <h3>What would make it fit</h3>
     <ul class="because" id="dqFix"></ul>
     <p class="fine" id="dqAlt" style="margin-top:18px"></p>
-    <div class="card" style="margin-top:30px">
+    <p style="margin-top:8px"><button class="quiet" id="dqBack" type="button">Tapped the wrong answer? Go back to that question.</button></p>
+    <div class="card" style="margin-top:22px">
       <h3>Want the checklist?</h3>
       <p class="fine">We will send a one-page setup checklist and let you know if that changes. Nothing else.</p>
       <input type="email" id="em3" autocomplete="email" placeholder="you@example.com" aria-label="Your email address">
@@ -446,41 +459,74 @@
   // Situation answers live HERE and nowhere else. They render the preview and
   // die with the tab. Only an email, a source tag and the three hardware
   // answers ever leave the browser. This is the whole privacy contract: quiz
-  // answers must never reach an ad platform or our own database.
+  // answers (including "what is hardest") must never reach an ad platform or
+  // our own database.
   var A = { asks: [], tried: [] };
   var SB_URL = 'https://cklagdabffzbikvtnnzo.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8';
 
   // Ordered flow. The hardware questions can divert to the warm exit (17).
-  var FLOW = ['s0','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','s12','s13','s14','s15','s16'];
+  var FLOW = ['s0','s1','s2','s4','s5','s6','s7','s8','s9','s10','s11','s12','s13','s14','s15','s16'];
   var idx = 0;
+  var hist = [];            // for the Back control
+  var dqFrom = null;        // which gate sent her to s17
+  var emailGiven = false;   // set on s15 success; de-dupes the s16 ask
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
 
   function el(id){ return document.getElementById(id); }
-  function show(id){
+  function show(id, fromBack){
     var cur = document.querySelector('.step.on');
-    if (cur) cur.classList.remove('on');
+    if (cur){
+      if (!fromBack && cur.id !== id) hist.push(cur.id);
+      cur.classList.remove('on');
+    }
     el(id).classList.add('on');
     window.scrollTo({top:0, behavior:'instant'});
     var i = FLOW.indexOf(id);
     if (i >= 0){ idx = i; el('rail').style.width = Math.round((i/(FLOW.length-1))*100) + '%'; }
-    if (id === 's16' || id === 's17'){ el('rail').style.width = '100%'; document.getElementById('wrap').classList.add('wide'); }
-    else { document.getElementById('wrap').classList.remove('wide'); }
+    if (id === 's16' || id === 's17'){ el('rail').style.width = '100%'; el('wrap').classList.add('wide'); }
+    else { el('wrap').classList.remove('wide'); }
+    // Back is available on the questions, never on start, processing, or results.
+    var canBack = hist.length > 0 && id !== 's0' && id !== 's14' && id !== 's16' && id !== 's17';
+    el('backrow').hidden = !canBack;
     var h = el(id).querySelector('h1,h2'); if (h) h.setAttribute('tabindex','-1'), h.focus({preventScroll:true});
   }
   function next(){ if (idx < FLOW.length-1) show(FLOW[idx+1]); }
+  function back(){
+    var prev = hist.pop();
+    if (prev) show(prev, true);
+  }
+  el('backBtn').addEventListener('click', back);
 
-  function possessive(n){ return n + '\u2019s'; }
+  // Name painting. If she skips the name, fall back to who she said this is
+  // for ("your mom"), never a cold "your loved one" when we know better.
+  function possessive(n){ return n + '’s'; }
+  function whoFallback(){
+    if (A.who === 'My mom') return 'your mom';
+    if (A.who === 'My dad') return 'your dad';
+    if (A.who === 'My spouse') return 'your spouse';
+    return 'your loved one';
+  }
+  function dispName(){ return (A.name || '').trim() || whoFallback(); }
   function paintName(){
     var n = (A.name || '').trim();
     [].forEach.call(document.querySelectorAll('[data-name]'), function(s){
-      s.textContent = n || s.dataset.fallback;
+      s.textContent = n || whoFallback();
     });
     [].forEach.call(document.querySelectorAll('[data-poss]'), function(s){
-      s.textContent = n ? possessive(n) : s.dataset.fallback;
+      s.textContent = n ? possessive(n) : (A.who ? possessive(whoFallback()) : s.dataset.fallback);
     });
   }
   [].forEach.call(document.querySelectorAll('[data-name],[data-poss]'), function(s){
     s.dataset.fallback = s.textContent;
+  });
+
+  // Label each option group for screen readers with its question.
+  [].forEach.call(document.querySelectorAll('[data-single],[data-multi]'), function(g){
+    var h = g.closest('section').querySelector('h2');
+    g.setAttribute('role','group');
+    if (h) g.setAttribute('aria-label', h.textContent);
   });
 
   // single-choice groups advance on tap
@@ -509,12 +555,18 @@
   });
 
   function afterSingle(key){
+    // Guard against the Back button racing the 190ms auto-advance: only act
+    // if the answered question is still the one on screen.
+    var onScreen = document.querySelector('.step.on');
+    var owner = document.querySelector('[data-single="' + key + '"]');
+    if (!onScreen || !owner || owner.closest('section').id !== onScreen.id) return;
     // Hardware answers are the only ones that gate. Any "no" exits warmly and
     // is never routed to checkout.
     if (key === 'ipad' && A.ipad === 'no') return disqualify('ipad');
     if (key === 'iphone' && A.iphone === 'no') return disqualify('iphone');
     if (key === 'wifi' && A.wifi === 'no') return disqualify('wifi');
     if (key === 'wifi') return startProcessing();
+    if (key === 'hardest') return showMirror();
     next();
   }
 
@@ -533,13 +585,41 @@
     paintName();
     next();
   });
+  el('nmSkip').addEventListener('click', function(){
+    A.name = '';
+    paintName();
+    next();
+  });
 
-  // processing: every named step is a thing that genuinely happens
+  // ---------- s9: mirror what she told us, nothing more ----------
+  var FREQ = {
+    'A few': 'a few times a day',
+    '5 to 10': 'five to ten times a day',
+    'More than 10': 'more than ten times a day',
+    'Lost count': 'more times than anyone has counted'
+  };
+  var HARDMIRROR = {
+    'Mornings': 'mornings are the hardest part',
+    'Late afternoon and evening': 'late afternoon and evening are the hardest part',
+    'Overnight': 'overnight is the hardest part',
+    'It moves around': 'the hard hours move around'
+  };
+  function showMirror(){
+    var bits = [];
+    if (A.freq && FREQ[A.freq]) bits.push('someone answers the same questions ' + FREQ[A.freq]);
+    if (A.hard && HARDMIRROR[A.hard]) bits.push(HARDMIRROR[A.hard]);
+    el('mirrorLine').textContent = bits.length
+      ? 'You told us ' + bits.join(', and that ') + '. We are not going to pretend that is a small thing.'
+      : '';
+    next();
+  }
+
+  // ---------- processing: every named step is a thing that genuinely happens ----------
   function startProcessing(){
     show('s14');
-    var steps = ['Laying out ' + possessive(A.name || 'their') + ' board', 'Putting today’s date first'];
+    var steps = ['Laying out ' + possessive(dispName()) + ' board', 'Putting today’s date first'];
     if (A.asks.indexOf('meds') > -1) steps.push('Making room for the medicine reminder');
-    if (A.asks.indexOf('visit') > -1 || A.dist) steps.push('Adding the line about who is coming');
+    if (A.asks.indexOf('visit') > -1) steps.push('Adding the line about who is coming');
     if (A.hard === 'Late afternoon and evening') steps.push('Setting the evening reassurance for 6pm');
     if (A.hard === 'Overnight') steps.push('Turning on overnight dimming');
     steps.push('Choosing the calm wording');
@@ -548,12 +628,17 @@
       return '<div><span class="spin"></span><span>' + s + '</span></div>';
     }).join('');
     var rows = box.querySelectorAll('div'), i = 0;
+    if (reduceMotion){
+      [].forEach.call(rows, function(r){ r.classList.add('on','done'); });
+      setTimeout(function(){ show('s15'); }, 800);
+      return;
+    }
     (function tick(){
       if (i > 0) rows[i-1].classList.add('done');
       if (i >= rows.length){ setTimeout(function(){ show('s15'); }, 420); return; }
       rows[i].classList.add('on');
       i++;
-      setTimeout(tick, 1150);
+      setTimeout(tick, 600);
     })();
   }
 
@@ -566,17 +651,11 @@
     if (A.dist === 'Same house' || A.dist === 'Same town') return 'Your family will see you later today.';
     return 'Your family will check in later.';
   }
-  var FREQ = {
-    'A few': 'a few times a day',
-    '5 to 10': 'five to ten times a day',
-    'More than 10': 'more than ten times a day',
-    'Lost count': 'more times than anyone has counted'
-  };
   var HARD = {
-    'Mornings': ['Mornings are hardest.', 'The board is at its clearest first thing, so the morning questions are already answered.'],
-    'Late afternoon and evening': ['Late afternoon and evening are hardest.', 'The evening reassurance turns on at 6pm and the wording gets calmer.'],
-    'Overnight': ['Overnight is hardest.', 'The screen dims overnight and the wording changes to night words.'],
-    'It moves around': ['It moves around.', 'The board keeps the same calm wording all day, so nothing changes underfoot.']
+    'Mornings': ['You said mornings are hardest.', 'The board is at its clearest first thing, so the morning questions are already answered when the day starts.'],
+    'Late afternoon and evening': ['You said late afternoon and evening are hardest.', 'The evening reassurance turns on at 6pm and the wording gets calmer.'],
+    'Overnight': ['You said overnight is hardest.', 'The screen dims overnight and the wording changes to night words.'],
+    'It moves around': ['You said it moves around.', 'The board keeps the same calm wording all day, so nothing changes underfoot.']
   };
   var DIST = {
     'Same house': ['You live in the same house.', 'The bottom line is still yours. You change it from your phone without saying it twice.'],
@@ -584,6 +663,46 @@
     'An hour or two': ['You live an hour or two away.', 'The bottom line is yours. You change it from your phone and it appears on the wall.'],
     'A flight or a long drive': ['You are a flight or a long drive away.', 'The bottom line is yours. You change it from your phone and it appears on the wall the same second.']
   };
+  // The direct answer to "what is hardest" leads the plan. Subjects allowed
+  // here: what she told us, and what the board does. Never the disease, never
+  // the future, never a feeling we promise to change.
+  function hardestLine(){
+    var nm2 = dispName();
+    var map = {
+      repeat: ['You said the hardest part is the same questions, over and over.',
+        'That is the exact job of the board. The day, the date, and what comes next stay on the wall, and Cassi answers the tenth ask the same way she answered the first.'],
+      calls: ['You said the phone calls are the hardest part.',
+        'The board keeps the answers most of those calls ask for, the day, the time, who is coming, in plain view at home. And calling you stays one tap away for the times it is really you ' + nm2 + ' wants.'],
+      away: ['You said the worry when you are not there is the hardest part.',
+        'Your phone shows you the same board ' + nm2 + ' sees, live, any time. You can look without ringing the house.'],
+      meds: ['You said the medicine is the hardest part.',
+        'The board reminds at the right times, in a voice you recorded. If a reminder is not confirmed, the app tells you instead of leaving you guessing.'],
+      evening: ['You said evenings are the hardest part.',
+        'The board changes with the day. Late afternoon, the wording gets calmer. At 6pm the evening reassurance turns on. Overnight, it dims and switches to night words.'],
+      alone: ['You said the hardest part is being the only one who answers.',
+        'The board carries the repeat questions so not every answer has to come from you. And one membership covers the whole family, so a brother, a sister, or a paid aide can have the same app and see the same board.'],
+      all: ['You said it honestly: all of it.',
+        'So here is the whole answer at once. The board keeps the day on the wall, Cassi answers the repeats, your recordings carry the reminders, and your phone shows you the board from anywhere.']
+    };
+    return map[A.hardest] || null;
+  }
+  // One earned line about what she has already tried. Priority order, one only.
+  function triedLine(){
+    var nm2 = dispName();
+    if (A.tried.indexOf('A clock that shows the date') > -1)
+      return ['You tried a clock that shows the date.', 'The board shows the date too. The difference is everything else: it can say it out loud, carry your recorded reminders, and change from your phone.'];
+    if (A.tried.indexOf('A smart speaker') > -1)
+      return ['You tried a smart speaker.', 'The difference here is what ' + nm2 + ' has to do: nothing. The board shows everything in large type, speaks first, and never needs the right magic words.'];
+    if (A.tried.indexOf('Notes and whiteboards') > -1)
+      return ['You tried notes and whiteboards.', 'The board is the same idea, kept current on its own. The day changes at midnight. Your note, typed on your phone, appears on the wall the same second.'];
+    if (A.tried.indexOf('Paid help at home') > -1)
+      return ['You have paid help at home.', 'The board works alongside an aide. They see the same schedule on the wall that you set from your phone.'];
+    if (A.tried.indexOf('More calls') > -1)
+      return ['You tried more calls.', 'The board does not replace them. It sits between them, holding the answers, while calling stays one tap away.'];
+    if (A.tried.indexOf('Just getting started') > -1)
+      return ['You are just getting started.', 'Starting simple matters. The board asks nothing of ' + nm2 + ' on day one. It is just there, showing the day.'];
+    return null;
+  }
   function nextLine(){
     if (A.asks.indexOf('meds') > -1) return { t:'Evening pill', s:'6:00 PM' };
     if (A.asks.indexOf('appt') > -1) return { t:'Doctor visit', s:'Tomorrow at 9:00 AM' };
@@ -612,21 +731,25 @@
       '<div class="line">' + familyLine() + '</div>' +
       '<div class="bar">Tap to talk</div>';
 
-    var nm2 = A.name || 'your loved one';
+    var nm2 = dispName();
     var out = [];
+    var hl = hardestLine();
+    if (hl) out.push(hl);
     if (A.freq) out.push(['Someone answers the same questions ' + FREQ[A.freq] + '.', 'The board answers them first, so ' + nm2 + ' does not have to ask.']);
     if (A.asks.length) out.push([nm2 + ' asks about ' + askWords() + '.', 'Those are the facts the board keeps on the wall all day.']);
-    if (A.hard && HARD[A.hard]) out.push(HARD[A.hard]);
-    if (A.dist && DIST[A.dist]) out.push(DIST[A.dist]);
-    out.push(['You record the reminders yourself.', 'Cassi speaks them in a voice ' + nm2 + ' already knows.']);
+    if (A.hard && HARD[A.hard] && A.hardest !== 'evening') out.push(HARD[A.hard]);
+    if (A.dist && DIST[A.dist] && A.hardest !== 'away') out.push(DIST[A.dist]);
+    var tl = triedLine();
+    if (tl) out.push(tl);
+    out.push(['You record the reminders yourself.', 'The board plays your recording back at the right time, so ' + nm2 + ' hears you, not a computer voice.']);
     // the phone preview: same answers, the caregiver's side of them
     var meds = A.asks.indexOf('meds') > -1;
     var appt = A.asks.indexOf('appt') > -1;
     el('phToday').textContent = meds ? 'Evening pill, 6:00 PM' : 'Nothing logged yet today.';
     el('phMeds').textContent = meds ? '1 scheduled' : 'None yet';
     el('phCal').textContent = appt ? '1 today' : 'Nothing today';
-    el('phSee').textContent = A.name ? ('See ' + possessive(A.name) + ' board') : 'See their board';
-    if (A.dist === 'A flight or a long drive') {
+    el('phSee').textContent = 'See ' + possessive(nm2) + ' board';
+    if (A.dist === 'A flight or a long drive' || A.hardest === 'away') {
       el('phStatus').textContent = 'Tablet online, checked in 4 minutes ago.';
       el('phSub').textContent = 'You are far away. This is how you know.';
     }
@@ -634,6 +757,11 @@
     el('because').innerHTML = out.map(function(p){
       return '<li><span class="dot"></span><span><b>' + p[0] + '</b>' + p[1] + '</span></li>';
     }).join('');
+
+    // De-dupe the closing ask: if she already gave her email, say so instead
+    // of asking again with an empty field.
+    el('wlAsk').hidden = emailGiven;
+    el('wlDone').hidden = !emailGiven;
   }
   function askWords(){
     var m = { day:'what day it is', appt:'appointments', meds:'the medicine', visit:'who is coming', where:'where you are' };
@@ -645,30 +773,31 @@
 
   // ---------- warm exit ----------
   function disqualify(reason){
-    var poss = A.name ? possessive(A.name) : 'their';
+    var poss = A.name ? possessive(A.name) : (A.who ? possessive(whoFallback()) : 'their');
     A.dq = reason;
+    dqFrom = { ipad:'s11', iphone:'s12', wifi:'s13' }[reason];
     var why = {
       ipad: 'Compasse needs an iPad living at ' + poss + ' home. Without one there is nothing to put on the wall.',
-      iphone: 'Setting the board up needs an iPhone. The family app only works on iPhone today, so an Android phone cannot run it yet.',
-      wifi: 'The board needs Wi-Fi at ' + poss + ' home to show today\u2019s facts and to reach you.'
+      iphone: 'Setting up the board needs one iPhone somewhere in the family. The family app only runs on iPhone today, so an all-Android family cannot set it up yet.',
+      wifi: 'The board needs Wi-Fi at ' + poss + ' home to show today’s facts and to reach you.'
     }[reason];
     el('dqWhy').textContent = why;
     var fix = {
       ipad: [['An iPad, any recent one.', 'It can be secondhand. It lives on a stand or a wall mount and stays plugged in.']],
-      iphone: [['An iPhone in the family.', 'Any family member with an iPhone can be the one who sets it up and records the voice.']],
+      iphone: [['One iPhone in the family.', 'Any relative with an iPhone can be the one who sets it up and records the reminders. It only takes one.']],
       wifi: [['Wi-Fi at the home.', 'A basic home connection is enough. A hotspot will not hold up for a board that stays on.']]
     }[reason];
     el('dqFix').innerHTML = fix.map(function(p){
       return '<li><span class="dot"></span><span><b>' + p[0] + '</b>' + p[1] + '</span></li>';
     }).join('');
-    // The honest alternative. For the hardware exits, a cheap day clock genuinely
-    // helps with the basics, and saying so costs us nothing but a sale we
-    // should not have made.
-    el('dqAlt').textContent = (reason === 'ipad' || reason === 'wifi')
-      ? 'While you decide, a simple day and date clock, usually about $25 online, can help with the basics. It will not talk, remind, or carry your voice, but it is an honest first step.'
-      : '';
+    // The honest alternative. A cheap day clock genuinely helps with the
+    // basics, and saying so costs us nothing but a sale we should not have made.
+    el('dqAlt').textContent = 'While you decide, a simple day and date clock, usually about $25 online, can help with the basics. It will not talk, remind, or carry your voice, but it is an honest first step.';
     show('s17');
   }
+  el('dqBack').addEventListener('click', function(){
+    if (dqFrom) show(dqFrom, true);
+  });
 
   // ---------- email ----------
   function valid(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
@@ -678,17 +807,8 @@
     // hardware answers only, never situation answers
     return src ? base + '|' + src : base;
   }
-  function saveEmail(email, msgEl, done){
+  function saveEmail(email, msgEl, done, failed){
     msgEl.textContent = 'One moment…';
-    // Preview build (no key wired): behave like a success so the flow can be
-    // walked end to end. The deployed file carries the real publishable key.
-    if (SB_KEY.indexOf('REPLACE') === 0){
-      setTimeout(function(){
-        msgEl.textContent = "You're on the list. We'll email you when your spot opens.";
-        done && done();
-      }, 500);
-      return;
-    }
     fetch(SB_URL + '/rest/v1/waitlist_signups', {
       method:'POST',
       headers:{ apikey:SB_KEY, Authorization:'Bearer ' + SB_KEY, 'Content-Type':'application/json', Prefer:'return=minimal' },
@@ -701,6 +821,7 @@
       done && done();
     }).catch(function(){
       msgEl.textContent = "That didn't go through. Please email us instead: hello@compasse.care";
+      failed && failed();
     });
   }
   // One Lead event. No quiz answers, no result type, no health wording, ever.
@@ -714,16 +835,26 @@
     }catch(e){}
   }
 
+  function enterSubmits(inputId, btnId){
+    el(inputId).addEventListener('keydown', function(e){
+      if (e.key === 'Enter') el(btnId).click();
+    });
+  }
+  enterSubmits('em','emGo'); enterSubmits('em2','em2Go'); enterSubmits('em3','em3Go');
+
   el('emGo').addEventListener('click', function(){
     var v = el('em').value.trim();
     if (!valid(v)){ el('emMsg').textContent = 'That email does not look right. Check it and try again.'; return; }
-    saveEmail(v, el('emMsg'), function(){ buildBoard(); setTimeout(function(){ show('s16'); }, 700); });
+    saveEmail(v, el('emMsg'),
+      function(){ emailGiven = true; buildBoard(); setTimeout(function(){ show('s16'); }, 700); },
+      // Never strand her before the plan she earned: on failure, show it anyway.
+      function(){ setTimeout(function(){ buildBoard(); show('s16'); }, 1400); });
   });
   el('emSkip').addEventListener('click', function(){ buildBoard(); show('s16'); });
   el('em2Go').addEventListener('click', function(){
     var v = el('em2').value.trim();
     if (!valid(v)){ el('em2Msg').textContent = 'That email does not look right. Check it and try again.'; return; }
-    saveEmail(v, el('em2Msg'));
+    saveEmail(v, el('em2Msg'), function(){ emailGiven = true; });
   });
   el('em3Go').addEventListener('click', function(){
     var v = el('em3').value.trim();
@@ -742,8 +873,10 @@
     if (LAUNCHED || localStorage.getItem('compasse_pricing') === '1'){
       el('preLaunch').hidden = true;
       el('atLaunch').hidden = false;
+      el('ctaHeadPre').hidden = true;
+      el('ctaHeadLive').hidden = false;
     }
-  } catch(e){ if (LAUNCHED){ el('preLaunch').hidden = true; el('atLaunch').hidden = false; } }
+  } catch(e){ if (LAUNCHED){ el('preLaunch').hidden = true; el('atLaunch').hidden = false; el('ctaHeadPre').hidden = true; el('ctaHeadLive').hidden = false; } }
 
   paintName();
 })();
