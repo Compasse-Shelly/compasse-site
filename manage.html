@@ -165,7 +165,7 @@ function showOptions() {
     '<p>Change or end your Compasse membership below. The board at home keeps running while you decide.</p>' +
     '<button class="opt" id="o-payment"><b>Update payment method</b><span>Card expired or changed? Update it securely with Stripe. It takes about a minute, and nothing else about your membership changes.</span></button>' +
     '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now and refund the rest of this month automatically. No questions, no follow-ups.</span></button>' +
-    '<button class="opt" id="o-pause"><b>We need a break: pause up to 3 months</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
+    '<button class="opt" id="o-pause"><b>We need a break: pause billing</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
     '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal. Compasse keeps running until the end of the time you’ve already paid for, then stops, and you won’t be charged again.</span></button>'
   );
   document.getElementById('o-payment').onclick = openPortal;
@@ -219,7 +219,7 @@ function confirmEndCare() {
 function confirmPause() {
   screen(
     '<h2 style="font-weight:400;font-size:20px;margin-bottom:6px">Pause your membership?</h2>' +
-    '<p>We’ll pause billing for up to 3 months. The board, the schedule, and your recordings all stay saved, and you can resume anytime in one tap.</p>' +
+    '<p>We’ll pause billing. The board, the schedule, and your recordings all stay saved, and you can resume anytime in one tap.</p>' +
     '<button class="primary" id="go">Pause membership</button>' +
     '<button class="ghost" id="back">Go back</button>'
   );
