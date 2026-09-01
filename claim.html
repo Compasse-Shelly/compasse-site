@@ -76,12 +76,15 @@ fbq('init','1039692688431979');
     // resetPasswordForEmail is anti-enumeration: it resolves ok whether or not
     // the account exists yet. The webhook creates it on checkout.completed,
     // which normally beats this page; the "Send it again" link covers the rare
-    // race where the redirect wins.
+    // race where the redirect wins. Returns the auth error (if any) so the
+    // resend link can tell the truth: Supabase allows one of these emails per
+    // address per minute, and a second tap inside that minute is refused.
     try {
-      await sb.auth.resetPasswordForEmail(email, {
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://compasse.care/reset.html',
       });
-    } catch (e) { /* the resend link is the recovery path */ }
+      return error || null;
+    } catch (e) { return e; }
   }
   // metaEvent — pixel + server-side CAPI, same eventID, no email/name/phone.
   function _cookie(n){ const m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
@@ -126,7 +129,13 @@ fbq('init','1039692688431979');
       if (resend) resend.addEventListener('click', async function(ev){
         ev.preventDefault();
         var msg = document.getElementById('resendMsg');
-        if (email) { await sendSetPassword(email); if (msg) msg.textContent = ' Sent. Check your inbox.'; }
+        if (!email) return;
+        const err = await sendSetPassword(email);
+        if (!msg) return;
+        if (!err) { msg.textContent = ' Sent. Check your inbox.'; }
+        else if (err.code === 'over_email_send_rate_limit' || /after \d+ seconds/i.test(err.message || '')) {
+          msg.textContent = ' One email per minute. Please wait a moment, then tap Send it again.';
+        } else { msg.textContent = ' That did not go through. Please try again in a minute.'; }
       });
       // The one conversion event for a completed checkout (a free-trial start).
       // Fired only on a server-verified session, so it can't be spoofed by
