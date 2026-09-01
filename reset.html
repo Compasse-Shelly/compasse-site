@@ -25,10 +25,10 @@
   <div class="rule"></div>
   <h1>Reset your password</h1>
   <div id="form" hidden>
-    <p style="margin-bottom:12px">Choose a new password for your Compasse account (at least 6 characters).</p>
+    <p style="margin-bottom:12px">Choose a new password for your Compasse account (at least 8 characters).</p>
     <div style="display:grid;gap:12px">
-      <input id="pw" type="password" placeholder="New password" autocomplete="new-password" minlength="6">
-      <input id="pw2" type="password" placeholder="Type it again" autocomplete="new-password" minlength="6">
+      <input id="pw" type="password" placeholder="New password" autocomplete="new-password" minlength="8">
+      <input id="pw2" type="password" placeholder="Type it again" autocomplete="new-password" minlength="8">
       <button id="save">Save new password</button>
       <p id="err" class="msg-warn" hidden></p>
     </div>
@@ -66,7 +66,7 @@
     const pw2 = document.getElementById('pw2').value;
     const err = document.getElementById('err');
     err.hidden = true;
-    if (pw.length < 6) { err.textContent = 'At least 6 characters, please.'; err.hidden = false; return; }
+    if (pw.length < 8) { err.textContent = 'At least 8 characters, please.'; err.hidden = false; return; }
     if (pw !== pw2) { err.textContent = "Those don't match. Try again."; err.hidden = false; return; }
     document.getElementById('save').disabled = true;
     const { error } = await client.auth.updateUser({ password: pw });

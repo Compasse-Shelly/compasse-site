@@ -46,11 +46,12 @@ fbq('init','1039692688431979');
     <div id="pending"><h1>One moment…</h1><p>Confirming your subscription.</p></div>
     <div id="ok" style="display:none">
       <h1>Welcome to Compasse 💙</h1>
-      <p>Your free week has started for <span class="email" id="who"></span>.<br>Nothing is charged until it ends, and you can cancel anytime.</p>
+      <p>Your free week has started, and your account is ready for <span class="email" id="who"></span>.<br>Nothing is charged until it ends, and you can cancel anytime.</p>
       <a class="btn" href="https://apps.apple.com/app/id6785591526">Download Compasse on the App&nbsp;Store</a>
       <ol>
-        <li><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store (or search &ldquo;Compasse&rdquo;).</li>
-        <li><b>Create your account in the app using the same email you just paid with</b>. That's how your subscription finds you.</li>
+        <li><b>Set your password</b>. We just emailed <span class="email" id="who2"></span> a link to choose one. <span id="resendWrap">Did not get it? <a href="#" id="resend">Send it again</a>.<span id="resendMsg"></span></span></li>
+        <li><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store, or search &ldquo;Compasse&rdquo;.</li>
+        <li><b>Sign in</b> with the email you paid with and the password you just set. Your subscription is already attached.</li>
         <li><b>Set up their tablet</b>. Install the same app on their iPad, and it walks you through pairing with a one-time code. About 15 minutes, once. <a href="https://compasse.care/film/setup/">Watch the 46-second setup video.</a></li>
       </ol>
       <p class="note">Compasse is a comfort and communication tool, not a medical or emergency device. In any emergency, always call 911.</p>
@@ -61,7 +62,27 @@ fbq('init','1039692688431979');
       <p>Your payment may still have gone through. Email us at <a href="mailto:hello@compasse.care">hello@compasse.care</a> and we'll sort it out personally. Usually within the hour.</p>
     </div>
   </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  // Silent pattern: the account was already created server-side by the Stripe
+  // webhook when the checkout completed. Here we just send the paid email a
+  // link to set a password, reusing the same recovery flow as reset.html.
+  // The anon key is safe to embed (publishable; RLS gates everything).
+  const sb = supabase.createClient(
+    'https://cklagdabffzbikvtnnzo.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8',
+  );
+  async function sendSetPassword(email) {
+    // resetPasswordForEmail is anti-enumeration: it resolves ok whether or not
+    // the account exists yet. The webhook creates it on checkout.completed,
+    // which normally beats this page; the "Send it again" link covers the rare
+    // race where the redirect wins.
+    try {
+      await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://compasse.care/reset.html',
+      });
+    } catch (e) { /* the resend link is the recovery path */ }
+  }
   // metaEvent — pixel + server-side CAPI, same eventID, no email/name/phone.
   function _cookie(n){ const m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
   function metaEvent(name, value){
@@ -94,8 +115,19 @@ fbq('init','1039692688431979');
     const d = await r.json();
     pending.style.display = 'none';
     if (d.ok) {
-      document.getElementById('who').textContent = d.email || 'your email';
+      const email = d.email || '';
+      document.getElementById('who').textContent = email || 'your email';
+      document.getElementById('who2').textContent = email || 'your email';
       ok.style.display = 'block';
+      // Send the set-password link to the paid address.
+      if (email) sendSetPassword(email);
+      // Resend on demand for the race case (redirect beat the webhook).
+      var resend = document.getElementById('resend');
+      if (resend) resend.addEventListener('click', async function(ev){
+        ev.preventDefault();
+        var msg = document.getElementById('resendMsg');
+        if (email) { await sendSetPassword(email); if (msg) msg.textContent = ' Sent. Check your inbox.'; }
+      });
       // The one conversion event for a completed checkout (a free-trial start).
       // Fired only on a server-verified session, so it can't be spoofed by
       // loading claim.html directly.
