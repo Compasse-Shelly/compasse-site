@@ -654,7 +654,7 @@ fbq('init','1039692688431979');
     // pricing section, the launch banner, and the paid-era FAQ
     // answers all appear, while the pre-launch (waitlist) copy disappears.
     // Preview any time with ?pricing=preview, undo with ?pricing=off.
-    const LAUNCHED = false; // ← flip to true on launch day
+    const LAUNCHED = true; // ← flipped 2026-09-01 (launch)
     const live = LAUNCHED || localStorage.getItem('compasse_pricing') === '1';
     if (live) {
       document.getElementById('pricing').hidden = false;

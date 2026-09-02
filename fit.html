@@ -884,7 +884,7 @@
   // Launch state mirrors index.html: one flag, flipped together on launch day
   // (see docs/gtm/GO-LIVE-SEQUENCE.md). Same ?pricing=preview convention and the
   // same localStorage key, so previewing one page previews both.
-  var LAUNCHED = false; // ← flip to true on launch day, together with index.html
+  var LAUNCHED = true; // ← flipped 2026-09-01 (launch), together with index.html
   try {
     var pq = new URLSearchParams(location.search).get('pricing');
     if (pq === 'preview') localStorage.setItem('compasse_pricing', '1');
