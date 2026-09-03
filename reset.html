@@ -25,11 +25,13 @@
   <div class="rule"></div>
   <h1>Reset your password</h1>
   <div id="form" hidden>
-    <p style="margin-bottom:12px">Choose a new password for your Compasse account (at least 8 characters).</p>
+    <p style="margin-bottom:4px">Choose a password for your Compasse account.</p>
+    <p style="margin-bottom:12px">At least 8 characters. Passwords that many people use, like a word with a number after it, are refused for your safety. A short phrase only you would think of works well.</p>
     <div style="display:grid;gap:12px">
       <input id="pw" type="password" placeholder="New password" autocomplete="new-password" minlength="8">
       <input id="pw2" type="password" placeholder="Type it again" autocomplete="new-password" minlength="8">
-      <button id="save">Save new password</button>
+      <label style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--muted)"><input id="showpw" type="checkbox" style="width:auto;padding:0"> Show what I typed</label>
+      <button id="save">Save password</button>
       <p id="err" class="msg-warn" hidden></p>
     </div>
   </div>
@@ -40,7 +42,7 @@
   </div>
   <div id="bad" hidden>
     <p class="msg-warn">This reset link is invalid or has expired.</p>
-    <p>Open the Compasse app, tap "Forgot your password?", and we'll send a fresh one.</p>
+    <p>Ask for a fresh one: on the welcome page tap "Send it again", or open the Compasse app and tap "Forgot your password?".</p>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -56,11 +58,30 @@
   };
   // supabase-js consumes the recovery token from the URL hash automatically
   // (detectSessionInUrl). Give it a moment, then check whether we have a session.
+  // Wait up to 4s for the session to land (slow phones parse the link's hash
+  // late), checking every 200ms, before declaring the link bad.
   (async () => {
-    await new Promise((r) => setTimeout(r, 600));
-    const { data } = await client.auth.getSession();
-    show(data.session ? 'form' : 'bad');
+    for (let i = 0; i < 20; i++) {
+      const { data } = await client.auth.getSession();
+      if (data.session) { show('form'); return; }
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    show('bad');
   })();
+  document.getElementById('showpw').addEventListener('change', (e) => {
+    const t = e.target.checked ? 'text' : 'password';
+    document.getElementById('pw').type = t;
+    document.getElementById('pw2').type = t;
+  });
+  // Turn Supabase's reasons into what to do next.
+  const explain = (m) => {
+    const x = String(m || '');
+    if (/weak|easy to guess|pwned|leaked|compromised|breach/i.test(x)) return 'That password is on lists of passwords people use often, so it is easy to guess. Try a short phrase only you would think of, like three words together.';
+    if (/different from the old|same password/i.test(x)) return 'That is the password already on the account. Choose a new one.';
+    if (/at least|too short|length/i.test(x)) return 'At least 8 characters, please.';
+    if (/session|token|expired|invalid|jwt|not logged in/i.test(x)) return 'This link has already been used or has expired. Ask for a fresh one: on the welcome page tap "Send it again", or in the app tap "Forgot your password?".';
+    return 'That did not save. ' + x;
+  };
   document.getElementById('save').addEventListener('click', async () => {
     const pw = document.getElementById('pw').value;
     const pw2 = document.getElementById('pw2').value;
@@ -71,7 +92,7 @@
     document.getElementById('save').disabled = true;
     const { error } = await client.auth.updateUser({ password: pw });
     if (error) {
-      err.textContent = "That didn't save: " + error.message;
+      err.textContent = explain(error.message);
       err.hidden = false;
       document.getElementById('save').disabled = false;
       return;
