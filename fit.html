@@ -4,10 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The Fit Check · Compasse</title>
-<meta name="description" content="A two minute fit check. Answer a few questions about your family's routine and see what a Grounding Board would look like on the wall.">
+<meta name="description" content="A two minute fit check. Answer a few questions about your family's routine and see what a reassurance board would look like on the wall.">
 <link rel="canonical" href="https://compasse.care/fit.html">
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('set','autoConfig',false,'1039692688431979');
+fbq('init','1039692688431979');
+/* Intentionally NO fbq('track','PageView'). */
+</script>
 <meta property="og:title" content="The Compasse Fit Check">
-<meta property="og:description" content="A two minute fit check. Answer a few questions about your family's routine and see what a Grounding Board would look like on the wall.">
+<meta property="og:description" content="A two minute fit check. Answer a few questions about your family's routine and see what a reassurance board would look like on the wall.">
 <meta property="og:image" content="https://compasse.care/setup-poster.jpg">
 <meta property="og:url" content="https://compasse.care/fit.html">
 <meta property="og:type" content="website">
@@ -104,24 +114,24 @@
      line sits right under it; then NEXT, the event and its time, the typed
      lines, and the Tap to talk bar with the mic. */
   .board{
-    background:var(--cream);border:1px solid var(--border);border-radius:var(--r-lg);
+    background:#FAF6EF;border:1px solid #E5DFD2;border-radius:var(--r-lg);
     padding:22px 20px 18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;
     box-shadow:var(--shadow);color:#1E1E1E;
   }
   .board .bhead{font-weight:600;font-size:17px;color:#3A3A3A;margin-bottom:4px}
   .board .bhead em{font-style:italic}
-  .board .card{width:100%;max-width:300px;border:1px solid var(--border);border-radius:12px;background:#fff;
+  .board .card{width:100%;max-width:300px;border:1px solid #E5DFD2;border-radius:12px;background:#fff;
     padding:14px 12px 12px;display:flex;flex-direction:column;align-items:center;gap:2px}
   .board .clock{font-weight:700;font-size:40px;line-height:1.05;font-variant-numeric:tabular-nums}
   .board .day{font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.01em}
   .board .part{font-weight:500;font-size:22px;color:#4A4A4A;letter-spacing:.02em}
-  .board .date{font-weight:500;font-size:15px;color:var(--muted);margin-top:4px}
+  .board .date{font-weight:500;font-size:15px;color:#5D5852;margin-top:4px}
   .board .line{font-weight:700;font-size:24px;line-height:1.2;max-width:22ch}
   .board .line.msg{font-size:26px;margin-top:4px}
   .board .when{font-weight:500;font-size:17px;color:#4A4A4A;margin-top:-6px}
   .board .lbl{font-weight:600;font-size:12px;letter-spacing:.22em;color:#4A4A4A;margin-top:2px}
   .board .bar{
-    width:100%;border:1px solid var(--border);border-radius:14px;background:#fff;margin-top:10px;
+    width:100%;border:1px solid #E5DFD2;border-radius:14px;background:#fff;margin-top:10px;
     min-height:54px;display:flex;align-items:center;justify-content:center;gap:9px;font-weight:700;font-size:16px;
   }
   .board .bar svg{width:18px;height:18px;flex:none}
@@ -189,6 +199,7 @@
     <p class="eyebrow">Compasse</p>
     <h1>A two-minute fit check</h1>
     <p>A few questions about your family&rsquo;s routine. At the end you will see the board we would build, and we will tell you honestly if it is not the right fit.</p>
+    <p class="fine" id="frontDoor">Compasse is $29 a month after a free first week, with a 30-day money-back guarantee. It needs an iPad on Wi-Fi at their home and one iPhone in the family. Ready now? <a href="/#pricing" style="color:var(--teal)">Start your free week</a>. Or <a href="/" style="color:var(--teal)">see the full site</a> first.</p>
     <div class="note">No phone calls. No salespeople. Your answers stay on this page.</div>
     <button class="cta" data-next>Start the fit check</button>
   </section>
@@ -391,48 +402,37 @@
             <div class="prow"><span>Medications</span><em id="phMeds">None yet</em></div>
             <div class="prow"><span>Calendar</span><em id="phCal">Nothing today</em></div>
             <div class="prow"><span>Voice reminders</span><em>3 recorded</em></div>
-            <div class="prow"><span>Grounding Board</span><span class="chev">&rsaquo;</span></div>
+            <div class="prow"><span>Board wording</span><span class="chev">&rsaquo;</span></div>
             <div class="prow"><span id="phSee">See their board</span><span class="chev">&rsaquo;</span></div>
           </div>
         </div>
         <ul class="caps">
-          <li><span class="dot"></span><div><b>Change the wall from anywhere.</b><span>Type the bottom line on your phone. It appears on the board at home the same second.</span></div></li>
+          <li><span class="dot"></span><div><b>Change the wall from anywhere.</b><span>Type the bottom line on your phone. It appears on the board at home within seconds.</span></div></li>
           <li><span class="dot"></span><div><b>See the board without calling.</b><span>The mirror shows you exactly what is on that screen right now, at the same proportions.</span></div></li>
           <li><span class="dot"></span><div><b>Record once, repeat forever.</b><span>You record the reminders in your own voice. The board plays your recording back at the right time, every time, without you.</span></div></li>
           <li><span class="dot"></span><div><b>Know without calling.</b><span>If a medicine reminder is not confirmed, or the tablet goes offline, the app tells you. Quiet days stay quiet.</span></div></li>
         </ul>
       </div>
-      <p class="fine" style="margin-top:22px">Today, one caregiver phone runs the board. Support for siblings and other family members is on the way.</p>
+      <p class="fine" style="margin-top:22px">Today, one caregiver phone runs the board.</p>
     </div>
 
     <div class="card" style="margin-top:38px">
       <h3>What it costs</h3>
       <p class="fine">No hardware to buy from us. It runs on the family&rsquo;s iPad, 2017 or newer, or one you buy once.</p>
       <ul class="price">
-        <li><span>Compasse, first year</span><span class="amt">$348</span></li>
         <li><span>Every month, after the free first week</span><span class="amt">$29</span></li>
+        <li><span>A full year, if you stay all twelve months</span><span class="amt">$348</span></li>
         <li><span>Hardware you must buy from us</span><span class="amt">None</span></li>
         <li><span>Setup visit or install fee</span><span class="amt">None</span></li>
       </ul>
     </div>
 
     <div style="margin-top:34px">
-      <h2 id="ctaHeadPre">When your spot opens, the board can be on <span data-poss>their</span> wall the same day.</h2>
-      <h2 id="ctaHeadLive" hidden>The board can be live on <span data-poss>their</span> wall tonight.</h2>
-      <div id="preLaunch">
-        <div id="wlAsk">
-          <p>We are opening spots to families in small groups. Leave your email and we will tell you the moment yours is ready.</p>
-          <input type="email" id="em2" autocomplete="email" placeholder="you@example.com" aria-label="Your email address">
-          <div class="row"><button class="cta" id="em2Go">Join the waitlist</button></div>
-          <p class="msg" id="em2Msg" role="status"></p>
-        </div>
-        <div id="wlDone" hidden>
-          <p>You are on the list. We will email you the plan, and the moment your spot opens. No phone calls, ever.</p>
-        </div>
-      </div>
-      <div id="atLaunch" hidden>
+      <h2 id="ctaHeadLive">The board can be live on <span data-poss>their</span> wall tonight.</h2>
+      <div id="atLaunch">
         <p>The first week is free, then $29 a month with a 30 day money back guarantee. Cancel anytime, online, in one tap. If care ends, billing stops immediately and we refund the unused part of the month.</p>
-        <div class="row"><a class="cta" href="/#pricing">Start your free week</a></div>
+        <div class="row"><button class="cta" id="buyGo" type="button">Start your free week</button></div>
+        <p class="fine" style="text-align:center;margin-top:10px">$29 a month after the free first week. 30-day money-back guarantee. Cancel anytime. <a href="/" style="color:var(--teal)">See the full site</a>.</p>
       </div>
     </div>
   </section>
@@ -705,7 +705,7 @@
       meds: ['You said the medicine is the hardest part.',
         'The board reminds at the right times, in a voice you recorded. If a reminder is not confirmed, the app tells you instead of leaving you guessing.'],
       evening: ['You said evenings are the hardest part.',
-        'The board changes with the day. Late afternoon, the wording gets calmer. At 6pm the evening reassurance turns on. Overnight, it dims and switches to night words.'],
+        'The board changes with the day. Late afternoon, the wording gets calmer. In the evening the reassurance line turns on. Overnight, it dims and switches to night words.'],
       alone: ['You said the hardest part is being the only one who answers.',
         'The board carries the repeat questions so not every answer has to come from you. The day, the date, and what comes next stay answered on the wall, whether or not you picked up.'],
       all: ['You said it honestly: all of it.',
@@ -790,8 +790,7 @@
 
     // De-dupe the closing ask: if she already gave her email, say so instead
     // of asking again with an empty field.
-    el('wlAsk').hidden = emailGiven;
-    el('wlDone').hidden = !emailGiven;
+    // (pre-launch waitlist toggle removed 2026-09-04; the results page is the live one)
   }
   function askWords(){
     var m = { day:'what day it is', appt:'appointments', meds:'the medicine', visit:'who is coming', where:'where you are' };
@@ -844,9 +843,9 @@
       headers:{ apikey:SB_KEY, Authorization:'Bearer ' + SB_KEY, 'Content-Type':'application/json', Prefer:'return=minimal' },
       body: JSON.stringify({ email: email, source: tag() })
     }).then(function(r){
-      if (r.status === 409){ msgEl.textContent = "You're already on the list. We'll be in touch soon."; done && done(); return; }
+      if (r.status === 409){ msgEl.textContent = "We already have that email. Your plan is on its way."; done && done(); return; }
       if (!r.ok) throw new Error(String(r.status));
-      msgEl.textContent = "You're on the list. We'll email you when your spot opens.";
+      msgEl.textContent = "Thank you. We will send the plan to that address.";
       metaLead();
       done && done();
     }).catch(function(){
@@ -854,23 +853,60 @@
       failed && failed();
     });
   }
-  // One Lead event. No quiz answers, no result type, no health wording, ever.
-  function metaLead(){
-    try{
-      if (window.fbq) window.fbq('track','Lead');
+  // One Lead event, deduplicated between the browser pixel and the server
+  // (same event_id both ways), and NEVER on the not-a-fit exit: an Android or
+  // no-iPad family must not teach Meta to find more of them. No quiz answers,
+  // no result type, no health wording, ever.
+  function _cookie(n){ var m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
+  function metaEvent(name, value){
+    if (A.dq) return;
+    var eventID = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+Math.random();
+    var cd = (value!=null) ? { value:value, currency:'USD' } : {};
+    try { if (window.fbq) fbq('track', name, cd, { eventID: eventID }); } catch(e){}
+    try {
       fetch(SB_URL + '/functions/v1/capi-event', {
         method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
-        body: JSON.stringify({ event_name:'Lead', event_source_url: location.origin + location.pathname })
+        body: JSON.stringify({ event_name:name, event_id:eventID, event_source_url: location.origin + location.pathname,
+          value:(value!=null)?value:undefined, currency:(value!=null)?'USD':undefined, fbp:_cookie('_fbp'), fbc:_cookie('_fbc') })
       }).catch(function(){});
-    }catch(e){}
+    } catch(e){}
   }
+  function metaLead(){ metaEvent('Lead'); }
+
+  // Checkout from the results page. The ad/channel tag rides along as Stripe
+  // metadata (create-checkout sanitizes it). Never an email or a quiz answer.
+  el('buyGo').addEventListener('click', function(){
+    var b = el('buyGo'); b.disabled = true; b.textContent = 'One moment…';
+    metaEvent('InitiateCheckout', 29);
+    fetch(SB_URL + '/functions/v1/create-checkout', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ src: tag() })
+    }).then(function(r){ return r.json(); }).then(function(d){
+      if (d && d.url){ location.href = d.url; return; }
+      throw new Error('no url');
+    }).catch(function(){
+      b.disabled = false; b.textContent = 'Start your free week';
+      location.href = '/#pricing';
+    });
+  });
+
+  // ?h= swaps only the first headline so the page opens on the ad's own words.
+  (function(){
+    var h = new URLSearchParams(location.search).get('h');
+    var lines = {
+      repeat: 'The same question, again. Two minutes to see if Compasse fits.',
+      calls: 'The fourth call today. Two minutes to see if Compasse fits.',
+      far: 'An hour away, and she asks again. Two minutes to see if Compasse fits.'
+    };
+    if (h && lines[h]) { var t = document.querySelector('#s0 h1'); if (t) t.textContent = lines[h]; }
+  })();
 
   function enterSubmits(inputId, btnId){
     el(inputId).addEventListener('keydown', function(e){
       if (e.key === 'Enter') el(btnId).click();
     });
   }
-  enterSubmits('em','emGo'); enterSubmits('em2','em2Go'); enterSubmits('em3','em3Go');
+  enterSubmits('em','emGo'); enterSubmits('em3','em3Go');
 
   el('emGo').addEventListener('click', function(){
     var v = el('em').value.trim();
@@ -881,32 +917,12 @@
       function(){ setTimeout(function(){ buildBoard(); show('s16'); }, 1400); });
   });
   el('emSkip').addEventListener('click', function(){ buildBoard(); show('s16'); });
-  el('em2Go').addEventListener('click', function(){
-    var v = el('em2').value.trim();
-    if (!valid(v)){ el('em2Msg').textContent = 'That email does not look right. Check it and try again.'; return; }
-    saveEmail(v, el('em2Msg'), function(){ emailGiven = true; });
-  });
   el('em3Go').addEventListener('click', function(){
     var v = el('em3').value.trim();
     if (!valid(v)){ el('em3Msg').textContent = 'That email does not look right. Check it and try again.'; return; }
     saveEmail(v, el('em3Msg'));
   });
 
-  // Launch state mirrors index.html: one flag, flipped together on launch day
-  // (see docs/gtm/GO-LIVE-SEQUENCE.md). Same ?pricing=preview convention and the
-  // same localStorage key, so previewing one page previews both.
-  var LAUNCHED = true; // ← flipped 2026-09-01 (launch), together with index.html
-  try {
-    var pq = new URLSearchParams(location.search).get('pricing');
-    if (pq === 'preview') localStorage.setItem('compasse_pricing', '1');
-    if (pq === 'off') localStorage.removeItem('compasse_pricing');
-    if (LAUNCHED || localStorage.getItem('compasse_pricing') === '1'){
-      el('preLaunch').hidden = true;
-      el('atLaunch').hidden = false;
-      el('ctaHeadPre').hidden = true;
-      el('ctaHeadLive').hidden = false;
-    }
-  } catch(e){ if (LAUNCHED){ el('preLaunch').hidden = true; el('atLaunch').hidden = false; el('ctaHeadPre').hidden = true; el('ctaHeadLive').hidden = false; } }
 
   paintName();
 })();

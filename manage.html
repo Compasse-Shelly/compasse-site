@@ -131,7 +131,7 @@ function endDatePhrase() {
 
 // ---------- options ----------
 function showOptions() {
-  // No paid subscription on file (trial/founding families have no Stripe row).
+  // No paid subscription on file yet (checkout not completed, or the account predates billing).
   if (!sub) {
     screen('<p>We don’t see a paid subscription on this account yet. If you think that’s wrong, email <a href="mailto:hello@compasse.care">hello@compasse.care</a> and we’ll sort it out.</p>');
     return;

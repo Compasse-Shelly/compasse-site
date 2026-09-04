@@ -1,4 +1,10 @@
 User-agent: *
+Disallow: /guides/
+Disallow: /index-bento.html
+Disallow: /index-classic-2026-08.html
+Disallow: /index-hallmark.html
+Disallow: /film/index.html
+Disallow: /film/reviewer/
 Allow: /
 
 Sitemap: https://compasse.care/sitemap.xml
