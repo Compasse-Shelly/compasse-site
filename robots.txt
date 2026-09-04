@@ -1,5 +1,4 @@
 User-agent: *
-Disallow: /guides/
 Disallow: /index-bento.html
 Disallow: /index-classic-2026-08.html
 Disallow: /index-hallmark.html
