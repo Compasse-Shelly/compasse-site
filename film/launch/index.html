@@ -345,7 +345,7 @@ recut_vo.py now enforces it by copying the file.
 
   /* ── the board (app tokens; own container so type scales with it) */
   .board {
-    --bd-bg: #FAF7F2; --bd-text: #1E1E1E; --bd-muted: #5A5A5A;
+    --bd-bg: #FAF7F2; --bd-text: #2B2A28; --bd-muted: #5A5A5A;
     --bd-surface: #FFFFFF; --bd-border: #E5DFD2; --bd-accent: #2C6A85;
     --bd-accentmuted: #D9E8EE;
     /* container-type: inline-size measures the CONTENT box, so 1cqi below
@@ -447,7 +447,7 @@ recut_vo.py now enforces it by copying the file.
   .vb-labels { display: grid; }
   .vb-l {
     grid-area: 1 / 1; display: flex; align-items: center; justify-content: center;
-    font-size: 1em; font-weight: 700; color: #1E1E1E; white-space: nowrap;
+    font-size: 1em; font-weight: 700; color: #2B2A28; white-space: nowrap;
     opacity: 0; visibility: hidden;
   }
   .vb-l.l-idle { opacity: 1; visibility: visible; }
@@ -498,7 +498,7 @@ recut_vo.py now enforces it by copying the file.
   .panel {
     container-type: inline-size;
     width: 100%;
-    background: #FAF7F2; color: #1E1E1E;
+    background: #FAF7F2; color: #2B2A28;
     border: 0; border-radius: 0;
     padding: 3.4cqi 3.4cqi;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -550,7 +550,7 @@ recut_vo.py now enforces it by copying the file.
     background: #F1ECE3; border: 0; border-radius: 4cqi;
     height: 20cqi; display: flex; align-items: center; justify-content: center;
   }
-  .pairbtn .bb-l { font-size: 6.8cqi; font-weight: 600; color: #1E1E1E; }
+  .pairbtn .bb-l { font-size: 6.8cqi; font-weight: 600; color: #2B2A28; }
   .pairbtn.ok { background: #2E7D32; }
   .pairbtn.ok .bb-l { color: #fff; }
 
@@ -566,7 +566,7 @@ recut_vo.py now enforces it by copying the file.
      the screen instead of reading as a dark title bar */
   .iosbanner {
     position: absolute; left: 2.7cqi; right: 2.7cqi; top: 2.7cqi;
-    background: rgba(250,250,250,.94); color: #1E1E1E; border-radius: 4.3cqi;
+    background: rgba(250,250,250,.94); color: #2B2A28; border-radius: 4.3cqi;
     padding: 4cqi 4.6cqi; display: flex; gap: 3.7cqi; align-items: flex-start;
     box-shadow: 0 1.5cqi 4cqi rgba(20,16,12,.18);
     opacity: 0; visibility: hidden;
@@ -740,8 +740,8 @@ recut_vo.py now enforces it by copying the file.
   function esc(s) { return s; }
 
   var MIC_SVG =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-    '<rect x="9" y="2" width="6" height="11" rx="3" fill="#1E1E1E" stroke="none"/>' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#2B2A28" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<rect x="9" y="2" width="6" height="11" rx="3" fill="#2B2A28" stroke="none"/>' +
     '<path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/><path d="M8.5 21h7"/></svg>';
 
   var PHONE_SVG =
