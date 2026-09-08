@@ -39,6 +39,8 @@ fbq('init','1039692688431979');
   a { color:var(--teal); }
   #pending, #failed { display:none; }
 </style>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if (window.top !== window.self) { window.top.location = window.location.href; }</script>
 </head>
 <body>
   <div class="card">
@@ -62,7 +64,7 @@ fbq('init','1039692688431979');
       <p>Your payment may still have gone through. Email us at <a href="mailto:hello@compasse.care">hello@compasse.care</a> and we'll sort it out personally. Usually within the hour.</p>
     </div>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
 <script>
   // Silent pattern: the account was already created server-side by the Stripe
   // webhook when the checkout completed. Here we just send the paid email a

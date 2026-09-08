@@ -19,6 +19,8 @@
   .msg-warn { color: var(--warn); }
   .rule { height: 4px; width: 132px; border-radius: 2px; background: linear-gradient(90deg, #2B4FC9, #6E3F9E, #D0322E); }
 </style>
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<script>if (window.top !== window.self) { window.top.location = window.location.href; }</script>
 </head>
 <body>
 <div class="card">
@@ -45,7 +47,7 @@
     <p>Ask for a fresh one: on the welcome page tap "Send it again", or open the Compasse app and tap "Forgot your password?".</p>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
 <script>
   const client = supabase.createClient(
     'https://cklagdabffzbikvtnnzo.supabase.co',
