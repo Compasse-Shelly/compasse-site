@@ -49,14 +49,14 @@
 
   /* iPad board */
   .ipad {
-    width: 62cqi; border-radius: 2.4cqi; background: #1c1c1e; padding: 1.6cqi;
+    width: 34cqi; border-radius: 2.4cqi; background: #1c1c1e; padding: 1.4cqi; /* PORTRAIT: the board stands upright */
     box-shadow: 0 2cqi 5cqi rgba(43,42,40,.25);
     opacity: 0; transform: translateY(2cqi) scale(.97); transition: all 1s ease;
   }
   .scene.on .ipad { opacity: 1; transform: none; }
   .board {
-    background: #FAF6EF; border-radius: 1.2cqi; padding: 1.4cqi 2.4cqi 1.4cqi; color: #2B2A28;
-    display: flex; flex-direction: column; align-items: center; gap: .6cqi; text-align: center;
+    background: #FAF7F2; border-radius: 1.2cqi; padding: 2cqi 1.6cqi; color: #2B2A28; min-height: 44cqi; box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6cqi; text-align: center;
   }
   .b-head { font-size: 1.5cqi; font-weight: 600; color: #3A3A3A; }
   .b-head em { font-style: italic; }
@@ -74,7 +74,7 @@
   .b-next { font-size: 2.2cqi; font-weight: 700; color: #2B2A28; line-height: 1.2; }
   .b-when { font-size: 1.6cqi; font-weight: 500; color: #4A4A4A; margin-top: -.4cqi; }
   .voicebar {
-    margin-top: .5cqi; width: 52cqi; height: 4cqi; border-radius: 1.3cqi;
+    margin-top: .5cqi; width: 28cqi; height: 4cqi; border-radius: 1.3cqi;
     background: #fff; border: 1px solid #E5DFD2; color: #2B2A28; display: flex; align-items: center;
     justify-content: center; gap: .9cqi; font-size: 1.9cqi; font-weight: 700;
   }
@@ -211,8 +211,11 @@
 <style>
   /* what-film additions: brighter, springier than the launch film. */
   .scene.day.ui .ipad { transition: all .8s cubic-bezier(.2,.9,.3,1.15); }
-  #s4 .ipad { margin-bottom: 22cqi; }
-  #s4 .chips { bottom: 4.5cqi; }
+  /* portrait board on the left, the exchange on the right */
+  #s4 { flex-direction: row; justify-content: center; gap: 7cqi; }
+  #s4 .ipad { margin-bottom: 0; }
+  #s4 .chips { position: static; width: 36cqi; align-items: flex-start; text-align: left; }
+  #s4 .chip { max-width: 36cqi; }
   .b-status.swap { color: #2C6A85; }
   .cue-med #statusLine { color: #2C6A85; }
   .appline { font-family: -apple-system, system-ui, sans-serif; font-size: 1.9cqi; color: #6B6660; font-weight: 600; }
@@ -222,7 +225,11 @@
   WHAT IS COMPASSE, 64s, 16:9. Base video: captions carry the story so the
   silent render works on the site today. VO drops in later via cut-video.
 
-  VO CUE SHEET (record each as its own clip; timecodes are clip START times;
+  VO CUE SHEET: SUPERSEDED 2026-09-07. Never record this as written: a first-person
+  daughter narrator is a synthetic person presented as a customer (brand law), and the
+  unnamed-parent pronouns break the 2026-09-07 pronoun rule (brand/VOICE.md). The film
+  plays silent with its on-screen lines. Kept for the record only.
+  (record each as its own clip; timecodes are clip START times;
   script is the claims-audited draft from ad-builder 2026-07-16, two
   claims-safe passes applied 7/23):
     [00.5] My mom asks what day it is nine times before noon.
@@ -254,7 +261,7 @@
 
     <!-- S2 8-14.5 · empathy turn (night) -->
     <section class="scene night" id="s2">
-      <div class="line mid" style="--d:.3s">She&rsquo;s not being difficult. Her memory is changing.</div>
+      <div class="line mid" style="--d:.3s">Mom is not being difficult. Something is changing.</div>
       <div class="line big" style="--d:2.4s">You can&rsquo;t be there every hour.<br>Your voice can.</div>
     </section>
 
@@ -262,7 +269,7 @@
     <section class="scene day" id="s3">
       <img class="mark line" style="--d:.3s" src="../../logo.png" alt="Compasse logo">
       <div class="wordmark line" style="--d:.8s">This is Compasse.</div>
-      <div class="tagline line" style="--d:1.6s">An iPad, turned into the calmest thing in her house.</div>
+      <div class="tagline line" style="--d:1.6s">An iPad, turned into the calmest thing in their house.</div>
     </section>
 
     <!-- S4 19.5-33 · the board (day, ui) -->
@@ -274,7 +281,7 @@
             <div class="b-clock">8:00 AM</div>
             <div class="b-day">TUESDAY</div>
             <div class="b-part">MORNING</div>
-            <div class="b-date">August 4th, 2026</div>
+            <div class="b-date">September 8th, 2026</div>
           </div>
           <div class="b-status" id="statusLine">Sarah recorded your reminders herself.</div>
           <div class="b-label">NEXT</div>
@@ -288,7 +295,7 @@
       </div>
       <div class="chips">
         <div class="chip her"><span class="who">Mom</span>&ldquo;What day is it?&rdquo;</div>
-        <div class="chip cassi"><span class="who">Cassi answers</span>&ldquo;Today is Tuesday, August 4th.&rdquo;</div>
+        <div class="chip cassi"><span class="who">Cassi answers</span>&ldquo;Today is Tuesday.&rdquo;</div>
         <div class="badge">The same patience, every single time.</div>
       </div>
     </section>
@@ -321,8 +328,8 @@
     <section class="scene day" id="s6">
       <div class="cards">
         <div class="fcard" style="--d:.2s"><div class="g g1">&#10003;</div><h4>&ldquo;I took it.&rdquo;</h4><p>Medication confirmed by voice at dose time, and logged for you. No nagging.</p></div>
-        <div class="fcard" style="--d:.8s"><div class="g g2">!</div><h4>If a dose is missed</h4><p>Your phone gets an alert. Her board stays calm.</p></div>
-        <div class="fcard" style="--d:1.4s"><div class="g g3">&#9742;</div><h4>&ldquo;Call Sarah.&rdquo;</h4><p>She taps the board and asks. The tablet rings your phone on FaceTime.</p></div>
+        <div class="fcard" style="--d:.8s"><div class="g g2">!</div><h4>If a dose is missed</h4><p>Your phone gets an alert. Their board stays calm.</p></div>
+        <div class="fcard" style="--d:1.4s"><div class="g g3">&#9742;</div><h4>&ldquo;Call Sarah.&rdquo;</h4><p>Mom taps the board and asks. The tablet rings your phone on FaceTime.</p></div>
       </div>
     </section>
 
