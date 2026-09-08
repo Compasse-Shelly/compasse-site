@@ -1,5 +1,13 @@
 <!doctype html>
 <!--
+v9.1 (2026-09-08, commit 44e0b29): beat 13 is the shipped call route, Ruth asks through Tap to talk (R07 'Call Sarah.'), Cassi places the call, the ring. Narrator = Kokoro af_heart with the locked brand string /kˈʌmpəsˌA/; Hera retired to fallback.
+v9 (2026-09-08, docs/FILM-SCRIPT-LAUNCH-v9.md): beat 1 the title alone; beat 4 'Who's coming today?' with a new Cassi answer from the Next card; beat 8 the board alone; beat 13 a tap and a ring; the call scene and Ruth's opening line retired; card B carries the synthetic-voices line; one clock time across beats 3 and 4.
+v8 (2026-09-08): docs/FILM-SCRIPT-LAUNCH-v8.md. Ruth speaks (R01 to R06), Cassi answers, the reminder beat is two shots (5a Sarah records, 5b the board plays the same file), the call is played out (C05, S03, R06, S04); beats grow by the script's chains and holds; every clip start comes from PLAN. Sarah synthetic: the badge says 'A recording, played back.'
+v7 (2026-09-07): 14 beats from docs/FILM-SCRIPT-LAUNCH-v7.md; narrator Hera; Cassi thalia (C01 new, C02 = C01, C03 new; C04 and C05 are the v6 pill and calling clips); Sarah S01 reused. The v6 table below is history.
+v6 (2026-09-06): narration N01 to N07 re-cut in the studio voice (Deepgram Aura-2 vesta);
+DUR updated from the new files; VISMIN floors added for button and phone beats (punch list);
+?fmt=9x16 / 4x5 render modes. The table below is the v5 arithmetic and is kept for the record.
+
 BEAT TIMINGS (seconds).
 
 The lengths below are the LOCKED script's own t_start table
@@ -214,6 +222,35 @@ recut_vo.py now enforces it by copying the file.
   body.render .stage { width: 100vw; height: 100vh; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
 
   #ground { position: absolute; inset: 0; background: #171310; }
+  /* v8 rule (Aidan, 2026-09-08): every phone moment is the REAL capture in a phone frame, never a drawn strip.
+     Overlays sit in percent boxes measured on the capture and only show the app's own transient states. */
+  .realphone { position: relative; width: 18.5cqi; border-radius: 3.6cqi; background: #1c1c1e; padding: .65cqi; box-shadow: 0 2cqi 5cqi rgba(43,42,40,.25); }
+  .realphone .shot { position: relative; border-radius: 3cqi; overflow: hidden; background: #FAF7F2; container-type: inline-size; }
+  .realphone img { width: 100%; display: block; }
+  .ov { position: absolute; display: flex; align-items: center; justify-content: center; border-radius: 2.2cqi; font-weight: 700; overflow: hidden; }
+  .ov .bb-l { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; white-space: nowrap; }
+  .ov .bb-l.on { opacity: 1; visibility: visible; }
+  #ciBtn { left: 4%; top: 35.9%; width: 44.7%; height: 6.4%; background: transparent; color: #2B2A28; font-size: 5.6cqi; border-radius: 9cqi; }
+  #ciL1 { background: #ECE8E0; }   /* opaque over the real pill; the timeline toggles visibility, not the class */
+  #recBtn { left: 9.2%; top: 31.4%; width: 81.6%; height: 13.9%; background: transparent; color: #fff; font-size: 8cqi; border-radius: 4cqi; }
+  #recDone { position: absolute; left: 5%; right: 5%; top: 47.5%; background: #fff; border: 1px solid #E8E2D8; border-radius: 4cqi; padding: 4cqi 5cqi; display: none; flex-direction: column; gap: 3cqi; }
+  #sentLine { display: none; }
+  #medStatus { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+  .band.ft .chip { position: absolute; left: 50%; transform: translateX(-50%); }
+  #chipR2, #chipS2, #chipBrand { position: absolute; left: 0; right: 0; bottom: 11cqh; margin: 0 auto; width: max-content; }
+
+  /* ── tall formats (v6, 2026-09-06) ─────────────────────────────
+     ?render=1&fmt=9x16 (1080x1920) or fmt=4x5 (1080x1350): the 16:9 stage is
+     centred at full width; #ground and the price wipe are moved up to .wrap
+     at boot (see fmtTall()) so the film's own colour fills above and below.
+     Nothing is padded after export. Safe zones, measured on the canvas:
+       9x16: the stage band is y 656..1264 of 1920; Reels UI keeps 0..250 and
+             1580..1920, so every frame of the film sits inside the safe area.
+       4x5:  the stage band is y 371..979 of 1350. */
+  body.render.fmt-tall .wrap { position: relative; overflow: hidden; width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center; background: #171310; }
+  body.render.fmt-tall .stage { width: 100vw; height: calc(100vw * 9 / 16); position: relative; background: transparent; }
+  body.render.fmt-tall .wrap > #ground { position: absolute; inset: 0; }
 
   .scene {
     position: absolute; inset: 0; opacity: 0; visibility: hidden;
@@ -673,6 +710,8 @@ recut_vo.py now enforces it by copying the file.
   /* ─── mode ──────────────────────────────────────────────────── */
   var Q = new URLSearchParams(location.search);
   var RENDER = Q.get('render') === '1';
+  var FMT = Q.get('fmt') || '16x9';
+  if (RENDER && FMT !== '16x9') document.body.classList.add('fmt-tall');
   var AR = Q.get('ar') === '9x16' ? '9x16' : '16x9';
   document.body.setAttribute('data-ar', AR);
   if (RENDER) document.body.classList.add('render');
@@ -681,15 +720,14 @@ recut_vo.py now enforces it by copying the file.
 
   /* ─── measured VO lengths (render/vo/durations.json) ────────── */
   var DUR = {
-    N01: 4.805, N02: 4.102, C01: 3.816, N03: 4.204, N04: 3.406,
-    S01: 2.738, S02: 4.134, N05: 3.598, C03: 6.504, N06: 4.066, N07: 5.587, C04: 1.104
-  };
+    R01: 1.493, N01: 4.0, N02: 2.931, N03: 2.218, R02: 1.722, C01: 1.0, R03: 1.75, C02: 1.68, N04: 4.662, S01: 2.879, S02: 2.879, N05: 3.324, C03: 3.16, R04: 3.708, N06: 2.229, C04: 6.504, R05: 2.113, N07: 4.923, C05: 1.104, R07: 1.09, S03: 0.959, R06: 1.493, S04: 2.411, N08: 5.565
+  };   /* measured from vo/: Ruth = Orpheus diana, Sarah = Orpheus hannah (S02 = S01), Cassi thalia, narrator Kokoro af_heart with the locked brand string /kˈʌmpəsˌA/ (v9.1) */
   /* Beat 6 is the SAME cached clip as beat 4, not a re-render: that is the
      beat's whole argument. C02 is C01, byte for byte, so it is also C01's
      length. render/recut_vo.py now copies C01.mp3 over C02.mp3 (gen_vo.py
      had synthesized a second file, 3.576s, which quietly broke the claim);
      assemble.py muxes the one file at both timecodes. */
-  DUR.C02 = DUR.C01;
+  /* v9: C02 is its own render ('Sarah is coming at five.'), measured above; it no longer copies C01 */
 
   /* ─── beats ─────────────────────────────────────────────────────
      Lengths are the LOCKED script's, taken straight off its t_start table
@@ -700,34 +738,64 @@ recut_vo.py now enforces it by copying the file.
      ends at its clip end + 0.40s. Cut the narrator clips back to their
      scripted lengths, drop the new numbers into DUR, and the film walks
      itself back to 90.0s. */
-  var LOCKED = [4.50, 5.50, 4.50, 5.80, 4.20, 5.80, 5.20, 4.50, 2.50, 4.80,
-                1.70, 3.50, 9.00, 2.50, 5.00, 7.50, 3.10, 7.40, 3.00];
+  var LOCKED = [4.50, 8.49, 5.86, 4.00, 7.90, 6.05, 5.35, 5.99, 5.71, 12.45, 4.30, 7.89, 4.00, 6.52];   /* v9: beat 13's v7 lock belonged to the played-out call */
+  /* v8 (2026-09-08, docs/FILM-SCRIPT-LAUNCH-v8.md): the v7 locked lengths; each beat is
+     max(lock, VO chain, floor). Index 5 is the script's 5a, 6 is 5b; 7 to 14 as before. */
   /* beat: [clip, start offset inside the beat, tail the beat owes after it]
      Cassi's beats (4, 6, 13, 18) owe a longer tail (2026-09-04, Aidan): the
      board rests on her answer before the cut, so the film never feels choppy.
      Cassi's clips are Deepgram Aura-2 thalia, the product voice since 9/4. */
-  var VOIN = {
-    2:  ['N01',  0.40, 0.40], 3:  ['N02',  0.20, 0.40], 4:  ['C01',  3.10, 1.40],
-    5:  ['N03',  0.30, 0.40], 6:  ['C02',  2.20, 1.40], 7:  ['N04',  0.20, 0.40],
-    8:  ['S01',  1.90, 0.40], 10: ['S02',  2.60, 0.40], 12: ['N05', -0.60, 0.40],
-    13: ['C03',  0.70, 2.20], 15: ['N06',  0.60, 0.40], 16: ['N07',  1.40, 0.40],
-    18: ['C04',  2.20, 1.20]
+  /* v8 VO chains (section 3): lead-in + clips + airs + holds + tail. Airs: 0.60 between speakers,
+     1.00 after a Ruth question. Tail 0.40. Holds are labeled in the script. */
+  var VOIN = {};   /* the mix reads window.plan instead (see PLAN below) */
+  var EXTRA = {
+    2:  function () { return 0.50 + DUR.N01 + 0.60 + DUR.N02 + 0.40; },
+    3:  function () { return 1.00 + DUR.N03 + 0.60 + DUR.R02 + 1.00 + DUR.C01 + 1.00 + 0.40; },
+    4:  function () { return 1.00 + DUR.R03 + 1.00 + DUR.C02 + 0.80 + 0.40; },
+    5:  function () { return 1.00 + DUR.N04 + 0.60 + DUR.S01 + 0.40; },
+    6:  function () { return 1.00 + DUR.S02 + 1.60 + 0.40; },
+    7:  function () { return 0.80 + DUR.N05 + 1.00 + 0.40; },
+    8:  function () { return 1.00 + 0.50 + DUR.C03 + 0.40; },
+    9:  function () { return 0.80 + DUR.R04 + 1.20 + DUR.N06 + 0.40; },
+    10: function () { return 0.80 + DUR.C04 + 1.00 + DUR.R05 + 1.00 + 0.40; },
+    12: function () { return 1.00 + DUR.N07 + 0.40; },
+    13: function () { return 1.00 + DUR.R07 + 1.00 + DUR.C05 + 2.00 + 0.40; },   /* v9.1: Ruth asks through Tap to talk, Cassi places the call, the ring */
+    14: function () { return 0.80 + DUR.N08 + 0.40; }
   };
   /* choreography that has to finish before the cut, VO aside */
-  var VISMIN = { 7: 5.25, 18: 7.40 };
+  var VISMIN = { 5: 7.90, 7: 3.70, 9: 3.30, 10: 10.80, 11: 4.30 };   /* v9: beat 13's floor retired with the call scene */
+  /* the punch-list floors (v8 section 3); beat 9's floor is a hold on Ruth after her answer, carried inside its chain */
+  /* v6 (2026-09-06, Aidan's punch list): every beat that shows a button or the
+     phone holds at least 2.5 s after its last text lands. 7 sent line 4.9+0.5;
+     9 badge 0.5+0.7; 11 Ruth's chip 0.2+0.6; 13 the mic-closed line at
+     0.7+C03+0.1+1.0; 14 the logged badge 1.1+0.7; 18 the end chip 4.6+0.8. */
   var B = {};
   (function () {
     var t = 0;
     LOCKED.forEach(function (len, i) {
       var n = i + 1, need = len, v = VOIN[n];
       if (v) need = Math.max(need, v[1] + DUR[v[0]] + v[2]);
+      if (EXTRA[n]) need = Math.max(need, EXTRA[n]());
       if (VISMIN[n]) need = Math.max(need, VISMIN[n]);
       need = +need.toFixed(3);
       B[n] = { s: +t.toFixed(3), e: +(t + need).toFixed(3), d: need };
       t += need;
     });
   })();
-  var TOTAL = B[19].e;
+  var TOTAL = B[14].e;
+  /* PLAN: every clip's start, beat-relative, from the chains above. The mix and the timeline both read it. */
+  var PLAN = {
+    N01: [2, 0.50], N02: [2, 0.50 + DUR.N01 + 0.60],
+    N03: [3, 1.00], R02: [3, 1.00 + DUR.N03 + 0.60], C01: [3, 1.00 + DUR.N03 + 0.60 + DUR.R02 + 1.00],
+    R03: [4, 1.00], C02: [4, 1.00 + DUR.R03 + 1.00],
+    N04: [5, 1.00], S01: [5, 1.00 + DUR.N04 + 0.60], S02: [6, 1.00],
+    N05: [7, 0.80], C03: [8, 1.50], R04: [9, 0.80], N06: [9, 0.80 + DUR.R04 + 1.20],
+    C04: [10, 0.80], R05: [10, 0.80 + DUR.C04 + 1.00], N07: [12, 1.00],
+    R07: [13, 1.00], C05: [13, 1.00 + DUR.R07 + 1.00], N08: [14, 0.80]
+  };
+  function at(id) { return B[PLAN[id][0]].s + PLAN[id][1]; }
+  window.plan = {}; Object.keys(PLAN).forEach(function (k) { window.plan[k] = at(k); });
+  window.beats = B; window.voin = VOIN; window.clipdur = DUR; window.TOTAL = TOTAL;
 
   /* ─── easings ───────────────────────────────────────────────── */
   var EXPO = 'expo.out';
@@ -789,6 +857,7 @@ recut_vo.py now enforces it by copying the file.
             '<div class="b-fact b-family">' + o.family + '</div>' +
             '<div class="b-caption" id="' + o.id + '-cap">' +
               '<div class="b-captext" id="' + o.id + '-captext">' + (o.caption || '') + '</div>' +
+              (o.caption2 ? '<div class="b-captext" id="' + o.id + '-captext2" style="display:none">' + o.caption2 + '</div>' : '') +
               '<div class="b-replay" id="' + o.id + '-replay">Tap to hear it again</div>' +
             '</div>' +
           '</div>' +
@@ -815,11 +884,11 @@ recut_vo.py now enforces it by copying the file.
   }
 
   /* ─── the strings, exactly as the product shows them ────────── */
-  var DATE_TUE = 'September 1st, 2026';
-  var DATE_WED = 'September 2nd, 2026';
+  var DATE_TUE = 'September 8th, 2026';
+  var DATE_WED = 'September 9th, 2026';
   var STATUS_DAY = 'You are safe at home.';
   var FAMILY_DAY = 'Your family is thinking of you.';
-  var CASSI_TODAY = '<span class="nb">Today is Tuesday,</span> <span class="nb">September 1st, 2026.</span>';
+  var CASSI_TODAY = 'Today is Tuesday.';   /* v7 date rule: the board's card carries the date */
 
   /* ─── build the DOM ─────────────────────────────────────────── */
   var html = '';
@@ -832,7 +901,10 @@ recut_vo.py now enforces it by copying the file.
       '<span class="kin main" id="kmain"></span>' +
     '</div>' +
     '<div class="center" id="hookChipSlot">' +
-      chip({ id: 'chipHook', who: 'RUTH', text: 'Sarah? What day is it?', night: true, hero: true }) +
+      chip({ id: 'chipHook', who: '', text: 'Have You Eaten?', night: true, hero: true }) +
+      chip({ id: 'chipR2', who: 'RUTH', text: 'At home.', night: true }) +
+      chip({ id: 'chipS2', who: 'SARAH', text: 'One hour away.', night: true }) +
+      chip({ id: 'chipBrand', who: 'THE BOARD', text: 'Compasse', night: true }) +
     '</div>');
 
   /* 2. board A : beats 4, 5, 6 */
@@ -840,39 +912,27 @@ recut_vo.py now enforces it by copying the file.
     '<div class="deviceslot">' + board({
       id: 'A', clocks: ['9:42 AM', '11:15 AM'], weekday: 'TUESDAY', daypart: 'MORNING', date: DATE_TUE,
       status: STATUS_DAY, next1: 'Sarah visits', next2: '5:00 PM', family: FAMILY_DAY,
-      caption: CASSI_TODAY
+      caption: CASSI_TODAY, caption2: 'Sarah is coming at five.'
     }) + '</div>' +
     '<div class="band">' +
-      chip({ id: 'chipA', who: 'RUTH', text: 'What day is it?' }) +
-      '<div class="badge" id="badgeA">The same calm answer. Every time.</div>' +
+      chip({ id: 'chipA', who: 'RUTH', text: 'Who&rsquo;s coming today?' }) +
+      '<div class="badge" id="badgeA">A different question. The same patience.</div>' +
     '</div>');
 
   /* 3. Sarah's phone : Voice reminders */
   html += scene('sVoice',
-    '<div class="panelslot tall"><div class="panel ui tall">' +
-      '<div class="p-title">Voice reminders</div>' +
-      '<div class="p-card">' +
-        '<div class="p-lab">SEND NOW</div>' +
-        '<div class="p-help">Record a quick message. It plays on their screen right away. Great when you&rsquo;re on your way over.</div>' +
-        '<div class="bigbtn" id="recBtn">' +
-          '<span class="btnripple" id="recRipple"></span>' +
-          '<span class="bb-l on" id="recL0">&#127897;&nbsp;&nbsp;Record and Send</span>' +
-          '<span class="bb-l" id="recL1">Stop &middot; 1s</span>' +
-          '<span class="bb-l" id="recL2">Stop &middot; 2s</span>' +
-          '<span class="bb-l" id="recL3">Stop &middot; 3s</span>' +
-        '</div>' +
-        '<div class="recdone" id="recDone">' +
-          '<div class="rd-row"><span class="rd-ok">&#10003; Recorded</span>' +
-            '<span class="rd-alt">Re-record</span><span class="rd-alt warn">Discard</span></div>' +
-          '<div class="bigbtn" id="sendBtn">' +
-            '<span class="btnripple" id="sendRipple"></span>' +
-            '<span class="bb-l on" id="sendL0">&#128232;&nbsp;&nbsp;Send now</span>' +
-            '<span class="bb-l" id="sendL1">Sending&hellip;</span>' +
-          '</div>' +
-          '<div class="sentline" id="sentLine">&#10003; Sent. It will play on the board</div>' +
-        '</div>' +
+    '<div class="deviceslot"><div class="realphone ui"><div class="shot"><img src="img/voice-reminders.png" alt="">' +
+      '<div class="ov" id="recBtn"><span class="btnripple" id="recRipple"></span>' +
+        '<span class="bb-l" id="recL0">&#127897;&nbsp;&nbsp;Record and Send</span>' +
+        '<span class="bb-l" id="recL1">Stop &middot; 1s</span><span class="bb-l" id="recL2">Stop &middot; 2s</span><span class="bb-l" id="recL3">Stop &middot; 3s</span></div>' +
+      '<div class="recdone" id="recDone">' +
+        '<div class="rd-row"><span class="rd-ok">&#10003; Recorded</span><span class="rd-alt">Re-record</span><span class="rd-alt warn">Discard</span></div>' +
+        '<div class="bigbtn" id="sendBtn"><span class="btnripple" id="sendRipple"></span>' +
+          '<span class="bb-l on" id="sendL0">&#128232;&nbsp;&nbsp;Send now</span><span class="bb-l" id="sendL1">Sending&hellip;</span></div>' +
+        '<div class="sentline" id="sentLine">&#10003; Sent. It will play on the board</div>' +
       '</div>' +
-    '</div></div>');
+    '</div></div></div>' +
+    '<div class="band">' + chip({ id: 'chipRec', who: 'SARAH', wave: true, text: '<span class="nb">Hi Mom. It&rsquo;s Sarah.</span> <span class="nb">I&rsquo;ll be there at five.</span>' }) + '</div>');
 
   /* 4. board B : the message plays on the wall */
   html += scene('sBoardB',
@@ -884,21 +944,16 @@ recut_vo.py now enforces it by copying the file.
     '<div class="band">' +
       chip({ id: 'chipB', who: 'SARAH', wave: true,
         text: '<span class="nb">Hi Mom. It&rsquo;s Sarah.</span> <span class="nb">I&rsquo;ll be there at five.</span>' }) +
-      '<div class="badge" id="badgeB"><span class="nb">Recorded by family.</span> <span class="nb">Not a copy.</span></div>' +
+      '<div class="badge" id="badgeB"><span class="nb">Not a copy.</span> <span class="nb">A recording, played back.</span></div>' +
+      '<div class="badge" id="badgeB2"><span class="nb">An assistant,</span> <span class="nb">not a substitute.</span></div>' +
     '</div>');
 
   /* 5. Sarah's phone : the check-in pair */
   html += scene('sDash',
-    '<div class="panelslot wide"><div class="panel ui wide">' +
-      '<div class="pairrow">' +
-        '<div class="pairbtn" id="ciBtn">' +
-          '<span class="btnripple" id="ciRipple"></span>' +
-          '<span class="bb-l on" id="ciL0">Check in</span>' +
-          '<span class="bb-l" id="ciL1">Asking&hellip;</span>' +
-        '</div>' +
-        '<div class="pairbtn"><span class="bb-l on">Call</span></div>' +
-      '</div>' +
-    '</div></div>');
+    '<div class="deviceslot"><div class="realphone ui"><div class="shot"><img src="img/dashboard.png" alt="">' +
+      '<div class="ov" id="ciBtn"><span class="btnripple" id="ciRipple"></span>' +
+        '<span class="bb-l" id="ciL0"></span><span class="bb-l" id="ciL1">Asking&hellip;</span></div>' +
+    '</div></div></div>');
 
   /* 6. board C : the recorded check-in and Ruth's answer */
   html += scene('sBoardC',
@@ -911,23 +966,17 @@ recut_vo.py now enforces it by copying the file.
       chip({ id: 'chipC1', who: 'SARAH', wave: true,
         text: '<span class="nb">Hi Mom, it&rsquo;s Sarah.</span> <span class="nb">Just checking in.</span> <span class="nb">Are you doing alright?</span>' }) +
       chip({ id: 'chipC2', who: 'RUTH',
-        text: '<span class="nb">I&rsquo;m fine, honey.</span> <span class="nb">Go back to work.</span>' }) +
+        text: '<span class="nb">I&rsquo;m fine.</span> <span class="nb">I had my lunch.</span>' }) +
     '</div>');
 
   /* 7. Sarah's phone : the push */
   html += scene('sPush',
-    '<div class="panelslot push"><div class="panel ui push">' +
-      '<div class="iosbanner" id="iosBanner">' +
+    '<div class="deviceslot"><div class="realphone ui"><div class="shot"><img src="img/dashboard.png" alt="">' +
+      '<div class="iosbanner" id="iosBanner" style="position:absolute;left:3%;right:3%;top:3.5%">' +
         '<span class="ib-icon"><img id="bannerIcon" alt=""></span>' +
-        '<div><div class="ib-app">Compasse</div>' +
-          '<div class="ib-title">Ruth is doing okay</div>' +
-          '<div class="ib-body">They said they\'re alright when Cassi checked in.</div></div>' +
+        '<div><div class="ib-app">Compasse</div><div class="ib-title">Ruth: &ldquo;I&rsquo;m fine. I had my lunch.&rdquo;</div><div class="ib-body">Cassi checked in a moment ago.</div></div>' +
       '</div>' +
-      '<div class="pairrow">' +
-        '<div class="pairbtn ok"><span class="bb-l on">&#10003; Okay</span></div>' +
-        '<div class="pairbtn"><span class="bb-l on">Call</span></div>' +
-      '</div>' +
-    '</div></div>');
+    '</div></div></div>');
 
   /* 8. the medication confirm screen, in the same bezel */
   html += scene('sMed',
@@ -947,16 +996,8 @@ recut_vo.py now enforces it by copying the file.
 
   /* 9. Sarah's phone : Medications */
   html += scene('sMeds',
-    '<div class="panelslot short"><div class="panel ui short">' +
-      '<div class="p-title">Medications</div>' +
-      '<div class="p-lab">CURRENT</div>' +
-      '<div class="medrow">' +
-        '<div class="mr-title">Blood pressure pill</div>' +
-        '<div class="mr-meta">1 tablet &middot; every day at 8:00 PM</div>' +
-        '<div class="mr-status" id="medStatus">&#10003; Taken today</div>' +
-      '</div>' +
-    '</div></div>' +
-    '<div class="band pnl"><div class="badge" id="badgeMeds">Confirmed by voice. Logged for Sarah.</div></div>');
+    '<div class="deviceslot"><div class="realphone ui"><div class="shot"><img src="img/dashboard.png" alt=""><span id="medStatus"></span></div></div></div>' +
+    '<div class="band pnl"><div class="badge" id="badgeMeds"><span class="nb">Quiet today.</span> <span class="nb">If a dose is missed, Sarah&rsquo;s phone knows within minutes.</span></div></div>');
 
   /* 10. the promise */
   html += scene('sPromise',
@@ -1016,8 +1057,9 @@ recut_vo.py now enforces it by copying the file.
         '<span class="ft-t" id="ftT2">0:03</span>' +
         '<span class="ft-t" id="ftT3">0:04</span></div>' +
     '</div></div></div>' +
-    '<div class="band ft">' + chip({ id: 'chipEnd', who: 'RUTH', big: true,
-        text: '<span class="nb">It&rsquo;s Mom.</span> <span class="nb">Have you eaten?</span>' }) + '</div>');
+    '<div class="band ft">' + chip({ id: 'chipS3', who: 'SARAH', big: true, text: 'Hi Mom.' }) +
+      chip({ id: 'chipEnd', who: 'RUTH', big: true, text: 'Have you eaten?' }) +
+      chip({ id: 'chipS4', who: 'SARAH', big: true, text: '<span class="nb">Not yet.</span> <span class="nb">I&rsquo;ll eat when I get there.</span>' }) + '</div>');
 
   /* 15. logo */
   html += scene('sLogo',
@@ -1025,7 +1067,7 @@ recut_vo.py now enforces it by copying the file.
       '<img class="mark" id="endMark" alt="">' +
       '<div class="wordmark" id="endWord">Compasse</div>' +
       '<div class="url" id="endUrl">compasse.care</div>' +
-      '<div class="fine" id="endFine">Ruth and Sarah are a demonstration family.</div>' +
+      '<div class="fine" id="endFine"><span class="nb">Voices in this film are synthetic.</span> <span class="nb">Your family&rsquo;s recordings play back unchanged.</span> <span class="nb">Ruth and Sarah are a demonstration family.</span></div>' +
     '</div>');
 
   document.getElementById('scenes').innerHTML = html;
@@ -1045,7 +1087,7 @@ recut_vo.py now enforces it by copying the file.
     }).join(' ');
     return el.querySelectorAll('.w');
   }
-  var kMain = words(document.getElementById('kmain'), 'What day is it?');
+  var kMain = words(document.getElementById('kmain'), 'What day is it?');   /* v8: Ruth's spoken words, no name */
   words(document.getElementById('kg1'), 'What day is it?');
   words(document.getElementById('kg2'), 'What day is it?');
   /* break after the comma: one idea per line, no lone word on line two */
@@ -1060,7 +1102,7 @@ recut_vo.py now enforces it by copying the file.
   var audioOn = false;
   var music = null;
   if (!RENDER) {
-    ['N01','N02','C01','N03','C02','N04','S01','S02','N05','C03','N06','N07','C04'].forEach(function (id) {
+    ['N01','N02','N03','R02','C01','R03','C02','N04','S01','S02','N05','C03','R04','N06','C04','R05','N07','R07','C05','N08'].forEach(function (id) {
       var a = new Audio('vo/' + id + '.mp3');
       a.preload = 'auto';
       AUDIO[id] = a;
@@ -1077,6 +1119,15 @@ recut_vo.py now enforces it by copying the file.
   }
 
   /* ─── timeline helpers ──────────────────────────────────────── */
+  function fmtTall() {
+    if (!(RENDER && FMT !== '16x9')) return;
+    var wrap = document.querySelector('.wrap');
+    wrap.insertBefore($('ground'), wrap.firstChild);
+    /* the price wipe stays inside the stage (its type is sized off the stage
+       container); the ground turns the wipe's colour for that beat instead,
+       so the tall canvas reads as one teal frame. See beat 17. */
+  }
+  fmtTall();
   var master = gsap.timeline({ paused: true });
 
   function show(el, t, d) {
@@ -1220,281 +1271,232 @@ recut_vo.py now enforces it by copying the file.
      BEAT 1 : Hook: Ruth's own words
      ═══════════════════════════════════════════════════════════ */
   function build() {
-    show($('sHook'), 0);
-    chipIn($('chipHook'), 0.90, 0.95);
+    /* ═══ v8 timeline (docs/FILM-SCRIPT-LAUNCH-v8.md). Clip starts come from PLAN; holds are the script's. ═══ */
+    var T = at;   /* absolute start of a clip */
 
-    /* BEAT 2 : the question returns */
+    /* BEAT 1 : cold open. Ruth's kitchen; Ruth speaks the title. */
+    show($('sHook'), 0);
+    chipIn($('chipHook'), 0.90, 0.95);                     /* v9: the title card alone, no voice */
+
+    /* BEAT 2 : Ruth at home, then Sarah one hour away. Narrator only. */
     var b2 = B[2].s;
     chipOut($('chipHook'), b2, 0.30);
     typeIn(kMain, b2 + 0.30, { y: 18, dur: 0.62, stagger: 0.07, ease: EXPO });
-    master.fromTo($('kg1'), { opacity: 0, y: 10, scale: 0.98 },
-      { opacity: 0.40, y: 0, scale: 1, duration: 1.0, ease: CIRC }, b2 + 2.30);
-    master.fromTo($('kg2'), { opacity: 0, y: 10, scale: 0.98 },
-      { opacity: 0.22, y: 0, scale: 1, duration: 1.0, ease: CIRC }, b2 + 3.90);
-    vo('N01', b2 + 0.40);
+    master.fromTo($('kg1'), { opacity: 0, y: 10, scale: 0.98 }, { opacity: 0.40, y: 0, scale: 1, duration: 1.0, ease: CIRC }, b2 + 2.30);
+    master.fromTo($('kg2'), { opacity: 0, y: 10, scale: 0.98 }, { opacity: 0.22, y: 0, scale: 1, duration: 1.0, ease: CIRC }, b2 + 3.90);
+    vo('N01', T('N01'));
+    chipIn($('chipR2'), T('N01') + 0.10, 0.6);
+    chipOut($('chipR2'), T('N02') - 0.10, 0.25);
+    master.to(['#kg1', '#kg2'], { opacity: 0, duration: 0.8, ease: 'none' }, T('N02'));
+    master.fromTo($('kinwrap'), { y: 0 }, { y: -11, duration: Math.max(0.5, B[2].e - T('N02')), ease: SINE }, T('N02'));
+    chipIn($('chipS2'), T('N02') + 0.10, 0.6);
+    vo('N02', T('N02'));
+    chipOut($('chipS2'), B[3].s - 0.05, 0.25);
 
-    /* BEAT 3 : an hour away */
-    master.to(['#kg1', '#kg2'], { opacity: 0, duration: 0.8, ease: 'none' }, B[3].s);
-    master.fromTo($('kinwrap'), { y: 0 }, { y: -11, duration: B[3].d, ease: SINE }, B[3].s);
-    vo('N02', B[3].s + 0.20);
-
-    /* BEAT 4 : the tap */
-    var b4 = B[4].s;
-    show($('sBoardA'), b4);
-    /* the bar alone: no bezel, no board, no facts.
-       the screen box un-clips a frame BEFORE the bar rises, so the ring
-       and the matched radius are intact on every frame of the rise */
-    master.set('#A-pad .screenbox', { overflow: 'visible' }, b4 - 0.10);
-    /* the pad's box-shadow paints OUTSIDE its border box, so while the pad
-       itself is transparent the shadow lands on the kinetic type and greys
-       every glyph past the pad's right edge. Off for the hero moment. */
-    master.set('#A-pad', { boxShadow: '0 0 0 rgba(20,16,12,0)' }, b4 - 0.10);
-    master.set('#A-pad', { backgroundColor: 'rgba(28,28,30,0)' }, b4);
-    master.set('#A-board', { backgroundColor: 'rgba(250,247,242,0)' }, b4);
-    master.set(['#A-board .b-head', '#A-pad .gloss'], { opacity: 0 }, b4);
-    master.fromTo('#A-bar',
-      { x: hero.dx, y: hero.dy + 34, scale: hero.sc, autoAlpha: 0 },
-      { x: hero.dx, y: hero.dy, scale: hero.sc, autoAlpha: 1, duration: 0.7, ease: EXPO }, b4);
-
-    barTap('A-bar', b4 + 0.90);
-    barState('A-bar', b4 + 0.92, 'listen');
-    barBreathe('A-bar', b4 + 0.95, 1.15);
-    barState('A-bar', b4 + 2.10, 'moment');
-
-    /* the bloom: night to cream, the bezel and board assemble around the bar */
-    var bloom = b4 + 2.40;
+    /* BEAT 3 : the board. N03 names the brand; Ruth taps and asks aloud; a second of quiet; Cassi answers; the date header holds. */
+    var b3 = B[3].s;
+    show($('sBoardA'), b3);
+    master.set('#A-pad .screenbox', { overflow: 'visible' }, b3 - 0.10);
+    master.set('#A-pad', { boxShadow: '0 0 0 rgba(20,16,12,0)' }, b3 - 0.10);
+    master.set('#A-pad', { backgroundColor: 'rgba(28,28,30,0)' }, b3);
+    master.set('#A-board', { backgroundColor: 'rgba(250,247,242,0)' }, b3);
+    master.set(['#A-board .b-head', '#A-pad .gloss'], { opacity: 0 }, b3);
+    master.fromTo('#A-bar', { x: hero.dx, y: hero.dy + 34, scale: hero.sc, autoAlpha: 0 }, { x: hero.dx, y: hero.dy, scale: hero.sc, autoAlpha: 1, duration: 0.7, ease: EXPO }, b3);
+    chipIn($('chipBrand'), T('N03'), 0.6);
+    vo('N03', T('N03'));
+    var tap3 = T('R02') - 0.35;                                /* the tap lands just before she speaks */
+    chipOut($('chipBrand'), tap3 - 0.2, 0.3);
+    barTap('A-bar', tap3);
+    barState('A-bar', tap3 + 0.02, 'listen');
+    barBreathe('A-bar', tap3 + 0.05, DUR.R02 + 0.6);
+    vo('R02', T('R02'));
+    master.set($('kmain'), { opacity: 1 }, T('R02'));          /* her words, as she says them */
+    barState('A-bar', T('R02') + DUR.R02 + 0.10, 'moment');
+    var bloom = T('C01') - 0.60;                              /* the board assembles in the second of quiet */
     master.to('#ground', { backgroundColor: '#FAF6EF', duration: 0.8, ease: 'none' }, bloom);
     master.to('#A-pad', { backgroundColor: 'rgba(28,28,30,1)', duration: 0.8, ease: 'none' }, bloom);
     master.to('#A-board', { backgroundColor: 'rgba(250,247,242,1)', duration: 0.8, ease: 'none' }, bloom);
     master.to(['#A-board .b-head', '#A-pad .gloss'], { opacity: 1, duration: 0.8, ease: 'none' }, bloom + 0.2);
     master.to('#A-bar', { x: 0, y: 0, scale: 1, duration: 0.95, ease: EXPO }, bloom);
     master.set('#A-pad .screenbox', { overflow: 'hidden' }, bloom + 0.95);
-    /* the type is gone by now, so the shadow can come back on one frame */
     master.set('#A-pad', { boxShadow: 'var(--padSh)' }, bloom + 0.60);
     master.to('#kinwrap', { opacity: 0, filter: 'blur(6px)', duration: 0.55, ease: 'power2.in' }, bloom);
     hide($('sHook'), bloom + 0.6);
-
-    /* Cassi answers on the board's own caption overlay */
-    var c01 = b4 + 3.10;
-    /* the overlay is opaque board cream: it must arrive on ONE frame, or the
-       facts under it read through a half-opaque card. Same tick as the bar. */
+    var c01 = T('C01');
     show($('A-cap'), c01);
     barState('A-bar', c01, 'stop');
     vo('C01', c01);
     barState('A-bar', c01 + DUR.C01, 'idle');
-
-    /* BEAT 5 : the board */
-    var b5 = B[5].s;
     show($('A-replay'), c01 + DUR.C01 + 0.05, 0.35);
-    vo('N03', b5 + 0.30);
-    var clear = b5 + 1.00;
-    hide($('A-cap'), clear);
-    hide($('A-replay'), clear);
+    /* the date header holds: the caption clears and the facts come up during the 1.00 hold */
+    var clear = c01 + DUR.C01 + 0.30;
+    hide($('A-cap'), clear); hide($('A-replay'), clear);
     var facts = $$('#A-board .b-fact');
-    facts.forEach(function (f, i) {
-      master.fromTo(f, { opacity: 0, y: 14, filter: 'blur(4px)' },
-        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: EXPO }, clear + 0.15 + i * 0.30);
-      master.set(f, { filter: 'none' }, clear + 0.8 + i * 0.30);
-    });
+    facts.forEach(function (f, i) { master.fromTo(f, { opacity: 0, y: 14, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.6, ease: EXPO }, clear + 0.10 + i * 0.22); master.set(f, { filter: 'none' }, clear + 0.7 + i * 0.22); });
 
-    /* BEAT 6 : every time */
-    var b6 = B[6].s;
-    /* the clock is two stacked numerals, so it changes on ONE frame like every
-       other label in the film: a 0.5s crossfade printed 9:42 over 11:15 */
-    master.set($$('#A-board .b-clock')[0], { opacity: 0 }, b6);
-    master.set($$('#A-board .b-clock')[1], { opacity: 1 }, b6);
-    barTap('A-bar', b6 + 0.30);
-    barState('A-bar', b6 + 0.32, 'listen');
-    barBreathe('A-bar', b6 + 0.35, 1.30);
-    chipIn($('chipA'), b6 + 0.70, 0.65);
-    barState('A-bar', b6 + 1.70, 'moment');
-    chipOut($('chipA'), b6 + 1.90, 0.25);
-    var c02 = b6 + 2.20;
+    /* BEAT 4 : later. Same tap, same question, same answer. */
+    var b4 = B[4].s;
+    /* v9 picture fix (Aidan, 2026-09-08): no clock flip. The board keeps one time across
+       beats 3 and 4; the callback is carried by the chip and Cassi's repeat, not by a time change. */
+    var tap4 = T('R03') - 0.35;
+    barTap('A-bar', tap4);
+    barState('A-bar', tap4 + 0.02, 'listen');
+    barBreathe('A-bar', tap4 + 0.05, DUR.R03 + 0.6);
+    chipIn($('chipA'), T('R03') - 0.05, 0.5);
+    vo('R03', T('R03'));
+    barState('A-bar', T('R03') + DUR.R03 + 0.10, 'moment');
+    chipOut($('chipA'), T('C02') - 0.10, 0.2);
+    var c02 = T('C02');
+    master.set('#A-captext', { display: 'none' }, c02 - 0.02);      /* v9: Cassi reads the Next card */
+    master.set('#A-captext2', { display: 'block' }, c02 - 0.02);
     show($('A-cap'), c02);
     barState('A-bar', c02, 'stop');
     vo('C02', c02);
     barState('A-bar', c02 + DUR.C02, 'idle');
-    show($('A-replay'), c02 + DUR.C02 + 0.05, 0.35);
-    /* the film's caption is keyed to the MEASURED clip, not to the beat, so
-       it always lands where the script puts it: 0.40s before Cassi finishes */
-    master.fromTo($('badgeA'), { autoAlpha: 0, y: 12 },
-      { autoAlpha: 1, y: 0, duration: 0.7, ease: EXPO }, c02 + DUR.C02 - 0.40);
+    master.fromTo($('badgeA'), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: EXPO }, c02 + DUR.C02 - 0.20);
 
-    /* BEAT 7 : Sarah records */
-    var b7 = B[7].s;
-    hide($('sBoardA'), b7);
-    show($('sVoice'), b7);
-    vo('N04', b7 + 0.20);
+    /* BEAT 5a : the reminder, shot one. Sarah records it into her phone, on camera. */
+    var b5 = B[5].s;
+    hide($('sBoardA'), b5);
+    show($('sVoice'), b5);
+    vo('N04', T('N04'));
     var REC = ['recL0','recL1','recL2','recL3'];
-    /* colour and label change on ONE frame together, the way the button does */
-    btnTap('recRipple', b7 + 0.60);
-    master.set('#recBtn', { backgroundColor: '#C0392B' }, b7 + 0.90);
-    btnLabel(REC, 'recL1', b7 + 0.90);
-    btnLabel(REC, 'recL2', b7 + 1.90);
-    btnLabel(REC, 'recL3', b7 + 2.90);
-    btnTap('recRipple', b7 + 3.80);
-    master.set('#recBtn', { backgroundColor: '#2C6A85' }, b7 + 3.82);
-    btnLabel(REC, 'recL0', b7 + 3.82);
-    master.set($('recDone'), { display: 'flex' }, b7 + 3.85);
-    master.fromTo($('recDone'), { autoAlpha: 0, y: 14 },
-      { autoAlpha: 1, y: 0, duration: 0.5, ease: EXPO }, b7 + 3.85);
-    btnTap('sendRipple', b7 + 4.40);
-    /* Sending... is the app's DISABLED button */
-    btnLabel(['sendL0','sendL1'], 'sendL1', b7 + 4.45);
-    master.set('#sendBtn', { opacity: 0.5 }, b7 + 4.45);
-    /* in the shipped 'sent' stage the green line REPLACES the button */
-    master.set($('sendBtn'), { autoAlpha: 0, display: 'none' }, b7 + 4.90);
-    master.set($('sentLine'), { display: 'block' }, b7 + 4.90);
-    show($('sentLine'), b7 + 4.90);
+    var rec = T('S01') - 0.30;                                 /* the tap, then she speaks */
+    btnTap('recRipple', rec - 0.30);
+    master.set('#recBtn', { backgroundColor: '#C0392B' }, rec);
+    btnLabel(REC, 'recL1', rec);
+    btnLabel(REC, 'recL2', rec + 1.00);
+    btnLabel(REC, 'recL3', rec + 2.00);
+    chipIn($('chipRec'), T('S01') - 0.05, 0.6);
+    waveOn('chipRec-wave', T('S01'), DUR.S01);
+    vo('S01', T('S01'));
+    var recEnd = T('S01') + DUR.S01 + 0.15;
+    btnTap('recRipple', recEnd);
+    master.set('#recBtn', { backgroundColor: '#2C6A85' }, recEnd + 0.02);
+    btnLabel(REC, 'recL0', recEnd + 0.02);
+    master.set($('recDone'), { display: 'flex' }, recEnd + 0.05);
+    master.fromTo($('recDone'), { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: EXPO }, recEnd + 0.05);
+    chipOut($('chipRec'), recEnd + 0.2, 0.3);
+    btnTap('sendRipple', recEnd + 0.55);
+    btnLabel(['sendL0','sendL1'], 'sendL1', recEnd + 0.60);
+    master.set('#sendBtn', { opacity: 0.5 }, recEnd + 0.60);
+    master.set($('sendBtn'), { autoAlpha: 0, display: 'none' }, recEnd + 1.05);
+    master.set($('sentLine'), { display: 'block' }, recEnd + 1.05);
+    show($('sentLine'), recEnd + 1.05);
 
-    /* BEAT 8 : it plays on the wall */
+    /* BEAT 5b : shot two. The board wakes at the set minute and plays the same file. Ruth listens. */
+    var b6 = B[6].s;
+    hide($('sVoice'), b6);
+    show($('sBoardB'), b6);
+    master.fromTo($('Bb-pill'), { autoAlpha: 0, y: -14 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: EXPO }, b6 + 0.40);
+    show($('Bb-cap'), T('S02') - 0.10);
+    barState('Bb-bar', T('S02') - 0.10, 'stop');
+    chipIn($('chipB'), T('S02'), 0.6);
+    waveOn('chipB-wave', T('S02'), DUR.S02);
+    vo('S02', T('S02'));
+    hide($('Bb-pill'), T('S02') + DUR.S02 + 0.20, 0.30);
+    barState('Bb-bar', T('S02') + DUR.S02 + 0.30, 'idle');
+
+    /* BEAT 7 : two cards over the board. "A recording, played back." while Sarah is synthetic. */
+    var b7 = B[7].s;
+    chipOut($('chipB'), b7, 0.40);
+    show($('Bb-replay'), b7 + 0.10, 0.35);
+    master.fromTo($('badgeB'), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: EXPO }, b7 + 0.30);
+    vo('N05', T('N05'));
+    master.to($('badgeB'), { autoAlpha: 0, duration: 0.25, ease: 'power1.in' }, T('N05') + DUR.N05 - 0.30);
+    master.fromTo($('badgeB2'), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: EXPO }, T('N05') + DUR.N05 - 0.05);
+
+    /* BEAT 8 : the board alone, later; the check-in card comes up and Cassi asks (v9 note 3: no phone shot) */
     var b8 = B[8].s;
-    hide($('sVoice'), b8);
-    show($('sBoardB'), b8);
-    master.fromTo($('Bb-pill'), { autoAlpha: 0, y: -14 },
-      { autoAlpha: 1, y: 0, duration: 0.55, ease: EXPO }, b8 + 0.60);
-    show($('Bb-cap'), b8 + 1.80);
-    barState('Bb-bar', b8 + 1.80, 'stop');
-    chipIn($('chipB'), b8 + 1.90, 0.6);
-    waveOn('chipB-wave', b8 + 1.90, DUR.S01);
-    vo('S01', b8 + 1.90);
-    hide($('Bb-pill'), b8 + 1.90 + DUR.S01 + 0.20, 0.30);
-    barState('Bb-bar', b8 + 1.90 + DUR.S01 + 0.30, 'idle');
+    hide($('sBoardB'), b8);
+    show($('sBoardC'), b8);
+    show($('Cc-cap'), T('C03'));
+    barState('Cc-bar', T('C03'), 'stop');
+    vo('C03', T('C03'));
+    barState('Cc-bar', T('C03') + DUR.C03, 'listen');
+    barBreathe('Cc-bar', T('C03') + DUR.C03 + 0.05, Math.max(0.6, B[9].s + 0.8 - (T('C03') + DUR.C03)));
 
-    /* BEAT 9 : not a copy */
+    /* BEAT 9 : Ruth answers aloud in her own time; a silent hold on her; then her words arrive on Sarah's phone. */
     var b9 = B[9].s;
-    chipOut($('chipB'), b9, 0.40);
-    show($('Bb-replay'), b9 + 0.10, 0.35);
-    master.fromTo($('badgeB'), { autoAlpha: 0, y: 12 },
-      { autoAlpha: 1, y: 0, duration: 0.7, ease: EXPO }, b9 + 0.50);
+    chipIn($('chipC2'), T('R04') - 0.05, 0.6);
+    vo('R04', T('R04'));
+    barState('Cc-bar', T('R04') + DUR.R04 + 0.10, 'moment');
+    vo('N06', T('N06'));
+    var cut9 = T('N06') + 0.60;                                 /* the cut to the phone, inside the narrator line */
+    hide($('sBoardC'), cut9);
+    show($('sPush'), cut9);
+    master.fromTo($('iosBanner'), { autoAlpha: 0, y: -90 }, { autoAlpha: 1, y: 0, duration: 0.65, ease: BACK }, cut9 + 0.20);
 
-    /* BEAT 10 : Sarah asks */
+    /* BEAT 10 : the pill card. Cassi's full prompt; Ruth takes a moment and answers aloud; hold with the green button in frame. */
     var b10 = B[10].s;
-    hide($('sBoardB'), b10);
-    show($('sDash'), b10);
-    btnTap('ciRipple', b10 + 0.35);
-    btnLabel(['ciL0','ciL1'], 'ciL1', b10 + 0.40);
-    master.set('#ciBtn', { opacity: 0.62 }, b10 + 0.40);
-    hide($('sDash'), b10 + 1.00);
-    show($('sBoardC'), b10 + 1.00);
-    show($('Cc-cap'), b10 + 2.50);
-    barState('Cc-bar', b10 + 2.50, 'stop');
-    chipIn($('chipC1'), b10 + 2.60, 0.6);
-    waveOn('chipC1-wave', b10 + 2.60, DUR.S02);
-    vo('S02', b10 + 2.60);
-
-    /* BEAT 11 : Ruth answers */
-    var b11 = B[11].s;
-    barState('Cc-bar', b11, 'listen');
-    barBreathe('Cc-bar', b11 + 0.05, 1.05);
-    chipOut($('chipC1'), b11, 0.20);
-    chipIn($('chipC2'), b11 + 0.20, 0.6);
-    barState('Cc-bar', b11 + 1.10, 'moment');
-    vo('N05', b11 + 1.10);           /* J-cut into beat 12 */
-
-    /* BEAT 12 : it ends on Sarah's phone */
-    var b12 = B[12].s;
-    hide($('sBoardC'), b12);
-    show($('sPush'), b12);
-    master.fromTo($('iosBanner'), { autoAlpha: 0, y: -90 },
-      { autoAlpha: 1, y: 0, duration: 0.65, ease: BACK }, b12 + 0.20);
-
-    /* BEAT 13 : dose time */
-    var b13 = B[13].s;
-    hide($('sPush'), b13);
-    show($('sMed'), b13);
-    vo('C03', b13 + 0.70);
-    /* Cassi finishes, then the screen moves: listening line, Ruth's chip,
-       the mic visibly closed, then the cut. All hung off the real clip. */
-    var lis = b13 + 0.70 + DUR.C03 + 0.10;
+    hide($('sPush'), b10);
+    show($('sMed'), b10);
+    vo('C04', T('C04'));
+    var lis = T('C04') + DUR.C04 + 0.10;
     show($('medListen'), lis, 0.30);
-    chipIn($('chipMed'), lis + 0.50, 0.65);
-    master.set([$('medListen'), $('medMoment')], { autoAlpha: 0 }, lis + 1.00);
-    master.set($('medMoment'), { autoAlpha: 1 }, lis + 1.00);
+    chipIn($('chipMed'), T('R05') - 0.05, 0.65);
+    vo('R05', T('R05'));
+    master.set([$('medListen'), $('medMoment')], { autoAlpha: 0 }, T('R05') + DUR.R05 + 0.30);
+    master.set($('medMoment'), { autoAlpha: 1 }, T('R05') + DUR.R05 + 0.30);
 
-    /* BEAT 14 : logged */
-    var b14 = B[14].s;
-    hide($('sMed'), b14);
-    show($('sMeds'), b14);
-    master.fromTo($('medStatus'), { autoAlpha: 0, x: -10 },
-      { autoAlpha: 1, x: 0, duration: 0.5, ease: EXPO }, b14 + 0.30);
-    master.fromTo($('badgeMeds'), { autoAlpha: 0, y: 12 },
-      { autoAlpha: 1, y: 0, duration: 0.7, ease: EXPO }, b14 + 1.10);
+    /* BEAT 11 : Sarah's phone, quiet. The card. */
+    var b11 = B[11].s;
+    hide($('sMed'), b11);
+    show($('sMeds'), b11);
+    master.fromTo($('badgeMeds'), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: EXPO }, b11 + 1.10);
 
-    /* BEAT 15 : the promise */
-    var b15 = B[15].s;
-    hide($('sMeds'), b15);
-    show($('sPromise'), b15);
-    typeIn(kPromise, b15 + 0.15, { y: 16, dur: 0.6, stagger: 0.07 });
-    master.to($('promiseRule'), { scaleX: 1, duration: 0.75, ease: EXPO }, b15 + 1.60);
-    vo('N06', b15 + 0.60);
-
-    /* BEAT 16 : the board at night */
-    var b16 = B[16].s;
-    hide($('sPromise'), b16, 0.5);
-    show($('sNight'), b16, 0.7);
-    /* Crossfading two full boards puts a flat grey frame in the middle of the
-       film's quietest beat: day text and night ground meet at the same
-       luminance and nothing is readable. So DIP instead of blend. The board
-       falls toward the darkening ground, the palette is swapped at the
-       trough where nothing is legible anyway, and the night board comes back
-       up at full contrast. No frame ever shows two palettes mixed. */
-    var dip = b16 + 0.30;
+    /* BEAT 12 : the board at night; the founders. */
+    var b12 = B[12].s;
+    hide($('sMeds'), b12, 0.5);
+    show($('sNight'), b12, 0.7);
+    var dip = b12 + 0.30;
     master.to('#ground', { backgroundColor: '#171310', duration: 1.6, ease: 'power2.in' }, dip);
     master.to('#nightStack', { opacity: 0.05, duration: 0.45, ease: 'power2.in' }, dip);
     master.set('#nightLayer', { opacity: 1 }, dip + 0.45);
     master.to('#nightStack', { opacity: 1, duration: 0.65, ease: 'power2.out' }, dip + 0.45);
-    master.fromTo('#nightStack', { scale: 1 }, { scale: 1.04, duration: B[16].d, ease: SINE }, b16);
-    vo('N07', b16 + 1.40);
+    master.fromTo('#nightStack', { scale: 1 }, { scale: 1.04, duration: B[12].d, ease: SINE }, b12);
+    vo('N07', T('N07'));
 
-    /* BEAT 17 : price */
-    var b17 = B[17].s;
-    master.set($('wipe'), { autoAlpha: 1 }, b17);
-    master.fromTo($('wipe'), { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: EXPO_IO }, b17);
-    hide($('sNight'), b17 + 0.62);
-    master.set('#ground', { backgroundColor: '#FAF6EF' }, b17 + 0.62);
-    master.fromTo($('priceLine'), { opacity: 0, y: 22 },
-      { opacity: 1, y: 0, duration: 0.85, ease: BACK }, b17 + 0.50);
-    master.fromTo($('reqLine'), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'none' }, b17 + 1.70);
+    /* BEAT 13 : the shipped call route (v9.1 note 4). Ruth presses Tap to talk and asks for her daughter;
+       Cassi places the call ("Calling Sarah."); Sarah's phone lights up one hour away and rings; cut before pickup. */
+    var b13 = B[13].s;
+    hide($('sNight'), b13, 0.4);
+    master.to('#ground', { backgroundColor: '#FAF6EF', duration: 0.5, ease: 'none' }, b13);
+    show($('sBoardD'), b13, 0.4);
+    var tap13 = T('R07') - 0.35;
+    barTap('Dd-bar', tap13);
+    barState('Dd-bar', tap13 + 0.02, 'listen');
+    barBreathe('Dd-bar', tap13 + 0.05, DUR.R07 + 0.6);
+    chipIn($('chipD'), T('R07') - 0.05, 0.5);
+    vo('R07', T('R07'));
+    barState('Dd-bar', T('R07') + DUR.R07 + 0.10, 'moment');
+    chipOut($('chipD'), T('C05') - 0.10, 0.25);
+    show($('Dd-cap'), T('C05'));
+    barState('Dd-bar', T('C05'), 'stop');
+    vo('C05', T('C05'));
+    var ring = T('C05') + DUR.C05 + 0.10;
+    hide($('sBoardD'), ring);
+    show($('sFT1'), ring);
+    master.fromTo($('ftPing'), { scale: 0.9, autoAlpha: 0.7 }, { scale: 1.35, autoAlpha: 0, duration: 0.9, ease: 'power2.out', repeat: 1 }, ring + 0.10);
 
-    /* BEAT 18 : Ruth calls */
-    var b18 = B[18].s;
-    master.set($('wipe'), { autoAlpha: 0 }, b18);
-    show($('sBoardD'), b18);
-    barTap('Dd-bar', b18 + 0.30);
-    barState('Dd-bar', b18 + 0.32, 'listen');
-    barBreathe('Dd-bar', b18 + 0.35, 1.30);
-    chipIn($('chipD'), b18 + 0.80, 0.6);
-    barState('Dd-bar', b18 + 1.70, 'moment');
-    chipOut($('chipD'), b18 + 2.10, 0.25);
-    show($('Dd-cap'), b18 + 2.20);
-    barState('Dd-bar', b18 + 2.20, 'stop');
-    vo('C04', b18 + 2.20);
-    hide($('sBoardD'), b18 + 3.10);
-    show($('sFT1'), b18 + 3.10);
-    master.fromTo($('ftPing'), { scale: 0.9, autoAlpha: 0.7 },
-      { scale: 1.35, autoAlpha: 0, duration: 0.9, ease: 'power2.out', repeat: 1 }, b18 + 3.20);
-    hide($('sFT1'), b18 + 4.00);
-    show($('sFT2'), b18 + 4.00);
-    /* the call is connected, so the counter counts: a frozen 0:01 under the
-       longest hold in the film reads as a mock-up */
-    ['ftT0','ftT1','ftT2','ftT3'].forEach(function (id, i) {
-      btnLabel(['ftT0','ftT1','ftT2','ftT3'], id, b18 + 4.00 + i);
-    });
-    chipIn($('chipEnd'), b18 + 4.60, 0.8);
-
-    /* BEAT 19 : logo */
-    var b19 = B[19].s;
-    hide($('sFT2'), b19);
-    show($('sLogo'), b19);
-    master.fromTo($('endMark'), { opacity: 0, scale: 0.94 },
-      { opacity: 1, scale: 1, duration: 0.8, ease: EXPO }, b19 + 0.20);
-    master.fromTo($('endWord'), { opacity: 0, y: 12 },
-      { opacity: 1, y: 0, duration: 0.8, ease: EXPO }, b19 + 0.50);
-    master.fromTo($('endUrl'), { opacity: 0 },
-      { opacity: 1, duration: 0.7, ease: 'none' }, b19 + 0.80);
-    master.fromTo($('endFine'), { opacity: 0 },
-      { opacity: 1, duration: 0.7, ease: 'none' }, b19 + 1.20);
+    /* BEAT 14 : price, then logo, with the offer spoken. */
+    var b14 = B[14].s;
+    master.set($('wipe'), { autoAlpha: 1 }, b14);
+    master.fromTo($('wipe'), { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: EXPO_IO }, b14);
+    hide($('sFT1'), b14 + 0.62);                         /* v9: the ring is the last shot before the price */
+    master.set('#ground', { backgroundColor: '#FAF6EF' }, b14 + 0.62);
+    if (RENDER && FMT !== '16x9') { master.set('#ground', { backgroundColor: '#2F6D66' }, b14 + 0.63); }
+    master.fromTo($('priceLine'), { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.85, ease: BACK }, b14 + 0.50);
+    master.fromTo($('reqLine'), { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'none' }, b14 + 1.70);
+    vo('N08', T('N08'));
+    var logo = b14 + 3.60;
+    master.to($('wipe'), { autoAlpha: 0, duration: 0.4, ease: 'none' }, logo);
+    if (RENDER && FMT !== '16x9') { master.set('#ground', { backgroundColor: '#FAF6EF' }, logo + 0.40); }
+    show($('sLogo'), logo);
+    master.fromTo($('endMark'), { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.8, ease: EXPO }, logo + 0.20);
+    master.fromTo($('endWord'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.8, ease: EXPO }, logo + 0.50);
+    master.fromTo($('endUrl'), { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'none' }, logo + 0.80);
+    master.fromTo($('endFine'), { opacity: 0 }, { opacity: 1, duration: 0.7, ease: 'none' }, logo + 1.20);
 
     /* pin the exact runtime */
     master.set({}, {}, TOTAL);
