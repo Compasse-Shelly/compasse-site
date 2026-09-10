@@ -1,5 +1,6 @@
 <!doctype html>
 <!--
+v9.2 (2026-09-10): beat 5a no longer doubles the 'Record and Send' label (the page's overlay label sat over the capture's real one while the overlay was still transparent); one initial-state line changed, nothing else.
 v9.1 (2026-09-08, commit 44e0b29): beat 13 is the shipped call route, Ruth asks through Tap to talk (R07 'Call Sarah.'), Cassi places the call, the ring. Narrator = Kokoro af_heart with the locked brand string /kˈʌmpəsˌA/; Hera retired to fallback.
 v9 (2026-09-08, docs/FILM-SCRIPT-LAUNCH-v9.md): beat 1 the title alone; beat 4 'Who's coming today?' with a new Cassi answer from the Next card; beat 8 the board alone; beat 13 a tap and a ring; the call scene and Ruth's opening line retired; card B carries the synthetic-voices line; one clock time across beats 3 and 4.
 v8 (2026-09-08): docs/FILM-SCRIPT-LAUNCH-v8.md. Ruth speaks (R01 to R06), Cassi answers, the reminder beat is two shots (5a Sarah records, 5b the board plays the same file), the call is played out (C05, S03, R06, S04); beats grow by the script's chains and holds; every clip start comes from PLAN. Sarah synthetic: the badge says 'A recording, played back.'
@@ -1212,7 +1213,8 @@ recut_vo.py now enforces it by copying the file.
   gsap.set('.vb-ripple', { autoAlpha: 0 });
   gsap.set('.btnripple', { autoAlpha: 0 });
   gsap.set(['#recL1','#recL2','#recL3','#sendL1','#ciL1'], { autoAlpha: 0 });
-  gsap.set(['#recL0','#sendL0','#ciL0'], { autoAlpha: 1 });
+  gsap.set(['#sendL0','#ciL0'], { autoAlpha: 1 });
+  gsap.set('#recL0', { autoAlpha: 0 });   /* v9.2: the overlay's 'Record and Send' stays hidden while its background is transparent (the capture's own label shows once); beat 5a shows it on the solid blue at recEnd */
   gsap.set(['#recDone','#sentLine','#medStatus','#iosBanner'], { autoAlpha: 0 });
   gsap.set(['#medListen','#medMoment'], { autoAlpha: 0 });
   gsap.set('#ftPing', { autoAlpha: 0 });
