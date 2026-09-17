@@ -66,7 +66,47 @@ let sub = null;     // the caregiver's subscription row
 const view = document.getElementById('view');
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-function screen(html) { view.innerHTML = '<div style="display:block">' + html + '</div>'; }
+function screen(html) {
+  view.innerHTML = '<div style="display:block">' + html + '</div>';
+  // Comp access: free, no card, never charged. Every sentence promising
+  // otherwise is marked data-paid-only (the pattern index.html, fit.html and
+  // claim.html use), and hiding happens here so it covers every screen from
+  // one place. For a paying customer this loop finds nothing to do, because
+  // isComp() is false, so their page is exactly what it was.
+  if (isComp()) {
+    var paid = view.querySelectorAll('[data-paid-only]');
+    for (var i = 0; i < paid.length; i++) paid[i].style.display = 'none';
+  }
+}
+
+// ---------- comp access ----------
+// This page reads the subscription row directly and never asks
+// manage-subscription what kind of membership this is, so the row carries the
+// answer: columns comp and cancel_at, added 2026-09-17. A row written before
+// then has comp false, which is correct for all of them.
+function isComp() { return !!(sub && sub.comp); }
+
+/** The day free access ends, in plain words ("December 9, 2026"), or null when
+ *  no end date is set. */
+function accessEndsPhrase() {
+  if (sub && sub.cancel_at) {
+    try {
+      return new Date(sub.cancel_at).toLocaleDateString(undefined, {
+        year: 'numeric', month: 'long', day: 'numeric',
+      });
+    } catch (e) {}
+  }
+  return null;
+}
+
+/** The one line a comp member sees in place of the card and refund sentences. */
+function compLine() {
+  if (!isComp()) return '';
+  var when = accessEndsPhrase();
+  return '<p>Free access, no card on file.' +
+    (when ? ' It ends on ' + esc(when) + '.' : '') +
+    ' Write to <a href="mailto:hello@compasse.care">hello@compasse.care</a> if you would like more time.</p>';
+}
 
 // ---------- login ----------
 function showLogin(msg) {
@@ -110,7 +150,12 @@ async function loadSubscription() {
     // newest NON-canceled row) — before 8/4 this page took newest-by-update
     // while the server preferred non-canceled, so a re-subscribed customer
     // could read one subscription while their buttons acted on another.
-    const r = await fetch(SB + '/rest/v1/subscriptions?select=status,paused,cancel_at_period_end,current_period_end&order=updated_at.desc&limit=10', {
+    // comp and cancel_at (added 2026-09-17) ride the SAME select, so a comp
+    // membership costs no extra request and a paying customer costs nothing at
+    // all. The owner-read RLS policy is a row policy with no column list, and
+    // every grant on the table is table-level, so these two need no new
+    // permission to be readable on the caregiver's own row.
+    const r = await fetch(SB + '/rest/v1/subscriptions?select=status,paused,cancel_at_period_end,current_period_end,comp,cancel_at&order=updated_at.desc&limit=10', {
       headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + token },
     });
     const rows = await r.json();
@@ -152,8 +197,9 @@ function showOptions() {
   if (sub.paused) {
     screen(
       '<p><b>Your membership is paused.</b> The board at home, the schedule, and your recordings are all saved. Resume whenever you’re ready, and it comes back exactly as you left it.</p>' +
+      compLine() +
       '<button class="primary" id="resume">Resume membership</button>' +
-      '<button class="opt" id="o-payment-paused" style="margin-top:10px"><b>Update payment method</b><span>Card changed while paused? Update it now so resuming just works.</span></button>'
+      '<button class="opt" id="o-payment-paused" data-paid-only style="margin-top:10px"><b>Update payment method</b><span>Card changed while paused? Update it now so resuming just works.</span></button>'
     );
     document.getElementById('resume').onclick = () => act('resume', 'Your membership is active again. Welcome back.');
     document.getElementById('o-payment-paused').onclick = openPortal;
@@ -165,8 +211,12 @@ function showOptions() {
   }
   screen(
     '<p>Change or end your Compasse membership below. The board at home keeps running while you decide.</p>' +
-    '<button class="opt" id="o-payment"><b>Update payment method</b><span>Card expired or changed? Update it securely with Stripe. It takes about a minute, and nothing else about your membership changes.</span></button>' +
-    '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now and refund the rest of this month automatically. No questions, no follow-ups.</span></button>' +
+    compLine() +
+    '<button class="opt" id="o-payment" data-paid-only><b>Update payment method</b><span>Card expired or changed? Update it securely with Stripe. It takes about a minute, and nothing else about your membership changes.</span></button>' +
+    // "Care has ended" must stay reachable for a comp family too: it is the
+    // button that matters most on the worst day. Only the refund clause is
+    // hidden, so the sentence still reads true without it.
+    '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now<span data-paid-only> and refund the rest of this month automatically</span>. No questions, no follow-ups.</span></button>' +
     '<button class="opt" id="o-pause"><b>We need a break: pause billing</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
     '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal. Compasse keeps running until the end of the time you’ve already paid for, then stops, and you won’t be charged again.</span></button>'
   );
@@ -211,11 +261,17 @@ function showPortalError() {
 function confirmEndCare() {
   screen(
     '<h2 style="font-weight:400;font-size:20px;margin-bottom:6px">We’re so sorry.</h2>' +
-    '<p>We’ll stop billing right now and refund the rest of this month automatically. No forms, no follow-up. You won’t hear from us again unless you reach out.</p>' +
-    '<button class="warn" id="go">Stop billing and refund</button>' +
+    '<p>We’ll stop billing right now<span data-paid-only> and refund the rest of this month automatically</span>. No forms, no follow-up. You won’t hear from us again unless you reach out.</p>' +
+    '<button class="warn" id="go">Stop billing<span data-paid-only> and refund</span></button>' +
     '<button class="ghost" id="back">Go back</button>'
   );
-  wireConfirm('end_care', 'Billing has stopped and we’ve refunded the rest of this month. Take care. We were glad we could help.');
+  // The done message is plain text, not markup, so the refund clause is
+  // dropped from the sentence rather than hidden. Nothing was ever charged on a
+  // comp, so nothing is refunded, and the server agrees: manage-subscription
+  // gates the refund on a paid invoice with amount_paid above zero.
+  wireConfirm('end_care', isComp()
+    ? 'Billing has stopped. Take care. We were glad we could help.'
+    : 'Billing has stopped and we’ve refunded the rest of this month. Take care. We were glad we could help.');
 }
 
 function confirmPause() {
