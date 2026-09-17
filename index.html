@@ -4,6 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="facebook-domain-verification" content="101q9uwdevv5efsa598gxavkvyuztw" />
+<!-- Comp links, read BEFORE the Meta pixel loads. The pixel auto-sends the full
+     location.href, query string and all, so an access code left in the address
+     bar would land in Meta's reporting. Scrub it first, exactly as claim.html
+     does with the Stripe session id. Other params (pricing, src, h) are kept.
+     Presence decides, not value: "?comp=" with nothing after it is still a comp
+     link, and a comp link must never quietly become a card checkout. -->
+<script>
+(function(){
+  try {
+    var p = new URLSearchParams(location.search);
+    window.__isComp = p.has('comp');
+    window.__comp = p.get('comp') || '';
+    if (window.__isComp) {
+      p.delete('comp');
+      var q = p.toString();
+      history.replaceState({}, '', location.pathname + (q ? '?' + q : '') + location.hash);
+    }
+  } catch (e) { window.__isComp = false; window.__comp = ''; }
+})();
+</script>
 <!-- Meta pixel, privacy-disciplined. Loads the library but fires NO PageView and
      NO automatic form/button scraping (autoConfig false, the email-leak vector).
      Only explicit conversion events (Lead, InitiateCheckout, StartTrial) are ever
@@ -491,9 +511,11 @@ fbq('init','1039692688431979');
       <div class="card">
         <div class="price">$29<span>/month</span></div>
         <p style="margin:8px auto 0;color:var(--muted)">First week free. Cancel anytime, online, in one tap.</p>
-        <p style="margin:12px auto 20px;font-size:16px;color:var(--muted)">Your card is charged after
+        <p data-paid-only style="margin:12px auto 20px;font-size:16px;color:var(--muted)">Your card is charged after
         the free week ends. Cancel before then and you pay nothing.</p>
         <button class="btn" id="buy-btn" type="button">Start your free week</button>
+        <!-- Shown only when a ?comp= access link carries a code the server refuses. -->
+        <p id="comp-msg" style="display:none;margin-top:10px;font-size:15px;color:var(--muted)">That access code is not active. Write to hello@compasse.care.</p>
         <p style="margin-top:8px;font-size:14px;color:var(--muted)">If care ends, tell us. We stop the
         subscription immediately and refund the unused part of the month.</p>
         <p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:15px;color:var(--muted)">
@@ -673,19 +695,39 @@ fbq('init','1039692688431979');
       document.querySelectorAll('[data-prelaunch]').forEach(function(el){ el.hidden = true; });
     }
     const buy = document.getElementById('buy-btn');
+    // A comp link (compasse.care/?comp=CODE) is the only checkout that asks for
+    // no card. The code was captured and scrubbed from the URL before the pixel
+    // loaded; it rides to the server in the body, and the server decides. A code
+    // it refuses returns 400 and no checkout, never a surprise pay page.
+    const isComp = !!window.__isComp;
+    const comp = window.__comp || '';
+    const compMsg = document.getElementById('comp-msg');
+    // Nobody is buying anything on a comp link, so the price promises come down.
+    if (isComp) document.querySelectorAll('[data-paid-only]').forEach(function(el){ el.style.display = 'none'; });
     if (buy) buy.addEventListener('click', async () => {
       buy.disabled = true; buy.textContent = 'One moment…';
-      metaEvent('InitiateCheckout', 29);
+      if (compMsg) compMsg.style.display = 'none';
+      // No ad event for a comp link: a $0 gift is not a $29 purchase, and
+      // teaching Meta otherwise corrupts the numbers Marketing reads.
+      if (!isComp) metaEvent('InitiateCheckout', 29);
+      const compFailed = () => {
+        buy.disabled = false; buy.textContent = 'Start your free week';
+        if (compMsg) compMsg.style.display = 'block';
+      };
       try {
         const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
+          body: JSON.stringify(isComp ? { comp } : {}),
         });
         const d = await r.json();
         if (d.url) { location.href = d.url; return; }
+        // Any failure on a comp link shows the one line and stays put. A comp
+        // visitor must never be handed the ordinary card checkout.
+        if (isComp) { compFailed(); return; }
         throw new Error('no url');
       } catch (e) {
+        if (isComp) { compFailed(); return; }
         buy.disabled = false; buy.textContent = 'Start your free week';
         alert('Something went wrong starting checkout. Please try again or email hello@compasse.care');
       }
