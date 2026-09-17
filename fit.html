@@ -432,6 +432,8 @@ fbq('init','1039692688431979');
       <div id="atLaunch">
         <p>The first week is free, then $29 a month with a 30 day money back guarantee. Cancel anytime, online, in one tap. If care ends, billing stops immediately and we refund the unused part of the month.</p>
         <div class="row"><button class="cta" id="buyGo" type="button">Start your free week</button></div>
+        <!-- Shown only when a ?comp= access link carries a code the server refuses. -->
+        <p id="compMsg" class="fine" style="display:none;text-align:center;margin-top:10px">That access code is not active. Write to hello@compasse.care.</p>
         <p class="fine" style="text-align:center;margin-top:10px">$29 a month after the free first week. 30-day money-back guarantee. Cancel anytime. <a href="/" style="color:var(--teal)">See the full site</a>.</p>
       </div>
     </div>
@@ -875,14 +877,27 @@ fbq('init','1039692688431979');
 
   // Checkout from the results page. The ad/channel tag rides along as Stripe
   // metadata (create-checkout sanitizes it). Never an email or a quiz answer.
+  // A comp link (?comp=CODE) is the only checkout that asks for no card. The
+  // server decides: a code it refuses returns 400 and no checkout, never a
+  // surprise pay page.
+  var comp = new URLSearchParams(location.search).get('comp') || '';
   el('buyGo').addEventListener('click', function(){
     var b = el('buyGo'); b.disabled = true; b.textContent = 'One moment…';
+    var cm = el('compMsg'); if (cm) cm.style.display = 'none';
     metaEvent('InitiateCheckout', 29);
+    var status = 0;
+    var payload = { src: tag() };
+    if (comp) payload.comp = comp;
     fetch(SB_URL + '/functions/v1/create-checkout', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ src: tag() })
-    }).then(function(r){ return r.json(); }).then(function(d){
+      body: JSON.stringify(payload)
+    }).then(function(r){ status = r.status; return r.json(); }).then(function(d){
       if (d && d.url){ location.href = d.url; return; }
+      if (comp && status === 400){
+        b.disabled = false; b.textContent = 'Start your free week';
+        if (cm) cm.style.display = 'block';
+        return;
+      }
       throw new Error('no url');
     }).catch(function(){
       b.disabled = false; b.textContent = 'Start your free week';

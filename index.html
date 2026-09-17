@@ -494,6 +494,8 @@ fbq('init','1039692688431979');
         <p style="margin:12px auto 20px;font-size:16px;color:var(--muted)">Your card is charged after
         the free week ends. Cancel before then and you pay nothing.</p>
         <button class="btn" id="buy-btn" type="button">Start your free week</button>
+        <!-- Shown only when a ?comp= access link carries a code the server refuses. -->
+        <p id="comp-msg" style="display:none;margin-top:10px;font-size:15px;color:var(--muted)">That access code is not active. Write to hello@compasse.care.</p>
         <p style="margin-top:8px;font-size:14px;color:var(--muted)">If care ends, tell us. We stop the
         subscription immediately and refund the unused part of the month.</p>
         <p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:15px;color:var(--muted)">
@@ -673,17 +675,28 @@ fbq('init','1039692688431979');
       document.querySelectorAll('[data-prelaunch]').forEach(function(el){ el.hidden = true; });
     }
     const buy = document.getElementById('buy-btn');
+    // A comp link (compasse.care/?comp=CODE) is the only checkout that asks for
+    // no card. The code rides along in the body and the server decides: a code
+    // it refuses returns 400 and no checkout, never a surprise pay page.
+    const comp = qs.get('comp') || '';
+    const compMsg = document.getElementById('comp-msg');
     if (buy) buy.addEventListener('click', async () => {
       buy.disabled = true; buy.textContent = 'One moment…';
+      if (compMsg) compMsg.style.display = 'none';
       metaEvent('InitiateCheckout', 29);
       try {
         const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
+          body: JSON.stringify(comp ? { comp } : {}),
         });
         const d = await r.json();
         if (d.url) { location.href = d.url; return; }
+        if (comp && r.status === 400) {
+          buy.disabled = false; buy.textContent = 'Start your free week';
+          if (compMsg) compMsg.style.display = 'block';
+          return;
+        }
         throw new Error('no url');
       } catch (e) {
         buy.disabled = false; buy.textContent = 'Start your free week';
