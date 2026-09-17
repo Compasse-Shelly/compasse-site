@@ -48,12 +48,15 @@ fbq('init','1039692688431979');
     <div id="pending"><h1>One moment…</h1><p>Confirming your subscription.</p></div>
     <div id="ok" style="display:none">
       <h1>Welcome to Compasse 💙</h1>
-      <p>Your free week has started, and your account is ready for <span class="email" id="who"></span>.<br>Nothing is charged until it ends, and you can cancel anytime.</p>
+      <p data-paid-only>Your free week has started, and your account is ready for <span class="email" id="who"></span>.<br>Nothing is charged until it ends, and you can cancel anytime.</p>
+      <!-- Comp access: no card, no charge, so the two sentences above would be
+           a false promise. Shown only when the verifier says comp. -->
+      <p id="compLine" style="display:none">Your access is free for 90 days. There is no card on file and nothing will be charged.</p>
       <a class="btn" href="https://apps.apple.com/app/id6785591526">Download Compasse on the App&nbsp;Store</a>
       <ol>
         <li><b>Set your password</b>. We just emailed <span class="email" id="who2"></span> a link to choose one. <span id="resendWrap">Did not get it? <a href="#" id="resend">Send it again</a>.<span id="resendMsg"></span></span></li>
         <li><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store, or search &ldquo;Compasse&rdquo;.</li>
-        <li><b>Sign in</b> with the email you paid with and the password you just set. Your subscription is already attached.</li>
+        <li><b>Sign in</b> with the email you used at checkout and the password you just set. Your subscription is already attached.</li>
         <li><b>Set up their tablet</b>. Install the same app on their iPad, and it walks you through pairing with a one-time code. About 15 minutes, once. <a href="https://compasse.care/film/setup/">Watch the 46-second setup video.</a></li>
       </ol>
       <p class="note">Compasse is a comfort and communication tool, not a medical or emergency device. In any emergency, always call 911.</p>
@@ -124,6 +127,18 @@ fbq('init','1039692688431979');
       document.getElementById('who').textContent = email || 'your email';
       document.getElementById('who2').textContent = email || 'your email';
       ok.style.display = 'block';
+      // Comp access: free, no card, never charged. Hide every sentence that
+      // promises otherwise and show the one honest line in their place. The
+      // flag comes from the server-verified session, never from the URL, so it
+      // cannot be faked by loading this page by hand. A paying customer gets
+      // comp:false and this block does nothing at all.
+      var isComp = !!d.comp;
+      if (isComp) {
+        var paid = document.querySelectorAll('[data-paid-only]');
+        for (var i = 0; i < paid.length; i++) paid[i].style.display = 'none';
+        var cl = document.getElementById('compLine');
+        if (cl) cl.style.display = 'block';
+      }
       // Send the set-password link to the paid address.
       if (email) sendSetPassword(email);
       // Resend on demand for the race case (redirect beat the webhook).
@@ -142,7 +157,9 @@ fbq('init','1039692688431979');
       // The one conversion event for a completed checkout (a free-trial start).
       // Fired only on a server-verified session, so it can't be spoofed by
       // loading claim.html directly.
-      metaEvent('StartTrial', 29);
+      // Never for a comp: it is $0, so reporting a 29 dollar trial start would
+      // put money in Marketing's numbers that nobody ever paid.
+      if (!isComp) metaEvent('StartTrial', 29);
     } else {
       failed.style.display = 'block';
     }
