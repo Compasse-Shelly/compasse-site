@@ -6,6 +6,26 @@
 <title>The Fit Check · Compasse</title>
 <meta name="description" content="A two minute fit check. Answer a few questions about your family's routine and see what a reassurance board would look like on the wall.">
 <link rel="canonical" href="https://compasse.care/fit.html">
+<!-- Comp links, read BEFORE the Meta pixel loads. The pixel auto-sends the full
+     location.href, query string and all, so an access code left in the address
+     bar would land in Meta's reporting. Scrub it first, exactly as claim.html
+     does with the Stripe session id. Other params (src, h) are kept.
+     Presence decides, not value: "?comp=" with nothing after it is still a comp
+     link, and a comp link must never quietly become a card checkout. -->
+<script>
+(function(){
+  try {
+    var p = new URLSearchParams(location.search);
+    window.__isComp = p.has('comp');
+    window.__comp = p.get('comp') || '';
+    if (window.__isComp) {
+      p.delete('comp');
+      var q = p.toString();
+      history.replaceState({}, '', location.pathname + (q ? '?' + q : '') + location.hash);
+    }
+  } catch (e) { window.__isComp = false; window.__comp = ''; }
+})();
+</script>
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
@@ -430,11 +450,11 @@ fbq('init','1039692688431979');
     <div style="margin-top:34px">
       <h2 id="ctaHeadLive">The board can be live on <span data-poss>their</span> wall tonight.</h2>
       <div id="atLaunch">
-        <p>The first week is free, then $29 a month with a 30 day money back guarantee. Cancel anytime, online, in one tap. If care ends, billing stops immediately and we refund the unused part of the month.</p>
+        <p data-paid-only>The first week is free, then $29 a month with a 30 day money back guarantee. Cancel anytime, online, in one tap. If care ends, billing stops immediately and we refund the unused part of the month.</p>
         <div class="row"><button class="cta" id="buyGo" type="button">Start your free week</button></div>
         <!-- Shown only when a ?comp= access link carries a code the server refuses. -->
         <p id="compMsg" class="fine" style="display:none;text-align:center;margin-top:10px">That access code is not active. Write to hello@compasse.care.</p>
-        <p class="fine" style="text-align:center;margin-top:10px">$29 a month after the free first week. 30-day money-back guarantee. Cancel anytime. <a href="/" style="color:var(--teal)">See the full site</a>.</p>
+        <p class="fine" data-paid-only style="text-align:center;margin-top:10px">$29 a month after the free first week. 30-day money-back guarantee. Cancel anytime. <a href="/" style="color:var(--teal)">See the full site</a>.</p>
       </div>
     </div>
   </section>
@@ -878,28 +898,40 @@ fbq('init','1039692688431979');
   // Checkout from the results page. The ad/channel tag rides along as Stripe
   // metadata (create-checkout sanitizes it). Never an email or a quiz answer.
   // A comp link (?comp=CODE) is the only checkout that asks for no card. The
-  // server decides: a code it refuses returns 400 and no checkout, never a
-  // surprise pay page.
-  var comp = new URLSearchParams(location.search).get('comp') || '';
+  // code was captured and scrubbed from the URL before the pixel loaded; the
+  // server decides whether it is real.
+  var isComp = !!window.__isComp;
+  var comp = window.__comp || '';
+  // Nobody is buying anything on a comp link, so the price promises come down.
+  if (isComp) {
+    var paid = document.querySelectorAll('[data-paid-only]');
+    for (var i = 0; i < paid.length; i++) paid[i].style.display = 'none';
+  }
   el('buyGo').addEventListener('click', function(){
     var b = el('buyGo'); b.disabled = true; b.textContent = 'One moment…';
     var cm = el('compMsg'); if (cm) cm.style.display = 'none';
-    metaEvent('InitiateCheckout', 29);
-    var status = 0;
+    // No ad event for a comp link: a $0 gift is not a $29 purchase.
+    if (!isComp) metaEvent('InitiateCheckout', 29);
+    // On a comp link EVERY failure ends here: the one line, and we stay on the
+    // page. The old catch sent people to /#pricing, where the buy button starts
+    // an ordinary card checkout. A 500 is reachable (a Stripe hiccup, a 429, a
+    // coupon Stripe refuses), so that redirect would have handed a creator the
+    // pay page the whole feature exists to avoid.
+    var compFailed = function(){
+      b.disabled = false; b.textContent = 'Start your free week';
+      if (cm) cm.style.display = 'block';
+    };
     var payload = { src: tag() };
-    if (comp) payload.comp = comp;
+    if (isComp) payload.comp = comp;
     fetch(SB_URL + '/functions/v1/create-checkout', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(payload)
-    }).then(function(r){ status = r.status; return r.json(); }).then(function(d){
+    }).then(function(r){ return r.json(); }).then(function(d){
       if (d && d.url){ location.href = d.url; return; }
-      if (comp && status === 400){
-        b.disabled = false; b.textContent = 'Start your free week';
-        if (cm) cm.style.display = 'block';
-        return;
-      }
+      if (isComp){ compFailed(); return; }
       throw new Error('no url');
     }).catch(function(){
+      if (isComp){ compFailed(); return; }
       b.disabled = false; b.textContent = 'Start your free week';
       location.href = '/#pricing';
     });
