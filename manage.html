@@ -218,7 +218,12 @@ function showOptions() {
     // hidden, so the sentence still reads true without it.
     '<button class="opt" id="o-endcare"><b>Care has ended</b><span>If your loved one has passed or moved to full-time care: we stop billing right now<span data-paid-only> and refund the rest of this month automatically</span>. No questions, no follow-ups.</span></button>' +
     '<button class="opt" id="o-pause"><b>We need a break: pause billing</b><span>Pause billing for a while. The board, the schedule, and your recordings all stay saved, and it comes back on in one tap.</span></button>' +
-    '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal. Compasse keeps running until the end of the time you’ve already paid for, then stops, and you won’t be charged again.</span></button>'
+    // The same already-paid clause the ruling removed from the confirm screen,
+    // on the button that leads to it. Removed for a comp as one whole sentence,
+    // because the clause cannot come out of the middle of it without writing
+    // new copy. A comp reads "Turn off renewal." and gets the detail on the
+    // confirm screen a tap later; a paying customer reads it exactly as before.
+    '<button class="opt" id="o-cancel"><b>End membership</b><span>Turn off renewal.<span data-paid-only> Compasse keeps running until the end of the time you’ve already paid for, then stops, and you won’t be charged again.</span></span></button>'
   );
   document.getElementById('o-payment').onclick = openPortal;
   document.getElementById('o-endcare').onclick = confirmEndCare;
@@ -287,7 +292,12 @@ function confirmPause() {
 function confirmCancel() {
   screen(
     '<h2 style="font-weight:400;font-size:20px;margin-bottom:6px">End your membership?</h2>' +
-    '<p>Compasse keeps running at home through <b>' + esc(endDatePhrase()) + '</b>, the time you’ve already paid for, and then it won’t renew. You won’t be charged again. There’s no refund for the current month.</p>' +
+    // Ruled 2026-09-17: a comp member never paid, so the clause about time
+    // already paid for comes out, the same way the refund clause does. The
+    // refund sentence goes with it, because a refund sentence is on the hide
+    // list everywhere else on this page. Existing copy with false clauses
+    // removed, no new copy, and a paying customer reads it exactly as before.
+    '<p>Compasse keeps running at home through <b>' + esc(endDatePhrase()) + '</b><span data-paid-only>, the time you’ve already paid for</span>, and then it won’t renew. You won’t be charged again.<span data-paid-only> There’s no refund for the current month.</span></p>' +
     '<button class="warn" id="go">Yes, end membership</button>' +
     '<button class="ghost" id="back">Go back</button>'
   );
