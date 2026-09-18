@@ -451,6 +451,9 @@ fbq('init','1039692688431979');
       <h2 id="ctaHeadLive">The board can be live on <span data-poss>their</span> wall tonight.</h2>
       <div id="atLaunch">
         <p data-paid-only>The first week is free, then $29 a month with a 30 day money back guarantee. Cancel anytime, online, in one tap. If care ends, billing stops immediately and we refund the unused part of the month.</p>
+        <!-- Shown only on a ?comp= access link: the inverse of data-paid-only. Without it
+             nothing on the page says the code worked. -->
+        <p data-comp-only class="fine" style="display:none;text-align:center;margin-bottom:14px">Free access code applied. No card will be asked for.</p>
         <div class="row"><button class="cta" id="buyGo" type="button">Start your free week</button></div>
         <!-- Shown only when a ?comp= access link carries a code the server refuses. -->
         <p id="compMsg" class="fine" style="display:none;text-align:center;margin-top:10px">That access code is not active. Write to hello@compasse.care.</p>
@@ -902,10 +905,13 @@ fbq('init','1039692688431979');
   // server decides whether it is real.
   var isComp = !!window.__isComp;
   var comp = window.__comp || '';
-  // Nobody is buying anything on a comp link, so the price promises come down.
+  // Nobody is buying anything on a comp link, so the price promises come down,
+  // and one plain line goes up in their place.
   if (isComp) {
     var paid = document.querySelectorAll('[data-paid-only]');
     for (var i = 0; i < paid.length; i++) paid[i].style.display = 'none';
+    var compOnly = document.querySelectorAll('[data-comp-only]');
+    for (var j = 0; j < compOnly.length; j++) compOnly[j].style.display = 'block';
   }
   el('buyGo').addEventListener('click', function(){
     var b = el('buyGo'); b.disabled = true; b.textContent = 'One moment…';

@@ -513,6 +513,10 @@ fbq('init','1039692688431979');
         <p style="margin:8px auto 0;color:var(--muted)">First week free. Cancel anytime, online, in one tap.</p>
         <p data-paid-only style="margin:12px auto 20px;font-size:16px;color:var(--muted)">Your card is charged after
         the free week ends. Cancel before then and you pay nothing.</p>
+        <!-- Shown only on a ?comp= access link: the inverse of data-paid-only. Without it
+             nothing on the page says the code worked, and the first tester read the
+             scrubbed address bar as a redirect back to the root. -->
+        <p data-comp-only style="display:none;margin:12px auto 20px;font-size:15px;color:var(--muted)">Free access code applied. No card will be asked for.</p>
         <button class="btn" id="buy-btn" type="button">Start your free week</button>
         <!-- Shown only when a ?comp= access link carries a code the server refuses. -->
         <p id="comp-msg" style="display:none;margin-top:10px;font-size:15px;color:var(--muted)">That access code is not active. Write to hello@compasse.care.</p>
@@ -702,8 +706,18 @@ fbq('init','1039692688431979');
     const isComp = !!window.__isComp;
     const comp = window.__comp || '';
     const compMsg = document.getElementById('comp-msg');
-    // Nobody is buying anything on a comp link, so the price promises come down.
-    if (isComp) document.querySelectorAll('[data-paid-only]').forEach(function(el){ el.style.display = 'none'; });
+    if (isComp) {
+      // Nobody is buying anything on a comp link, so the price promises come down,
+      // and one plain line goes up in their place.
+      document.querySelectorAll('[data-paid-only]').forEach(function(el){ el.style.display = 'none'; });
+      document.querySelectorAll('[data-comp-only]').forEach(function(el){ el.style.display = 'block'; });
+      // The buy button sits far down a long page. Bring it into view once, after
+      // load, so the line and the button are the first things seen. No focus is
+      // taken. The scroll is smooth from html{scroll-behavior:smooth}, which the
+      // reduced-motion rule above already turns off for anyone who asked for that.
+      var pricingSection = document.getElementById('pricing');
+      if (pricingSection) window.addEventListener('load', function(){ pricingSection.scrollIntoView(); }, { once: true });
+    }
     if (buy) buy.addEventListener('click', async () => {
       buy.disabled = true; buy.textContent = 'One moment…';
       if (compMsg) compMsg.style.display = 'none';
