@@ -62,6 +62,14 @@ fbq('init','1039692688431979');
       <p class="note">Compasse is a comfort and communication tool, not a medical or emergency device. In any emergency, always call 911.</p>
       <p style="margin-top:16px">Questions at any step: <a href="mailto:hello@compasse.care">hello@compasse.care</a>. A real person answers.</p>
     </div>
+    <!-- One membership per email (2026-09-18). This checkout completed under an
+         email that already had a membership, so the webhook cancelled it
+         unbilled and made NO account. Every step below would be a lie here:
+         there is no new free week, no password to set, and nothing to pair. So
+         the steps come out and one line goes in their place. -->
+    <div id="dup" style="display:none">
+      <p>This email already has a Compasse membership. Sign in at <a href="https://compasse.care/manage.html">compasse.care/manage.html</a>, or use a different email for a second family.</p>
+    </div>
     <div id="failed">
       <h1>We couldn't confirm that</h1>
       <p>Your payment may still have gone through. Email us at <a href="mailto:hello@compasse.care">hello@compasse.care</a> and we'll sort it out personally. Usually within the hour.</p>
@@ -122,6 +130,16 @@ fbq('init','1039692688431979');
     const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout?session_id=' + encodeURIComponent(sid));
     const d = await r.json();
     pending.style.display = 'none';
+    // One membership per email (2026-09-18). The flag is server-read from the
+    // row the webhook wrote, never from the URL, so it cannot be faked by
+    // loading this page by hand. Nothing else runs: no set-password email for
+    // an account that was never created, and no StartTrial, because no trial
+    // started and nobody was charged. The buyer also gets one email saying the
+    // same thing. A paying customer gets duplicate:false and this does nothing.
+    if (d.ok && d.duplicate) {
+      document.getElementById('dup').style.display = 'block';
+      return;
+    }
     if (d.ok) {
       const email = d.email || '';
       document.getElementById('who').textContent = email || 'your email';

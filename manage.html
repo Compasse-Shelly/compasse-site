@@ -86,6 +86,21 @@ function screen(html) {
 // then has comp false, which is correct for all of them.
 function isComp() { return !!(sub && sub.comp); }
 
+// ---------- two memberships ----------
+// One membership per email (Aidan's ruling, 2026-09-18). Kept in step with
+// TWO_MEMBERSHIPS_TEXT in manage-subscription/pickSubscription.ts, which is
+// what the server sends on a 409. The page and the server must never say
+// different things, so the words are written once here and compared, not
+// paraphrased.
+const TWO_MEMBERSHIPS =
+  'Two memberships match this account. Write to hello@compasse.care and we will sort it out.';
+
+function showTwoMemberships() {
+  // Exactly the ruled sentence and nothing else. The ruling said one line and
+  // no other copy changes, so no reassurance sentence is invented here.
+  screen('<p>' + esc(TWO_MEMBERSHIPS) + '</p>');
+}
+
 /** The day free access ends, in plain words ("December 9, 2026"), or null when
  *  no end date is set. */
 function accessEndsPhrase() {
@@ -160,7 +175,16 @@ async function loadSubscription() {
     });
     const rows = await r.json();
     const list = Array.isArray(rows) ? rows : [];
-    sub = list.find(function (x) { return x.status !== 'canceled'; }) || list[0] || null;
+    // One membership per email (2026-09-18). The line above used to be
+    // `list.find(x => x.status !== 'canceled')`, which GUESSED when two live
+    // rows matched, exactly as the server did. It now shows the one line and
+    // offers no buttons, because every button on this page would act on a
+    // membership nobody chose. The server refuses the same case with a 409, so
+    // this is belt and braces, not the only guard.
+    const live = list.filter(function (x) { return x.status !== 'canceled'; });
+    if (live.length > 1) { showTwoMemberships(); return; }
+    // Identical to what this line always did once there is at most one live row.
+    sub = live[0] || list[0] || null;
     showOptions();
   } catch (e) {
     showOptions();
@@ -246,6 +270,9 @@ async function openPortal() {
       body: JSON.stringify({ action: 'portal' }),
     });
     const d = await r.json();
+    // Same backstop as act(): the server refused to choose, so do not tell the
+    // customer to check their connection and try again.
+    if (r.status === 409 && d && d.error === TWO_MEMBERSHIPS) { showTwoMemberships(); return; }
     if (d && d.ok && d.url) { window.location.href = d.url; return; }
     showPortalError();
   } catch (e) {
@@ -319,6 +346,10 @@ async function act(action, doneMsg) {
       body: JSON.stringify({ action }),
     });
     const d = await r.json();
+    // The server's backstop: two live memberships match this caller, so it
+    // acted on NEITHER. Say so in its own words rather than the generic
+    // "that didn't go through", which would invite a retry that cannot work.
+    if (r.status === 409 && d && d.error === TWO_MEMBERSHIPS) { showTwoMemberships(); return; }
     if (d && d.ok) {
       document.getElementById('title').textContent = 'Compasse';
       screen('<p style="font-size:16px;color:var(--ink)">' + esc(doneMsg) + '</p>');
