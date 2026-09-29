@@ -717,6 +717,18 @@ fbq('init','1039692688431979');
       // reduced-motion rule above already turns off for anyone who asked for that.
       var pricingSection = document.getElementById('pricing');
       if (pricingSection) window.addEventListener('load', function(){ pricingSection.scrollIntoView(); }, { once: true });
+      // Every other "Start your free week" is a link to #pricing. On a comp link
+      // that only moved the page, so a visitor who tapped the header copy saw
+      // nothing happen (a creator, 2026-09-28). Each one now scrolls to the button
+      // and presses it, so all of them run the one checkout below. A button that
+      // is already busy is disabled, so a second tap starts nothing.
+      document.querySelectorAll('a[href="#pricing"]').forEach(function(a){
+        a.addEventListener('click', function(e){
+          e.preventDefault();
+          if (pricingSection) pricingSection.scrollIntoView();
+          if (buy) buy.click();
+        });
+      });
     }
     if (buy) buy.addEventListener('click', async () => {
       buy.disabled = true; buy.textContent = 'One moment…';
