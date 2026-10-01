@@ -53,11 +53,12 @@ fbq('init','1039692688431979');
            a false promise. Shown only when the verifier says comp. -->
       <p id="compLine" style="display:none">Your access is free for 90 days. There is no card on file and nothing will be charged.</p>
       <a class="btn" href="https://apps.apple.com/app/id6785591526">Download Compasse on the App&nbsp;Store</a>
+      <p>The whole setup takes about 20 minutes.</p>
       <ol>
-        <li><b>Set your password</b>. We just emailed <span class="email" id="who2"></span> a link to choose one. <span id="resendWrap">Did not get it? <a href="#" id="resend">Send it again</a>.<span id="resendMsg"></span></span></li>
-        <li><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store, or search &ldquo;Compasse&rdquo;.</li>
+        <li><b>Set your password</b>. Your welcome email to <span class="email" id="who2"></span> has a link to choose one. It can take a minute or two to arrive. <span id="resendWrap">Did not get it? <a href="#" id="resend">Send it again</a>.<span id="resendMsg"></span></span></li>
+        <li><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store. Searching the App Store may not find it yet, so please use the button.</li>
         <li><b>Sign in</b> with the email you used at checkout and the password you just set. Your subscription is already attached.</li>
-        <li><b>Set up their tablet</b>. Install the same app on their iPad, and it walks you through pairing with a one-time code. About 15 minutes, once. <a href="https://compasse.care/film/setup/">Watch the 46-second setup video.</a></li>
+        <li><b>Set up their tablet</b>. On their iPad, open <a href="https://apps.apple.com/app/id6785591526">apps.apple.com/app/id6785591526</a> (the link is in your welcome email too) and install the same app. It walks you through pairing with a one-time code. <a href="https://compasse.care/film/setup/">Watch the 46-second setup video.</a></li>
       </ol>
       <p class="note">Compasse is a comfort and communication tool, not a medical or emergency device. In any emergency, always call 911.</p>
       <p style="margin-top:16px">Questions at any step: <a href="mailto:hello@compasse.care">hello@compasse.care</a>. A real person answers.</p>
@@ -78,8 +79,11 @@ fbq('init','1039692688431979');
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
 <script>
   // Silent pattern: the account was already created server-side by the Stripe
-  // webhook when the checkout completed. Here we just send the paid email a
-  // link to set a password, reusing the same recovery flow as reset.html.
+  // webhook when the checkout completed, and the webhook's welcome email
+  // carries the set-password link (2026-10-01). This page does NOT send one on
+  // load any more: Supabase keeps only the newest recovery link per account, so
+  // an automatic send here would kill the link in the welcome email. "Send it
+  // again" stays as a manual button for a family whose email has not arrived.
   // The anon key is safe to embed (publishable; RLS gates everything).
   const sb = supabase.createClient(
     'https://cklagdabffzbikvtnnzo.supabase.co',
@@ -87,11 +91,10 @@ fbq('init','1039692688431979');
   );
   async function sendSetPassword(email) {
     // resetPasswordForEmail is anti-enumeration: it resolves ok whether or not
-    // the account exists yet. The webhook creates it on checkout.completed,
-    // which normally beats this page; the "Send it again" link covers the rare
-    // race where the redirect wins. Returns the auth error (if any) so the
-    // resend link can tell the truth: Supabase allows one of these emails per
-    // address per minute, and a second tap inside that minute is refused.
+    // the account exists yet. Only the "Send it again" tap calls this. Returns
+    // the auth error (if any) so the link can tell the truth: Supabase allows
+    // one of these per address per minute (the welcome email's link counts),
+    // and a tap inside that minute is refused.
     try {
       const { error } = await sb.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://compasse.care/reset.html',
@@ -157,9 +160,9 @@ fbq('init','1039692688431979');
         var cl = document.getElementById('compLine');
         if (cl) cl.style.display = 'block';
       }
-      // Send the set-password link to the paid address.
-      if (email) sendSetPassword(email);
-      // Resend on demand for the race case (redirect beat the webhook).
+      // No automatic send here (see the note at the top of this script). A
+      // manual send makes a NEW link and the welcome email's link stops
+      // working, so the message after a send says to use the newest email.
       var resend = document.getElementById('resend');
       if (resend) resend.addEventListener('click', async function(ev){
         ev.preventDefault();
@@ -167,7 +170,7 @@ fbq('init','1039692688431979');
         if (!email) return;
         const err = await sendSetPassword(email);
         if (!msg) return;
-        if (!err) { msg.textContent = ' Sent. Check your inbox.'; }
+        if (!err) { msg.textContent = ' Sent. Use the link in this newest email. It replaces the one before.'; }
         else if (err.code === 'over_email_send_rate_limit' || /after \d+ seconds/i.test(err.message || '')) {
           msg.textContent = ' One email per minute. Please wait a moment, then tap Send it again.';
         } else { msg.textContent = ' That did not go through. Please try again in a minute.'; }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Reset your password · Compasse</title>
+<title>Set your password · Compasse</title>
 <style>
   :root { --bg:#FAF7F2; --text:#1E1E1E; --muted:#5A5A5A; --accent:#2C6A85; --border:#E5DFD2; --good:#2E7D32; --warn:#C0392B; }
   * { box-sizing: border-box; margin: 0; }
@@ -25,7 +25,7 @@
 <body>
 <div class="card">
   <div class="rule"></div>
-  <h1>Reset your password</h1>
+  <h1>Set your password</h1>
   <div id="form" hidden>
     <p style="margin-bottom:4px">Choose a password for your Compasse account.</p>
     <p style="margin-bottom:12px">At least 8 characters. Passwords that many people use, like a word with a number after it, are refused for your safety. A short phrase only you would think of works well.</p>
@@ -37,14 +37,15 @@
       <p id="err" class="msg-warn" hidden></p>
     </div>
   </div>
-  <p id="checking">Checking your reset link…</p>
+  <p id="checking">Checking your link…</p>
   <div id="done" hidden>
-    <p class="msg-good">✓ Password updated.</p>
+    <p class="msg-good">✓ Password saved.</p>
     <p>Open the Compasse app on your phone and sign in with your new password.</p>
   </div>
   <div id="bad" hidden>
-    <p class="msg-warn">This reset link is invalid or has expired.</p>
-    <p>Ask for a fresh one: on the welcome page tap "Send it again", or open the Compasse app and tap "Forgot your password?".</p>
+    <p class="msg-warn">This link has expired or has already been used.</p>
+    <p>To get a fresh one, open the Compasse app on your iPhone, type your email and tap "Forgot your password?".</p>
+    <p>Or email <a href="mailto:hello@compasse.care" style="color:var(--accent)">hello@compasse.care</a> and we will help.</p>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
@@ -81,7 +82,7 @@
     if (/weak|easy to guess|pwned|leaked|compromised|breach/i.test(x)) return 'That password is on lists of passwords people use often, so it is easy to guess. Try a short phrase only you would think of, like three words together.';
     if (/different from the old|same password/i.test(x)) return 'That is the password already on the account. Choose a new one.';
     if (/at least|too short|length/i.test(x)) return 'At least 8 characters, please.';
-    if (/session|token|expired|invalid|jwt|not logged in/i.test(x)) return 'This link has already been used or has expired. Ask for a fresh one: on the welcome page tap "Send it again", or in the app tap "Forgot your password?".';
+    if (/session|token|expired|invalid|jwt|not logged in/i.test(x)) return 'This link has already been used or has expired. To get a fresh one, open the Compasse app on your iPhone, type your email and tap "Forgot your password?". Or email hello@compasse.care.';
     return 'That did not save. ' + x;
   };
   document.getElementById('save').addEventListener('click', async () => {

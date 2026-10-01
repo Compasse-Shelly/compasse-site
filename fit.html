@@ -219,7 +219,7 @@ fbq('init','1039692688431979');
     <p class="eyebrow">Compasse</p>
     <h1>A two-minute fit check</h1>
     <p>A few questions about your family&rsquo;s routine. At the end you will see the board we would build, and we will tell you honestly if it is not the right fit.</p>
-    <p class="fine" id="frontDoor">Compasse is $29 a month after a free first week, with a 30-day money-back guarantee. It needs an iPad on Wi-Fi at their home and one iPhone in the family. Ready now? <a href="/#pricing" style="color:var(--teal)">Start your free week</a>. Or <a href="/" style="color:var(--teal)">see the full site</a> first.</p>
+    <p class="fine" id="frontDoor">Compasse is $29 a month after a free first week, with a 30-day money-back guarantee. It needs an iPad on Wi-Fi at their home and one iPhone in the family. The app is on the US App Store only for now, so it is for families in the US. Ready now? <a href="/#pricing" style="color:var(--teal)">Start your free week</a>. Or <a href="/" style="color:var(--teal)">see the full site</a> first.</p>
     <div class="note">No phone calls. No salespeople. Your answers stay on this page.</div>
     <button class="cta" data-next>Start the fit check</button>
   </section>
@@ -343,7 +343,7 @@ fbq('init','1039692688431979');
   <!-- 11 ipad -->
   <section class="step" id="s11">
     <h2>Is there an iPad on Wi-Fi at <span data-poss>their</span> home, or could there be?</h2>
-    <p class="sub">Compasse runs on an iPad on the wall or a stand, and it needs the home Wi-Fi to stay current. We would rather tell you now than after you have paid.</p>
+    <p class="sub">Compasse runs on an iPad from 2017 or newer (iPadOS 16 or later), on the wall or a stand, and it needs the home Wi-Fi to stay current. The iPad also needs an Apple ID to install the app. We would rather tell you now than after you have paid.</p>
     <div class="opts" data-single="ipad">
       <button class="opt" data-v="yes" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Yes, or we could set one up</button>
       <button class="opt" data-v="no" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>No, and that is not likely</button>
@@ -438,7 +438,7 @@ fbq('init','1039692688431979');
 
     <div class="card" style="margin-top:38px">
       <h3>What it costs</h3>
-      <p class="fine">No hardware to buy from us. It runs on the family&rsquo;s iPad, 2017 or newer, or one you buy once.</p>
+      <p class="fine">No hardware to buy from us. It runs on the family&rsquo;s iPad, 2017 or newer with iPadOS 16 or later, or one you buy once.</p>
       <ul class="price">
         <li><span>Every month, after the free first week</span><span class="amt">$29</span></li>
         <li><span>A full year, if you stay all twelve months</span><span class="amt">$348</span></li>
@@ -455,6 +455,8 @@ fbq('init','1039692688431979');
              nothing on the page says the code worked. -->
         <p data-comp-only class="fine" style="display:none;text-align:center;margin-bottom:14px">Free access code applied. No card will be asked for.</p>
         <div class="row"><button class="cta" id="buyGo" type="button">Start your free week</button></div>
+        <!-- Onboarding QA 2026-10-01: say it before checkout, not after. -->
+        <p class="fine" style="text-align:center;margin-top:10px">US App Store only for now, so Compasse is for families in the US.</p>
         <!-- Shown only when a ?comp= access link carries a code the server refuses. -->
         <p id="compMsg" class="fine" style="display:none;text-align:center;margin-top:10px">That access code is not active. Write to hello@compasse.care.</p>
         <p class="fine" data-paid-only style="text-align:center;margin-top:10px">$29 a month after the free first week. 30-day money-back guarantee. Cancel anytime. <a href="/" style="color:var(--teal)">See the full site</a>.</p>
@@ -837,7 +839,7 @@ fbq('init','1039692688431979');
     }[reason];
     el('dqWhy').textContent = why;
     var fix = {
-      ipad: [['An iPad, any recent one.', 'It can be secondhand. It lives on a stand or a wall mount and stays plugged in.'], ['Home Wi-Fi.', 'A basic connection is enough. A hotspot will not hold up for a board that stays on.']],
+      ipad: [['An iPad from 2017 or newer, on iPadOS 16 or later.', 'It can be secondhand. It lives on a stand or a wall mount and stays plugged in.'], ['Home Wi-Fi.', 'A basic connection is enough. A hotspot will not hold up for a board that stays on.']],
       iphone: [['One iPhone in the family.', 'Any relative with an iPhone can be the one who sets it up and records the reminders. It only takes one.']],
       wifi: [['Wi-Fi at the home.', 'A basic home connection is enough. A hotspot will not hold up for a board that stays on.']]
     }[reason];
