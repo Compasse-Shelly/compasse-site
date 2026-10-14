@@ -46,6 +46,8 @@ fbq('init','1039692688431979');
   .btn[disabled] { opacity:.6; }
   .pwMsg { font-size:14px; min-height:1.4em; font-family:-apple-system,system-ui,sans-serif; }
   .done { color:var(--ink); font-size:17px; }
+  #appReturn, #appCancel { display:none; }
+  .btn.secondary { background:#fff; color:var(--teal); border:2px solid var(--teal); }
 </style>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (window.top !== window.self) { window.top.location = window.location.href; }</script>
@@ -60,6 +62,17 @@ fbq('init','1039692688431979');
       <!-- Comp access: no card, no charge, so the two sentences above would be
            a false promise. Shown only when the verifier says comp. -->
       <p id="compLine" style="display:none">Your access is free for 90 days. There is no card on file and nothing will be charged.</p>
+      <!-- App mode (2026-10-14): the checkout was started from the Compasse
+           app's "Start your free week". The way back is compasse://claim with
+           NO session id or other secret in it (another app could register the
+           scheme); the app already holds its own session id in memory. The
+           password step below stays as the fallback if the hop fails or the
+           app was closed in between. -->
+      <div id="appReturn">
+        <p class="done">Go back to the Compasse app to choose your password and set up the board.</p>
+        <a class="btn" id="appReturnBtn" href="compasse://claim">Continue in the Compasse app</a>
+        <p>If the app does not open, choose your password here instead.</p>
+      </div>
       <!-- Step 1: choose the password here, on this page (2026-10-14). One
            POST to the set-password function with the verified session id. The
            welcome email's link stays as the backup, in the list below. -->
@@ -98,6 +111,15 @@ fbq('init','1039692688431979');
          the steps come out and one line goes in their place. -->
     <div id="dup" style="display:none">
       <p>This email already has a Compasse membership. Sign in at <a href="https://compasse.care/manage.html">compasse.care/manage.html</a>, or use a different email for a second family.</p>
+    </div>
+    <!-- App cancel mode: the person closed Stripe's checkout from the app.
+         Nothing was charged, no account exists, and the way back is the
+         bare compasse://cancel. Never a dead end. -->
+    <div id="appCancel">
+      <h1>No charge was made</h1>
+      <p>You closed the checkout before it finished. Nothing was charged and no account was created.</p>
+      <a class="btn" href="compasse://cancel">Back to the Compasse app</a>
+      <p>Or start again at <a href="https://compasse.care/#pricing">compasse.care</a>.</p>
     </div>
     <div id="failed">
       <h1>We couldn't confirm that</h1>
@@ -153,10 +175,18 @@ fbq('init','1039692688431979');
   const ok = document.getElementById('ok');
   const failed = document.getElementById('failed');
   pending.style.display = 'block';
-  const sid = new URLSearchParams(location.search).get('session_id') || '';
+  const qs = new URLSearchParams(location.search);
+  const sid = qs.get('session_id') || '';
+  const fromApp = qs.get('app') === '1';
+  const cancelled = qs.get('cancel') === '1';
   // Scrub the Stripe session id from the address bar BEFORE the pixel captures
   // the page URL — the pixel auto-sends location.href to Meta otherwise.
   try { history.replaceState({}, '', location.pathname); } catch(e){}
+  if (fromApp && cancelled) {
+    pending.style.display = 'none';
+    document.getElementById('appCancel').style.display = 'block';
+    return;
+  }
     // ---- step 1: choose the password here (2026-10-14) ----
     // Wired BEFORE the verify call, so the form can never fall through to a
     // native submit (which would reload the page and lose the session id).
@@ -240,6 +270,11 @@ fbq('init','1039692688431979');
       document.getElementById('who4').textContent = email || 'your email';
       ok.style.display = 'block';
       verified = true;
+      if (fromApp) {
+        // Offer the hop and try it once; Safari asks "Open in Compasse?".
+        document.getElementById('appReturn').style.display = 'block';
+        setTimeout(function(){ try { location.href = 'compasse://claim'; } catch (e) {} }, 600);
+      }
       // Comp access: free, no card, never charged. Hide every sentence that
       // promises otherwise and show the one honest line in their place. The
       // flag comes from the server-verified session, never from the URL, so it
