@@ -201,7 +201,8 @@ fbq('init','1039692688431979');
         return;
       }
       if (r.status === 403) { pwMsg.textContent = 'A password was already chosen for this account, or this page has expired.' + BACKUP; return; }
-      if (r.status === 429) { pwMsg.textContent = 'Too many tries. Please wait a few minutes, then try again.'; return; }
+      if (r.status === 400 && b.error === 'weak_password') { pwMsg.textContent = 'Please choose a different password. That one is too easy to guess.'; return; }
+      if (r.status === 429) { pwMsg.textContent = 'Too many tries. Please wait a few minutes, then try again.' + BACKUP; return; }
       pwMsg.textContent = 'That did not go through. Please try again.' + BACKUP;
     }
     pwForm.addEventListener('submit', async function(ev){
