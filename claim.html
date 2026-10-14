@@ -214,7 +214,7 @@ fbq('init','1039692688431979');
     var pwToggle = document.getElementById('pwToggle');
     var pwBusy = false;
     var verified = false;
-    var BACKUP = ' Use the link in your welcome email to set your password, or open the app, type your email and tap "Forgot your password?".';
+    var BACKUP = ' Use the link in your welcome email to set your password, or open the app, tap I already have an account, type your email and tap "Forgot your password?".';
     pwToggle.addEventListener('click', function(){
       var show = pwInput.type === 'password';
       pwInput.type = show ? 'text' : 'password';
@@ -224,6 +224,8 @@ fbq('init','1039692688431979');
       pwInput.value = '';
       document.getElementById('pw').style.display = 'none';
       document.getElementById('pwDone').style.display = 'block';
+      // The password is chosen here now, so the app hop would only refuse.
+      if (fromApp) document.getElementById('appReturn').style.display = 'none';
     }
     async function postPassword(pw, attempt) {
       var r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/set-password', {
