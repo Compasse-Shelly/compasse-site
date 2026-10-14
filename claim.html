@@ -38,6 +38,14 @@ fbq('init','1039692688431979');
          padding:14px 28px; border-radius:12px; margin:14px 0 6px; }
   a { color:var(--teal); }
   #pending, #failed { display:none; }
+  h2 { font-size:19px; font-weight:400; margin:22px 0 6px; }
+  .pwRow { display:flex; gap:8px; align-items:center; margin:10px 0 4px; }
+  .pwRow input { flex:1; font-size:17px; padding:12px 14px; border:1px solid var(--line); border-radius:10px;
+                 font-family:-apple-system,system-ui,sans-serif; min-width:0; }
+  .pwRow button { background:none; border:0; color:var(--teal); font-size:15px; cursor:pointer; padding:8px; }
+  .btn[disabled] { opacity:.6; }
+  .pwMsg { font-size:14px; min-height:1.4em; font-family:-apple-system,system-ui,sans-serif; }
+  .done { color:var(--ink); font-size:17px; }
 </style>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (window.top !== window.self) { window.top.location = window.location.href; }</script>
@@ -52,12 +60,32 @@ fbq('init','1039692688431979');
       <!-- Comp access: no card, no charge, so the two sentences above would be
            a false promise. Shown only when the verifier says comp. -->
       <p id="compLine" style="display:none">Your access is free for 90 days. There is no card on file and nothing will be charged.</p>
+      <!-- Step 1: choose the password here, on this page (2026-10-14). One
+           POST to the set-password function with the verified session id. The
+           welcome email's link stays as the backup, in the list below. -->
+      <div id="pw">
+        <h2>1. Choose your password</h2>
+        <p>You will sign in to the app with <span class="email" id="who3"></span> and this password.</p>
+        <form id="pwForm" novalidate>
+          <div class="pwRow">
+            <input id="pwInput" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="At least 8 characters" aria-label="Password">
+            <button type="button" id="pwToggle" aria-label="Show password">Show</button>
+          </div>
+          <button type="submit" id="pwSubmit" class="btn">Set password</button>
+          <p id="pwMsg" class="pwMsg" aria-live="polite"></p>
+        </form>
+      </div>
+      <div id="pwDone" style="display:none">
+        <h2>1. Password set</h2>
+        <p class="done">Done. Now download Compasse and sign in with <span class="email" id="who4"></span> and the password you just chose.</p>
+      </div>
+      <h2>2. Download Compasse</h2>
       <a class="btn" href="https://apps.apple.com/app/id6785591526">Download Compasse on the App&nbsp;Store</a>
       <p>The whole setup takes about 20 minutes.</p>
       <ol>
-        <li><b>Set your password</b>. Your welcome email to <span class="email" id="who2"></span> has a link to choose one. It can take a minute or two to arrive. <span id="resendWrap">Did not get it? <a href="#" id="resend">Send it again</a>.<span id="resendMsg"></span></span></li>
+        <li><b>Password</b>. If you skipped step 1, we also emailed a link to set it later, to <span class="email" id="who2"></span>. The link works for 24 hours. It can take a minute or two to arrive. <span id="resendWrap">Did not get it? <a href="#" id="resend">Send it again</a>.<span id="resendMsg"></span></span></li>
         <li><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store. Searching the App Store may not find it yet, so please use the button.</li>
-        <li><b>Sign in</b> with the email you used at checkout and the password you just set. Your subscription is already attached.</li>
+        <li><b>Sign in</b> with the email you used at checkout and the password you chose. Your subscription is already attached.</li>
         <li><b>Set up their tablet</b>. On their iPad, open <a href="https://apps.apple.com/app/id6785591526">apps.apple.com/app/id6785591526</a> (the link is in your welcome email too) and install the same app. It walks you through pairing with a one-time code. <a href="https://compasse.care/film/setup/">Watch the 46-second setup video.</a></li>
       </ol>
       <p class="note">Compasse is a comfort and communication tool, not a medical or emergency device. In any emergency, always call 911.</p>
@@ -129,6 +157,66 @@ fbq('init','1039692688431979');
   // Scrub the Stripe session id from the address bar BEFORE the pixel captures
   // the page URL — the pixel auto-sends location.href to Meta otherwise.
   try { history.replaceState({}, '', location.pathname); } catch(e){}
+    // ---- step 1: choose the password here (2026-10-14) ----
+    // Wired BEFORE the verify call, so the form can never fall through to a
+    // native submit (which would reload the page and lose the session id).
+    // It only sends once the session is verified (verified = true below).
+    // The function bounds the session id hard (complete, under 24 h, never
+    // signed in, one use), and answers the same refusal for every "no", so
+    // the words below never claim to know why. 202 means the account is
+    // still being created by the webhook; the page waits and tries again.
+    var pwForm = document.getElementById('pwForm');
+    var pwInput = document.getElementById('pwInput');
+    var pwMsg = document.getElementById('pwMsg');
+    var pwSubmit = document.getElementById('pwSubmit');
+    var pwToggle = document.getElementById('pwToggle');
+    var pwBusy = false;
+    var verified = false;
+    var BACKUP = ' Use the link in your welcome email to set your password, or open the app, type your email and tap "Forgot your password?".';
+    pwToggle.addEventListener('click', function(){
+      var show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      pwToggle.textContent = show ? 'Hide' : 'Show';
+    });
+    function pwDone() {
+      pwInput.value = '';
+      document.getElementById('pw').style.display = 'none';
+      document.getElementById('pwDone').style.display = 'block';
+    }
+    async function postPassword(pw, attempt) {
+      var r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/set-password', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sid, password: pw }),
+      });
+      var b = {};
+      try { b = await r.json(); } catch (e) {}
+      if (r.status === 200 && b.ok) { pwDone(); return; }
+      if (r.status === 202 && b.retry) {
+        if (attempt < 8) {
+          pwMsg.textContent = 'One moment. Your account is still being set up.';
+          await new Promise(function(res){ setTimeout(res, 2500); });
+          return postPassword(pw, attempt + 1);
+        }
+        pwMsg.textContent = 'Your account is taking longer than usual to set up. Please try again in a minute.' + BACKUP;
+        return;
+      }
+      if (r.status === 403) { pwMsg.textContent = 'A password was already chosen for this account, or this page has expired.' + BACKUP; return; }
+      if (r.status === 429) { pwMsg.textContent = 'Too many tries. Please wait a few minutes, then try again.'; return; }
+      pwMsg.textContent = 'That did not go through. Please try again.' + BACKUP;
+    }
+    pwForm.addEventListener('submit', async function(ev){
+      ev.preventDefault();
+      if (pwBusy) return;
+      var pw = pwInput.value;
+      if (pw.length < 8) { pwMsg.textContent = 'Please use at least 8 characters.'; return; }
+      if (pw.length > 72) { pwMsg.textContent = 'Please use 72 characters or fewer.'; return; }
+      if (!sid || !verified) { pwMsg.textContent = 'This page has expired.' + BACKUP; return; }
+      pwBusy = true; pwSubmit.disabled = true;
+      pwMsg.textContent = 'Setting your password.';
+      try { await postPassword(pw, 1); }
+      catch (e) { pwMsg.textContent = 'That did not go through. Please try again.' + BACKUP; }
+      pwBusy = false; pwSubmit.disabled = false;
+    });
   try {
     const r = await fetch('https://cklagdabffzbikvtnnzo.supabase.co/functions/v1/create-checkout?session_id=' + encodeURIComponent(sid));
     const d = await r.json();
@@ -147,7 +235,10 @@ fbq('init','1039692688431979');
       const email = d.email || '';
       document.getElementById('who').textContent = email || 'your email';
       document.getElementById('who2').textContent = email || 'your email';
+      document.getElementById('who3').textContent = email || 'your email';
+      document.getElementById('who4').textContent = email || 'your email';
       ok.style.display = 'block';
+      verified = true;
       // Comp access: free, no card, never charged. Hide every sentence that
       // promises otherwise and show the one honest line in their place. The
       // flag comes from the server-verified session, never from the URL, so it
