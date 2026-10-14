@@ -42,7 +42,7 @@ fbq('init','1039692688431979');
   .pwRow { display:flex; gap:8px; align-items:center; margin:10px 0 4px; }
   .pwRow input { flex:1; font-size:17px; padding:12px 14px; border:1px solid var(--line); border-radius:10px;
                  font-family:-apple-system,system-ui,sans-serif; min-width:0; }
-  .pwRow button { background:none; border:0; color:var(--teal); font-size:15px; cursor:pointer; padding:8px; }
+  .pwRow button { background:none; border:0; color:var(--teal); font-size:15px; cursor:pointer; padding:12px; min-height:44px; min-width:44px; }
   .btn[disabled] { opacity:.6; }
   .pwMsg { font-size:14px; min-height:1.4em; font-family:-apple-system,system-ui,sans-serif; }
   .done { color:var(--ink); font-size:17px; }
@@ -70,8 +70,9 @@ fbq('init','1039692688431979');
            app was closed in between. -->
       <div id="appReturn">
         <p class="done">Go back to the Compasse app to choose your password and set up the board.</p>
+        <p>Safari will ask to open Compasse. Tap Open.</p>
         <a class="btn" id="appReturnBtn" href="compasse://claim">Continue in the Compasse app</a>
-        <p>If the app does not open, choose your password here instead.</p>
+        <p>If the app does not open, or it sends you back here, choose your password here instead.</p>
       </div>
       <!-- Step 1: choose the password here, on this page (2026-10-14). One
            POST to the set-password function with the verified session id. The
@@ -90,14 +91,15 @@ fbq('init','1039692688431979');
       </div>
       <div id="pwDone" style="display:none">
         <h2>1. Password set</h2>
-        <p class="done">Done. Now download Compasse and sign in with <span class="email" id="who4"></span> and the password you just chose.</p>
+        <p class="done" data-web-only>Done. Now download Compasse and sign in with <span class="email" id="who4"></span> and the password you just chose.</p>
+        <p class="done" data-app-only style="display:none">Done. Go back to the Compasse app, tap I already have an account, and sign in with <span class="email" id="who5"></span> and this password.</p>
       </div>
-      <h2>2. Download Compasse</h2>
-      <a class="btn" href="https://apps.apple.com/app/id6785591526">Download Compasse on the App&nbsp;Store</a>
-      <p>The whole setup takes about 20 minutes.</p>
+      <h2 data-web-only>2. Download Compasse</h2>
+      <a class="btn" data-web-only href="https://apps.apple.com/app/id6785591526">Download Compasse on the App&nbsp;Store</a>
+      <p data-web-only>The whole setup takes about 20 minutes.</p>
       <ol>
         <li><b>Password</b>. If you skipped step 1, we also emailed a link to set it later, to <span class="email" id="who2"></span>. The link works for 24 hours. It can take a minute or two to arrive. <span id="resendWrap">Did not get it? <a href="#" id="resend">Send it again</a>.<span id="resendMsg"></span></span></li>
-        <li><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store. Searching the App Store may not find it yet, so please use the button.</li>
+        <li data-web-only><b>Install Compasse on your iPhone</b>. The button above takes you straight to the App Store. Searching the App Store may not find it yet, so please use the button.</li>
         <li><b>Sign in</b> with the email you used at checkout and the password you chose. Your subscription is already attached.</li>
         <li><b>Set up their tablet</b>. On their iPad, open <a href="https://apps.apple.com/app/id6785591526">apps.apple.com/app/id6785591526</a> (the link is in your welcome email too) and install the same app. It walks you through pairing with a one-time code. <a href="https://compasse.care/film/setup/">Watch the 46-second setup video.</a></li>
       </ol>
@@ -111,6 +113,8 @@ fbq('init','1039692688431979');
          the steps come out and one line goes in their place. -->
     <div id="dup" style="display:none">
       <p>This email already has a Compasse membership. Sign in at <a href="https://compasse.care/manage.html">compasse.care/manage.html</a>, or use a different email for a second family.</p>
+      <p data-app-only style="display:none">In the Compasse app, tap I already have an account. Nothing was charged.</p>
+      <a class="btn" data-app-only style="display:none" href="compasse://cancel">Back to the Compasse app</a>
     </div>
     <!-- App cancel mode: the person closed Stripe's checkout from the app.
          Nothing was charged, no account exists, and the way back is the
@@ -119,7 +123,7 @@ fbq('init','1039692688431979');
       <h1>No charge was made</h1>
       <p>You closed the checkout before it finished. Nothing was charged and no account was created.</p>
       <a class="btn" href="compasse://cancel">Back to the Compasse app</a>
-      <p>Or start again at <a href="https://compasse.care/#pricing">compasse.care</a>.</p>
+      <p>Or start again in the app when you are ready.</p>
     </div>
     <div id="failed">
       <h1>We couldn't confirm that</h1>
@@ -182,6 +186,14 @@ fbq('init','1039692688431979');
   // Scrub the Stripe session id from the address bar BEFORE the pixel captures
   // the page URL — the pixel auto-sends location.href to Meta otherwise.
   try { history.replaceState({}, '', location.pathname); } catch(e){}
+  // App mode: the person already has the app, so the download step and the
+  // "install on your iPhone" line come out and the app-only lines go in.
+  function appMode() {
+    var hide = document.querySelectorAll('[data-web-only]');
+    for (var i = 0; i < hide.length; i++) hide[i].style.display = 'none';
+    var show = document.querySelectorAll('[data-app-only]');
+    for (var j = 0; j < show.length; j++) show[j].style.display = show[j].tagName === 'A' ? 'inline-block' : 'block';
+  }
   if (fromApp && cancelled) {
     pending.style.display = 'none';
     document.getElementById('appCancel').style.display = 'block';
@@ -260,6 +272,7 @@ fbq('init','1039692688431979');
     // same thing. A paying customer gets duplicate:false and this does nothing.
     if (d.ok && d.duplicate) {
       document.getElementById('dup').style.display = 'block';
+      if (fromApp) appMode();
       return;
     }
     if (d.ok) {
@@ -272,6 +285,8 @@ fbq('init','1039692688431979');
       verified = true;
       if (fromApp) {
         // Offer the hop and try it once; Safari asks "Open in Compasse?".
+        appMode();
+        document.getElementById('who5').textContent = email || 'your email';
         document.getElementById('appReturn').style.display = 'block';
         setTimeout(function(){ try { location.href = 'compasse://claim'; } catch (e) {} }, 600);
       }
