@@ -114,7 +114,8 @@ fbq('init','1039692688431979');
     <div id="dup" style="display:none">
       <p>This email already has a Compasse membership. Sign in at <a href="https://compasse.care/manage.html">compasse.care/manage.html</a>, or use a different email for a second family.</p>
       <p data-app-only style="display:none">In the Compasse app, tap I already have an account. Nothing was charged.</p>
-      <a class="btn" data-app-only style="display:none" href="compasse://cancel">Back to the Compasse app</a>
+      <!-- compasse://claim, not cancel: the app then asks for a password, the server refuses the duplicate, and the screen offers Sign in (security check). -->
+      <a class="btn" data-app-only style="display:none" href="compasse://claim">Back to the Compasse app</a>
     </div>
     <!-- App cancel mode: the person closed Stripe's checkout from the app.
          Nothing was charged, no account exists, and the way back is the
