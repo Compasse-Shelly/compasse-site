@@ -269,7 +269,6 @@ fbq('init','1039692688431979');
     <a class="brand" href="/"><img src="logo.png" alt="">Compasse</a>
     <div class="navlinks">
       <a class="plain" href="#tour">How it works</a>
-      <a class="btn" data-prelaunch hidden href="#join">Join the waitlist</a>
       <a class="btn" data-launch hidden href="#pricing">Start your free week</a>
     </div>
   </div>
@@ -287,15 +286,6 @@ fbq('init','1039692688431979');
         cognitive decline. Cassi answers their questions in a warm, patient voice, keeps the day in
         plain view, and plays back short recordings from the people they love. You set it up from
         your phone and see that they are okay.</p>
-
-        <div data-prelaunch hidden>
-          <form id="wl" class="wlform" aria-label="Join the waitlist">
-            <input id="wl-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
-            <button class="btn" type="submit">Join the waitlist</button>
-          </form>
-          <p id="wl-msg" class="wlmsg" aria-live="polite"></p>
-          <p class="micro"><b>The family trial is free.</b> At launch, Compasse will be $29 a month with the first week free. We will email you when your spot opens. No spam, ever.</p>
-        </div>
 
         <div data-launch hidden>
           <a class="btn" href="#pricing">Start your free week</a>
@@ -418,9 +408,6 @@ fbq('init','1039692688431979');
           already have, 2017 or newer, plugged in on a simple stand.</p>
           <div data-launch hidden style="margin-top:10px">
             <a class="btn" href="#pricing">Start your free week</a>
-          </div>
-          <div data-prelaunch hidden style="margin-top:10px">
-            <a class="btn" href="#join">Join the waitlist</a>
           </div>
         </div>
         <div class="filmcell">
@@ -583,10 +570,6 @@ fbq('init','1039692688431979');
         <details><summary>Can more than one family member use it?</summary>
           <p>Right now each family has one caregiver phone connected. Support for siblings and other
           family members is on the way.</p></details>
-        <details data-prelaunch hidden><summary>What does it cost?</summary>
-          <p>During our family trial, Compasse is free. At launch it will be $29 a month with the
-          first week free, everything included, cancel anytime. No tiers, no setup fee, no
-          contract, and nothing else to buy.</p></details>
         <details data-launch hidden><summary>What does it cost?</summary>
           <p>Your first week is free, then it&rsquo;s $29 a month, everything included. We ask for a
           card up front, and if you cancel during the free week you are never charged. And once you
@@ -613,16 +596,6 @@ fbq('init','1039692688431979');
   <!-- FINAL CTA -->
   <section class="final center">
     <div class="wrap">
-      <div data-prelaunch hidden>
-        <h2>Be first to bring Compasse home</h2>
-        <p style="margin:14px auto 24px">We are onboarding a small group of first families, personally.
-        Leave your email and we will reach out when your spot opens.</p>
-        <form id="wl2" class="wlform" style="margin:0 auto;justify-content:center" aria-label="Join the waitlist">
-          <input id="wl2-email" type="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">
-          <button class="btn" type="submit">Join the waitlist</button>
-        </form>
-        <p id="wl2-msg" class="wlmsg" aria-live="polite"></p>
-      </div>
       <div data-launch hidden>
         <h2>Give them a week of calm, on us</h2>
         <p style="margin:14px auto 24px">First week free, then $29 a month with a 30 day money back guarantee. Cancel anytime, online, in one tap.</p>
@@ -657,7 +630,6 @@ fbq('init','1039692688431979');
 
 <!-- phones only: the one ask, pinned in thumb reach -->
 <div class="mobilebar">
-  <a class="btn" data-prelaunch hidden href="#join">Join the waitlist</a>
   <a class="btn" data-launch hidden href="#pricing">Start your free week</a>
 </div>
 
@@ -782,50 +754,6 @@ fbq('init','1039692688431979');
   }
   tickBoard(); setInterval(tickBoard, 15000);
 
-  // Waitlist: writes to our own database. The key below is the public
-  // publishable key; the table is insert-only, so it can add an email but
-  // never read the list. Two identical forms (hero + final CTA) share the
-  // same handler; both keep the 409 duplicate handling and the Lead event.
-  const SB_URL = 'https://cklagdabffzbikvtnnzo.supabase.co';
-  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbGFnZGFiZmZ6YmlrdnRubnpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTc0ODQsImV4cCI6MjA5NTAzMzQ4NH0.EN91SpgAUFnVzyKDFtQ12_HxA6REjpU7ourQf4u3Va8';
-  function wireWaitlist(formId, emailId, msgId){
-    const form = document.getElementById(formId);
-    if (!form) return;
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById(emailId).value.trim();
-      const msg = document.getElementById(msgId);
-      msg.textContent = 'One moment…';
-      try {
-        const r = await fetch(SB_URL + '/rest/v1/waitlist_signups', {
-          method: 'POST',
-          headers: {
-            apikey: SB_KEY,
-            Authorization: 'Bearer ' + SB_KEY,
-            'Content-Type': 'application/json',
-            Prefer: 'return=minimal',
-          },
-          body: JSON.stringify({
-            email,
-            source: new URLSearchParams(location.search).get('src'),
-          }),
-        });
-        if (r.status === 409) {
-          msg.textContent = "You're already on the list. We'll be in touch soon.";
-        } else if (r.ok) {
-          msg.textContent = "You're on the list. We'll email you when your spot opens.";
-          metaEvent('Lead');
-          e.target.reset();
-        } else {
-          throw new Error(String(r.status));
-        }
-      } catch {
-        msg.textContent = "That didn't go through. Please email us instead: hello@compasse.care";
-      }
-    });
-  }
-  wireWaitlist('wl', 'wl-email', 'wl-msg');
-  wireWaitlist('wl2', 'wl2-email', 'wl2-msg');
 </script>
 </body>
 </html>
