@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The Fit Check · Compasse</title>
-<meta name="description" content="See the board Compasse would put on an iPad at their home. A few questions, no phone calls, and an honest answer if it is not a fit. look like on the wall.">
+<meta name="description" content="See the board Compasse would put on an iPad at their home. A few questions, no phone calls, and an honest answer if it is not a fit.">
 <link rel="canonical" href="https://compasse.care/fit.html">
 <!-- Comp links, read BEFORE the Meta pixel loads. The pixel auto-sends the full
      location.href, query string and all, so an access code left in the address
@@ -37,7 +37,7 @@ fbq('init','1039692688431979');
 /* Intentionally NO fbq('track','PageView'). */
 </script>
 <meta property="og:title" content="The Compasse Fit Check">
-<meta property="og:description" content="See the board Compasse would put on an iPad at their home. A few questions, no phone calls, and an honest answer if it is not a fit. look like on the wall.">
+<meta property="og:description" content="See the board Compasse would put on an iPad at their home. A few questions, no phone calls, and an honest answer if it is not a fit.">
 <meta property="og:image" content="https://compasse.care/setup-poster.jpg">
 <meta property="og:url" content="https://compasse.care/fit.html">
 <meta property="og:type" content="website">
@@ -49,7 +49,7 @@ fbq('init','1039692688431979');
   :root{
     --cream:#FAF6EF; --paper:#FFFFFF; --ink:#2B2A28; --muted:#5D5852;
     --terra:#A8542F; --teal:#2F6D66; --teal-deep:#25574F; --border:#E5DFD2;
-    --sky:#D9E8EE; --warm:#F1ECE3; --good:#2E7D32; --on-accent:#FFFFFF;
+    --sky:#D9E8EE; --warm:#F1ECE3; --good:#276B2B; --on-accent:#FFFFFF;
     --r:20px; --r-lg:28px; --bezel:#2B2A28;
     --shadow:0 2px 8px rgba(43,42,40,.06),0 12px 32px rgba(43,42,40,.07);
   }
@@ -220,8 +220,8 @@ fbq('init','1039692688431979');
   .board.mini .bar{min-height:34px;font-size:12px;margin-top:4px}
   .exits a { color:var(--teal); display:block; padding:10px 0; }
   .backrow .quiet{padding:12px 10px;min-height:44px}
-  .phone .pill{color:#276B2B}
   .cta.secondary{background:transparent;color:var(--teal);border:2px solid var(--teal)}
+  .cta.secondary:hover{background:var(--sky);color:var(--teal-deep)}
 </style>
 <div class="rail"><i id="rail"></i></div>
 
@@ -284,14 +284,13 @@ fbq('init','1039692688431979');
     <p class="eyebrow" id="step3">3 of 5</p>
     <h2 aria-describedby="step3">What do they go by at home?</h2>
     <p class="sub">Optional. We use it in your preview. It stays on this page.</p>
-    <!-- First glimpse (deck b): a small live board, today's day, time and
-         part of day, from this screen on. -->
-    <div class="board mini" id="boardGlimpse" aria-hidden="true"></div>
     <input type="text" id="nm" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="First name" aria-label="First name">
-    <div class="note">It stays on this page. We do not store it.</div>
     <div class="row">
       <button class="cta" id="nmGo">Continue</button>
     </div>
+    <!-- First glimpse (deck b): a small live board, today's day, time and
+         part of day, from this screen on. -->
+    <div class="board mini" id="boardGlimpse" aria-hidden="true" style="margin-top:20px"></div>
   </section>
 
   <!-- 4 which questions -->
@@ -909,7 +908,7 @@ fbq('init','1039692688431979');
   // the address to the waitlist (as before), fires the one Lead (as before),
   // and asks the fit-checklist function for the one automatic email. The
   // function gets the address and the ad tag, nothing else.
-  function sendChecklist(email, msgEl, keepMsg){
+  function sendChecklist(email, msgEl, keepMsg, btn){
     // "Sent" only once the function has answered 200; the waitlist row is
     // already saved either way, and the words say so when the email did not go.
     var NOT_SENT = 'We saved your email, but the checklist did not go out just now. Write to hello@compasse.care and we will send it.';
@@ -917,21 +916,23 @@ fbq('init','1039692688431979');
       fetch(SB_URL + '/functions/v1/fit-checklist', {
         method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
         body: JSON.stringify({ email:email, tag:TAG })
-      }).then(function(r){ if (!msgEl) return; if (!r.ok) msgEl.textContent = NOT_SENT; else msgEl.textContent = keepMsg ? 'If that address has not had the checklist yet, it is on its way. Check your inbox, or write to hello@compasse.care.' : 'Sent. It should reach you in a few minutes.'; })
-        .catch(function(){ if (msgEl) msgEl.textContent = NOT_SENT; });
-    } catch(e){ if (msgEl) msgEl.textContent = NOT_SENT; }
+      }).then(function(r){ if (!msgEl) return; if (!r.ok) notSent(); else msgEl.textContent = keepMsg ? 'If that address has not had the checklist yet, it is on its way. Check your inbox, or write to hello@compasse.care.' : 'Sent. It should reach you in a few minutes.'; })
+        .catch(notSent);
+    } catch(e){ notSent(); }
+    // The function releases its claim on a failed send, so a second tap works.
+    function notSent(){ if (msgEl) msgEl.textContent = NOT_SENT; if (btn) btn.disabled = false; }
   }
   el('emGo').addEventListener('click', function(){
     var v = el('em').value.trim();
     if (!valid(v)){ el('emMsg').textContent = 'That email does not look right. Check it and try again.'; return; }
     track('email_submit');
-    saveEmail(v, el('emMsg'), function(already){ emailGiven = true; sendChecklist(v, el('emMsg'), !!already); el('emGo').disabled = true; });
+    saveEmail(v, el('emMsg'), function(already){ emailGiven = true; el('emGo').disabled = true; sendChecklist(v, el('emMsg'), !!already, el('emGo')); });
   });
   el('em3Go').addEventListener('click', function(){
     var v = el('em3').value.trim();
     if (!valid(v)){ el('em3Msg').textContent = 'That email does not look right. Check it and try again.'; return; }
     track('email_submit', 'dq');
-    saveEmail(v, el('em3Msg'), function(already){ sendChecklist(v, el('em3Msg'), !!already); el('em3Go').disabled = true; });
+    saveEmail(v, el('em3Msg'), function(already){ el('em3Go').disabled = true; sendChecklist(v, el('em3Msg'), !!already, el('em3Go')); });
   });
 
 
