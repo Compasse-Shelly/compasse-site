@@ -473,10 +473,15 @@ fbq('init','1039692688431979');
   // keepalive so a tap that leaves the page still counts; never a retry,
   // never a wait.
   var LOAD_ID = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : null;
+  // src is capped and h is kept only when it is one of the ad keys, so a
+  // merge field or a shared link can never put a person's data in the tag.
+  var H_KEYS = { repeat:1, calls:1, far:1, founder:1 };
   function tagOnly(){
     var q = new URLSearchParams(location.search);
-    var t = [q.get('src') || '', q.get('h') || ''].filter(Boolean).join('|');
-    return t.replace(/[^A-Za-z0-9_.:|-]/g, '').slice(0, 64) || null;
+    var src = (q.get('src') || '').replace(/[^A-Za-z0-9_.:-]/g, '').slice(0, 32);
+    var h = q.get('h') || '';
+    if (!H_KEYS[h]) h = '';
+    return [src, h].filter(Boolean).join('|') || null;
   }
   var TAG = tagOnly();
   function track(event, step){
@@ -787,6 +792,10 @@ fbq('init','1039692688431979');
     show('s17');
   }
   el('dqBack').addEventListener('click', function(){
+    // A corrected answer must not keep the exit state: the source tag, the
+    // Lead gate and the exit's email box all read it.
+    A.dq = null;
+    el('dqEmail').style.display = 'none';
     if (dqFrom) show(dqFrom, true);
   });
 
@@ -807,7 +816,7 @@ fbq('init','1039692688431979');
     }).then(function(r){
       if (r.status === 409){ msgEl.textContent = "You already have it. Check your inbox, or write to hello@compasse.care."; done && done(); return; }
       if (!r.ok) throw new Error(String(r.status));
-      msgEl.textContent = "Sent. It should reach you in a few minutes.";
+      msgEl.textContent = "One moment…";
       metaLead();
       done && done();
     }).catch(function(){
@@ -911,25 +920,29 @@ fbq('init','1039692688431979');
   // the address to the waitlist (as before), fires the one Lead (as before),
   // and asks the fit-checklist function for the one automatic email. The
   // function gets the address and the ad tag, nothing else.
-  function sendChecklist(email){
+  function sendChecklist(email, msgEl){
+    // "Sent" only once the function has answered 200; the waitlist row is
+    // already saved either way, and the words say so when the email did not go.
+    var NOT_SENT = 'We saved your email, but the checklist did not go out just now. Write to hello@compasse.care and we will send it.';
     try {
       fetch(SB_URL + '/functions/v1/fit-checklist', {
         method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
         body: JSON.stringify({ email:email, tag:TAG })
-      }).catch(function(){});
-    } catch(e){}
+      }).then(function(r){ if (msgEl) msgEl.textContent = r.ok ? 'Sent. It should reach you in a few minutes.' : NOT_SENT; })
+        .catch(function(){ if (msgEl) msgEl.textContent = NOT_SENT; });
+    } catch(e){ if (msgEl) msgEl.textContent = NOT_SENT; }
   }
   el('emGo').addEventListener('click', function(){
     var v = el('em').value.trim();
     if (!valid(v)){ el('emMsg').textContent = 'That email does not look right. Check it and try again.'; return; }
     track('email_submit');
-    saveEmail(v, el('emMsg'), function(){ emailGiven = true; sendChecklist(v); el('emGo').disabled = true; });
+    saveEmail(v, el('emMsg'), function(){ emailGiven = true; sendChecklist(v, el('emMsg')); el('emGo').disabled = true; });
   });
   el('em3Go').addEventListener('click', function(){
     var v = el('em3').value.trim();
     if (!valid(v)){ el('em3Msg').textContent = 'That email does not look right. Check it and try again.'; return; }
     track('email_submit', 'dq');
-    saveEmail(v, el('em3Msg'), function(){ sendChecklist(v); el('em3Go').disabled = true; });
+    saveEmail(v, el('em3Msg'), function(){ sendChecklist(v, el('em3Msg')); el('em3Go').disabled = true; });
   });
 
 
