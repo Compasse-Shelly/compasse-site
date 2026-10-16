@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>The Fit Check · Compasse</title>
-<meta name="description" content="A two minute fit check. Answer a few questions about your family's routine and see what a reassurance board would look like on the wall.">
+<meta name="description" content="See the board Compasse would put on an iPad at their home. A few questions, no phone calls, and an honest answer if it is not a fit. look like on the wall.">
 <link rel="canonical" href="https://compasse.care/fit.html">
 <!-- Comp links, read BEFORE the Meta pixel loads. The pixel auto-sends the full
      location.href, query string and all, so an access code left in the address
@@ -37,7 +37,7 @@ fbq('init','1039692688431979');
 /* Intentionally NO fbq('track','PageView'). */
 </script>
 <meta property="og:title" content="The Compasse Fit Check">
-<meta property="og:description" content="A two minute fit check. Answer a few questions about your family's routine and see what a reassurance board would look like on the wall.">
+<meta property="og:description" content="See the board Compasse would put on an iPad at their home. A few questions, no phone calls, and an honest answer if it is not a fit. look like on the wall.">
 <meta property="og:image" content="https://compasse.care/setup-poster.jpg">
 <meta property="og:url" content="https://compasse.care/fit.html">
 <meta property="og:type" content="website">
@@ -210,11 +210,18 @@ fbq('init','1039692688431979');
 
 <style>
   /* v2 additions */
-  .hero { margin:18px 0 20px; }
-  .hero img { width:100%; height:auto; border-radius:14px; display:block; }
-  .qlabel { font-weight:600; margin:0 0 8px; }
-  .board.small { transform:scale(.82); transform-origin:top center; margin-bottom:-40px; }
-  .exits a { color:var(--teal); }
+  .hero { margin:22px 0 0; }
+  .board.mini{max-width:250px;margin:0 auto;padding:12px 12px 10px;gap:5px}
+  .board.mini .bhead,.board.mini .date{display:none}
+  .board.mini .card{padding:8px}
+  .board.mini .clock{font-size:26px} .board.mini .day{font-size:22px} .board.mini .part{font-size:13px;line-height:1.3}
+  .board.mini .line{font-size:15px} .board.mini .line.msg{font-size:17px}
+  .board.mini .when,.board.mini .lbl{font-size:11px;line-height:1.3;margin-top:0}
+  .board.mini .bar{min-height:34px;font-size:12px;margin-top:4px}
+  .exits a { color:var(--teal); display:block; padding:10px 0; }
+  .backrow .quiet{padding:12px 10px;min-height:44px}
+  .phone .pill{color:#276B2B}
+  .cta.secondary{background:transparent;color:var(--teal);border:2px solid var(--teal)}
 </style>
 <div class="rail"><i id="rail"></i></div>
 
@@ -231,36 +238,28 @@ fbq('init','1039692688431979');
   <section class="step on" id="s0">
     <h1>When they ask what day it is again, the board already has the answer.</h1>
     <p class="sub">Compasse turns an iPad at their home into a large-type board with the day, the time and what comes next. You run it from your iPhone.</p>
-    <!-- The picture: the page's own board renderer (the same markup as the
-         result board, today's date and time, a sample family line), so it
-         never goes stale. The Studio's capture is the no-script fallback and
-         the first paint before the script runs. -->
-    <figure class="hero">
-      <div class="board" id="heroBoard" aria-label="A Compasse board on an iPad showing the time, the day, a family message and what comes next." role="img">
-        <picture>
-          <source type="image/webp" srcset="compasse_fitcheck-v2_board_v1_2x.webp 2x, compasse_fitcheck-v2_board_v1_3x.webp 3x">
-          <img src="compasse_fitcheck-v2_board_v1_2x.png" srcset="compasse_fitcheck-v2_board_v1_2x.png 2x, compasse_fitcheck-v2_board_v1_3x.png 3x" width="354" height="458" alt="A Compasse board on an iPad showing the time, the day, a family message and what comes next." loading="eager">
-        </picture>
-      </div>
-    </figure>
     <button class="cta" id="startBtn" type="button">Build their board</button>
     <p class="fine" id="frontDoor">$29 a month after a free week. Cancel anytime online.</p>
     <p class="fine">Needs an iPad at their home and an iPhone in the family. US only.</p>
-    <p class="fine exits" style="margin-top:32px"><a href="/#pricing" data-exit="pricing">Ready now? Start your free week.</a><br><a href="/" data-exit="site">Or see the full site first.</a></p>
+    <!-- The picture: the page's own board renderer (the same markup as the
+         result board, today's date and time, a sample family line), small, so
+         the button and the price stay above the fold on a phone (UX check).
+         The full board is the payoff on the result. -->
+    <figure class="hero">
+      <div class="board mini" id="heroBoard" aria-label="A Compasse board on an iPad showing the time, the day, a family message and what comes next." role="img"></div>
+    </figure>
+    <p class="fine exits" style="margin-top:28px"><a href="/#pricing" data-exit="pricing">Ready now? Start your free week.</a><a href="/" data-exit="site">Or see the full site first.</a></p>
     <p class="fine">No phone calls. No salespeople. Your answers stay on this page.</p>
   </section>
 
   <section class="step" id="s1">
-    <p class="eyebrow">1 of 5</p>
-    <h2>Who would the board be for?</h2>
+    <p class="eyebrow" id="step1">1 of 5</p>
+    <h2 aria-describedby="step1">Who would the board be for?</h2>
     <div class="opts" data-single="who">
       <button class="opt" data-v="My mom" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>My mom</button>
       <button class="opt" data-v="My dad" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>My dad</button>
       <button class="opt" data-v="My spouse" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>My spouse</button>
       <button class="opt" data-v="Other" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Someone else</button>
-    </div>
-    <div id="whoOtherWrap" style="display:none;margin-top:14px">
-      <input type="text" id="whoOther" autocomplete="off" placeholder="Who are they to you?" aria-label="Who are they to you?">
     </div>
     <p class="fine" style="margin-top:16px">No phone calls. No salespeople. Your answers stay on this page.</p>
   </section>
@@ -268,8 +267,8 @@ fbq('init','1039692688431979');
        two answers continue, two go to the warm exit; "tapped the wrong
        answer" there comes back here. -->
   <section class="step" id="s1hw">
-    <p class="eyebrow">2 of 5</p>
-    <h2>Is there an iPad on Wi-Fi at their home, and an iPhone in the family?</h2>
+    <p class="eyebrow" id="step2">2 of 5</p>
+    <h2 aria-describedby="step2">Is there an iPad on Wi-Fi at their home, and an iPhone in the family?</h2>
     <p class="sub">Compasse runs on an iPad from 2017 or newer (iPadOS 16 or later) with an Apple ID, set up from one iPhone. It is iPhone and iPad only. We would rather tell you now than after you have paid.</p>
     <div class="opts" data-single="hw">
       <button class="opt" data-v="both" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Yes, both</button>
@@ -282,24 +281,23 @@ fbq('init','1039692688431979');
 
   <!-- 2 name -->
   <section class="step" id="s2">
-    <p class="eyebrow">3 of 5</p>
-    <h2>What do they go by at home?</h2>
-    <p class="sub">Optional. We put it on the board you will see. It stays on this page.</p>
-    <p class="sub">First name is plenty. We use it to build the board you will see at the end.</p>
-    <input type="text" id="nm" autocomplete="off" placeholder="First name" aria-label="First name">
+    <p class="eyebrow" id="step3">3 of 5</p>
+    <h2 aria-describedby="step3">What do they go by at home?</h2>
+    <p class="sub">Optional. We use it in your preview. It stays on this page.</p>
+    <!-- First glimpse (deck b): a small live board, today's day, time and
+         part of day, from this screen on. -->
+    <div class="board mini" id="boardGlimpse" aria-hidden="true"></div>
+    <input type="text" id="nm" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="First name" aria-label="First name">
     <div class="note">It stays on this page. We do not store it.</div>
     <div class="row">
       <button class="cta" id="nmGo">Continue</button>
     </div>
-    <!-- First glimpse (deck b): a small live board, the name, today's day
-         and time and the part of day, from this screen on. -->
-    <div class="board small" id="boardGlimpse" aria-hidden="true"></div>
   </section>
 
   <!-- 4 which questions -->
   <section class="step" id="s4">
-    <p class="eyebrow">4 of 5</p>
-    <h2>What do they ask about more than once a day?</h2>
+    <p class="eyebrow" id="step4">4 of 5</p>
+    <h2 aria-describedby="step4">What do they ask about more than once a day?</h2>
     <p class="sub">Choose as many as fit.</p>
     <div class="opts" data-multi="asks">
       <button class="opt" data-v="day" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>What day it is</button>
@@ -314,8 +312,8 @@ fbq('init','1039692688431979');
 
   <!-- 5 how many times -->
   <section class="step" id="s7">
-    <p class="eyebrow">5 of 5</p>
-    <h2>How far away do you live?</h2>
+    <p class="eyebrow" id="step5">5 of 5</p>
+    <h2 aria-describedby="step5">How far away do you live?</h2>
     <div class="opts" data-single="dist">
       <button class="opt" data-v="Same house" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Same house</button>
       <button class="opt" data-v="Same town" aria-pressed="false"><span class="tick" aria-hidden="true">✓</span>Same town</button>
@@ -334,7 +332,7 @@ fbq('init','1039692688431979');
   <section class="step" id="s16">
     <p class="eyebrow">The plan</p>
     <h1>What <span data-poss>their</span> board would do with what you told us</h1>
-    <p>This is what would be on the wall. Every line comes from something you told us.</p>
+    <p>This is what would be on the wall today. You set the words from your phone.</p>
     <div class="grid2">
       <div>
         <div class="board" id="board"></div>
@@ -347,19 +345,6 @@ fbq('init','1039692688431979');
       </div>
     </div>
 
-    <!-- The email ask (v2): BELOW the board, optional, for the checklist and
-         the price. On submit: the waitlist insert (as before), the one Meta
-         Lead (as before), and ONE automatic email with fixed content from
-         the fit-checklist function. The answers never leave the page. Words
-         from the deck (c). -->
-    <div class="card" id="emailAsk" style="margin-top:34px">
-      <h3>Want the setup checklist and the price in your inbox?</h3>
-      <p class="fine">One email with what you need, how setup works and what it costs. Your answers above stay on this page and are not in it.</p>
-      <input type="email" id="em" autocomplete="email" placeholder="you@email.com" aria-label="Your email address">
-      <div class="row"><button class="cta" id="emGo" type="button">Email me the checklist</button></div>
-      <p class="fine" style="margin-top:8px">One email. No phone calls.</p>
-      <p class="msg" id="emMsg" role="status"></p>
-    </div>
 
     <div style="margin-top:44px">
       <h2>And this is your half of it</h2>
@@ -369,7 +354,7 @@ fbq('init','1039692688431979');
           <div class="notch"><i></i></div>
           <div class="pbody">
             <div class="ptop">
-              <span class="pname" data-name>Your loved one</span>
+              <span class="pname" data-name data-cap>Your loved one</span>
               <span class="pmark">Compasse</span>
             </div>
             <div class="status">
@@ -401,6 +386,20 @@ fbq('init','1039692688431979');
       <p class="fine" style="margin-top:22px">Today, one caregiver phone runs the board.</p>
     </div>
 
+    <!-- The email ask (v2): BELOW the board, optional, for the checklist and
+         the price. On submit: the waitlist insert (as before), the one Meta
+         Lead (as before), and ONE automatic email with fixed content from
+         the fit-checklist function. The answers never leave the page. Words
+         from the deck (c). -->
+    <div class="card" id="emailAsk" style="margin-top:34px">
+      <h3>Want the setup checklist and the price in your inbox?</h3>
+      <p class="fine">One email with what you need, how setup works and what it costs. Your answers above stay on this page and are not in it.</p>
+      <input type="email" id="em" autocomplete="email" placeholder="you@email.com" aria-label="Your email address">
+      <div class="row"><button class="cta secondary" id="emGo" type="button">Email me the checklist</button></div>
+      <p class="fine" style="margin-top:8px">One email. No phone calls.</p>
+      <p class="msg" id="emMsg" role="status"></p>
+    </div>
+
     <div class="card" style="margin-top:38px">
       <h3>What it costs</h3>
       <p class="fine">No hardware to buy from us. It runs on the family&rsquo;s iPad, 2017 or newer with iPadOS 16 or later, or one you buy once.</p>
@@ -413,7 +412,7 @@ fbq('init','1039692688431979');
     </div>
 
     <div style="margin-top:34px">
-      <h2 id="ctaHeadLive">The board can be live on <span data-poss>their</span> wall tonight.</h2>
+      <h2 id="ctaHeadLive"><span data-poss id="ctaPoss">Their</span> board can be live the same day someone is at the iPad.</h2>
       <div id="atLaunch">
         <p data-paid-only>The first week is free, then $29 a month with a 30 day money back guarantee. Cancel anytime, online. If care ends, billing stops immediately and we refund the unused part of the month.</p>
         <!-- Shown only on a ?comp= access link: the inverse of data-paid-only. Without it
@@ -443,7 +442,7 @@ fbq('init','1039692688431979');
       <h3>Want the checklist for later?</h3>
       <p class="fine">One email with what the iPad needs and how setup works.</p>
       <input type="email" id="em3" autocomplete="email" placeholder="you@email.com" aria-label="Your email address">
-      <div class="row"><button class="cta" id="em3Go" type="button">Email me the checklist</button></div>
+      <div class="row"><button class="cta secondary" id="em3Go" type="button">Email me the checklist</button></div>
       <p class="msg" id="em3Msg" role="status"></p>
     </div>
   </section>
@@ -547,13 +546,16 @@ fbq('init','1039692688431979');
     return 'your loved one';
   }
   function dispName(){ return (A.name || '').trim() || whoFallback(); }
+  function cap(t){ return t ? t.charAt(0).toUpperCase() + t.slice(1) : t; }
   function paintName(){
     var n = (A.name || '').trim();
     [].forEach.call(document.querySelectorAll('[data-name]'), function(s){
-      s.textContent = n || whoFallback();
+      var v = n || whoFallback();
+      s.textContent = s.hasAttribute('data-cap') ? cap(v) : v;
     });
     [].forEach.call(document.querySelectorAll('[data-poss]'), function(s){
-      s.textContent = n ? possessive(n) : (A.who ? possessive(whoFallback()) : s.dataset.fallback);
+      var v = n ? possessive(n) : (A.who ? possessive(whoFallback()) : s.dataset.fallback);
+      s.textContent = s.id === 'ctaPoss' ? cap(v) : v;
     });
   }
   [].forEach.call(document.querySelectorAll('[data-name],[data-poss]'), function(s){
@@ -604,12 +606,6 @@ fbq('init','1039692688431979');
       if (A.hw === 'noipad') return disqualify('ipad');
       if (A.hw === 'noiphone') return disqualify('iphone');
     }
-    // "Someone else" needs a word from them before moving on.
-    if (key === 'who') {
-      var w = el('whoOtherWrap');
-      if (A.who === 'Other') { w.style.display = 'block'; el('whoOther').focus(); return; }
-      w.style.display = 'none';
-    }
     // Distance is the last question: build the board.
     if (key === 'dist') return startProcessing();
     next();
@@ -625,10 +621,6 @@ fbq('init','1039692688431979');
 
 
   // name
-  // "Someone else": Enter carries their own words forward.
-  el('whoOther').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') { A.whoOther = el('whoOther').value.trim(); next(); }
-  });
   // The name is optional (v2): Continue works empty and the fallback ("your
   // mom") paints everywhere a name would.
   var nm = el('nm'), nmGo = el('nmGo');
@@ -674,7 +666,8 @@ fbq('init','1039692688431979');
   function statusLine(){ return 'Love you. See you Sunday.'; }
   function familyLine(){
     if (A.dist === 'A flight or a long drive') return 'Your family is thinking of you today.';
-    if (A.dist === 'Same house' || A.dist === 'Same town') return 'Your family will see you later today.';
+    if (A.dist === 'Same house') return 'You live here with your family.';
+    if (A.dist === 'Same town') return 'Your family lives close by.';
     return 'Your family will check in later.';
   }
   var DIST = {
@@ -689,18 +682,12 @@ fbq('init','1039692688431979');
   function hardestLine(){
     var nm2 = dispName();
     var map = {
-      repeat: ['You said the hardest part is the same questions, over and over.',
+      repeat: ['The same questions, over and over.',
         'That is the exact job of the board. The day, the date, and what comes next stay on the wall, and Cassi answers the tenth ask with the same patience as the first.'],
-      calls: ['You said the phone calls are the hardest part.',
+      calls: ['The phone calls.',
         'The board keeps the answers most of those calls ask for, the day, the time, who is coming, in plain view at home. And when it is really you ' + nm2 + ' wants, they can tap to talk and ask Cassi to call you. The iPad rings your phone on FaceTime.'],
-      away: ['You said the worry when you are not there is the hardest part.',
+      away: ['The worry when you are not there.',
         'Your phone shows you the same board ' + nm2 + ' sees, live, any time. You can look without ringing the house.'],
-      meds: ['You said the medicine is the hardest part.',
-        'The board reminds at the right times, in a voice you recorded. If a reminder is not confirmed, the app tells you instead of leaving you guessing.'],
-      alone: ['You said the hardest part is being the only one who answers.',
-        'The board carries the repeat questions so not every answer has to come from you. The day, the date, and what comes next stay answered on the wall, whether or not you picked up.'],
-      all: ['You said it honestly: all of it.',
-        'So here is the whole answer at once. The board keeps the day on the wall, Cassi answers the repeats, your recordings carry the reminders, and your phone shows you the board from anywhere.']
     };
     return map[A.hardest] || null;
   }
@@ -713,7 +700,7 @@ fbq('init','1039692688431979');
   // What the board shows, from the answers so far. The hero on screen 1 uses
   // a sample instead (sampleOpts), so it never goes stale.
   function boardOpts(){ return { msg: statusLine(), next: nextLine(), family: familyLine() }; }
-  function sampleOpts(){ return { msg: 'Love you. See you Sunday.', next: { t:'Haircut', s:'2:00 PM' }, family: 'Cards with Sam at 8.' }; }
+  function sampleOpts(){ return { msg: 'Love you. See you Sunday.', next: { t:'Haircut', s:'Tomorrow at 2:00 PM' }, family: 'Cards with Sam this week.' }; }
   function renderBoard(target, o){
     var d = new Date();
     var nx = o.next;
@@ -745,8 +732,8 @@ fbq('init','1039692688431979');
     var out = [];
     var hl = hardestLine();
     if (hl) out.push(hl);
-    if (A.asks.length) out.push([nm2 + ' asks about ' + askWords() + '.', 'Those are the facts the board keeps on the wall all day.']);
-    if (A.dist && DIST[A.dist] && A.hardest !== 'away') out.push(DIST[A.dist]);
+    if (A.asks.length) out.push([cap(nm2) + ' asks about ' + askWords() + '.', 'You can put those answers on the board from your phone, and they stay in view all day.']);
+    if (A.dist && DIST[A.dist]) out.push(DIST[A.dist]);
     out.push(['You record the reminders yourself.', 'The board plays your recording back at the right time, so ' + nm2 + ' hears you, not a computer voice.']);
     // the phone preview: same answers, the caregiver's side of them
     var meds = A.asks.indexOf('meds') > -1;
@@ -755,7 +742,7 @@ fbq('init','1039692688431979');
     el('phMeds').textContent = meds ? '1 scheduled' : 'None yet';
     el('phCal').textContent = appt ? '1 today' : 'Nothing today';
     el('phSee').textContent = 'See ' + possessive(nm2) + ' board';
-    if (A.dist === 'A flight or a long drive' || A.hardest === 'away') {
+    if (A.dist === 'A flight or a long drive') {
       el('phStatus').textContent = 'Tablet online.';
       el('phSub').textContent = 'You are far away. This is how you know.';
     }
@@ -782,7 +769,7 @@ fbq('init','1039692688431979');
     dqFrom = 's1hw';
     track('dq_shown', reason);
     var fix = {
-      ipad: [['An iPad from 2017 or newer (iPadOS 16 or later) on their home Wi-Fi.', 'A used or refurbished one works. If you get one, setup takes about 20 minutes from your iPhone.']],
+      ipad: [['An iPad from 2017 or newer (iPadOS 16 or later) on their home Wi-Fi.', 'A used or refurbished one works. If you get one, setup takes about 20 minutes. You do it from your iPhone, and someone at the iPad types one code.']],
       iphone: [['Compasse needs one iPhone in the family to set up the board.', 'The family app is iPhone only today.']]
     }[reason];
     el('dqEmail').style.display = reason === 'ipad' ? 'block' : 'none';
@@ -796,6 +783,7 @@ fbq('init','1039692688431979');
     // Lead gate and the exit's email box all read it.
     A.dq = null;
     el('dqEmail').style.display = 'none';
+    hist.pop();
     if (dqFrom) show(dqFrom, true);
   });
 
@@ -814,7 +802,7 @@ fbq('init','1039692688431979');
       headers:{ apikey:SB_KEY, Authorization:'Bearer ' + SB_KEY, 'Content-Type':'application/json', Prefer:'return=minimal' },
       body: JSON.stringify({ email: email, source: tag() })
     }).then(function(r){
-      if (r.status === 409){ msgEl.textContent = "You already have it. Check your inbox, or write to hello@compasse.care."; done && done(true); return; }
+      if (r.status === 409){ msgEl.textContent = "That address is already on our list. One moment…"; done && done(true); return; }
       if (!r.ok) throw new Error(String(r.status));
       msgEl.textContent = "One moment…";
       metaLead();
@@ -929,7 +917,7 @@ fbq('init','1039692688431979');
       fetch(SB_URL + '/functions/v1/fit-checklist', {
         method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
         body: JSON.stringify({ email:email, tag:TAG })
-      }).then(function(r){ if (!msgEl) return; if (!r.ok) msgEl.textContent = NOT_SENT; else if (!keepMsg) msgEl.textContent = 'Sent. It should reach you in a few minutes.'; })
+      }).then(function(r){ if (!msgEl) return; if (!r.ok) msgEl.textContent = NOT_SENT; else msgEl.textContent = keepMsg ? 'If that address has not had the checklist yet, it is on its way. Check your inbox, or write to hello@compasse.care.' : 'Sent. It should reach you in a few minutes.'; })
         .catch(function(){ if (msgEl) msgEl.textContent = NOT_SENT; });
     } catch(e){ if (msgEl) msgEl.textContent = NOT_SENT; }
   }
